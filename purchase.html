@@ -69,17 +69,70 @@
     const params = new URLSearchParams(location.search);
     const cat = params.get('cat');
     const file = params.get('file');
+    
     const map = {
-      holidays:'חגים',
       recipes:'מתכונים',
-      emotions:'רגשות',
-      observations:'תצפיות',
-      planning:'תכנון כללי'
+      birthday:'יום הולדת',
+      holidays:'חגים',
+      general:'תכנים כלליים',
+      body:'גוף',
+      family:'יום המשפחה',
+      consulting:'ייעוץ'
     };
+    
+    const productDetails = {
+      'recipes-1': { name: 'עוגת יום הולדת', desc: 'מתכון אורייני לעוגת שוקולד – עוגת יום הולדת' },
+      'recipes-2': { name: 'עוגת תפוזים בתוך תפוז – מתכון פעיל', desc: 'מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז' },
+      'recipes-3': { name: 'עוגת ביסקוויטים – מתכון פעיל', desc: 'מתכון אורייני פעיל לעוגת ביסקוויטים' },
+      'recipes-4': { name: 'עוגת דבש – מתכון פעיל', desc: 'מתכון אורייני פעיל לעוגת דבש' },
+      'recipes-5': { name: 'ספר מתכונים אורייניים', desc: 'ספר המתכונים מכיל 32 מתכונים אורייניים גם ליום יום וגם לחגים' },
+      'recipes-6': { name: 'עוגת דבש', desc: 'מתכון אורייני לעוגת דבש' },
+      'recipes-7': { name: 'עוגת תמרים', desc: 'מתכון אורייני לעוגת תמרים' },
+      'birthday-1': { name: 'עוגת יום הולדת', desc: 'מתכון אורייני לעוגת שוקולד – עוגת יום הולדת' },
+      'birthday-2': { name: 'כרטיסיות יום הולדת', desc: 'כרטיסיות שירים ומשחקים ללוח יום הולדת' },
+      'holidays-1': { name: 'ערכת שבועות', desc: 'ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות' },
+      'holidays-2': { name: 'ערכת חנוכה – פעילות בקבוצה', desc: 'ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות "הגעתי לגן"' },
+      'holidays-3': { name: 'עוגת דבש', desc: 'מתכון אורייני לעוגת דבש' },
+      'general-1': { name: 'תרשים משפחות כלי נגינה', desc: 'תמונת תרשים משפחות כלי נגינה' },
+      'general-2': { name: 'כרטיסיות "מה עוזר לי להירגע?"', desc: 'מתכון אורייני לעוגת שוקולד – עוגת יום הולדת' },
+      'general-3': { name: 'לוח "הגעתי לגן"', desc: '10 לוחות הגעתי לגן עם 4-6 אפשרויות' },
+      'body-1': { name: 'סרגל אותיות – שפת הסימנים', desc: 'סרגל אותיות שפת הסימנים להדפסה בעברית' },
+      'body-2': { name: 'איברי גוף', desc: '17 כרטיסיות גדולות של איברי גוף: תמונות + שם' },
+      'body-3': { name: 'היגיינה אישית – פעולות ניקיון', desc: '18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד' },
+      'family-1': { name: 'ערכת יום המשפחה', desc: 'ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות' },
+      'family-2': { name: 'משחק ליום המשפחה', desc: 'משחק לוח משפחתי' }
+    };
+    
+    const consultingPackages = {
+      'parents-meeting': { name: 'לקראת אסיפת הורים ראשונה', price: '₪200.00' },
+      'monthly-plan': { name: 'תוכנית חודשית + תכנון שבועי', price: '₪600.00' },
+      'custom': { name: 'פגישת ייעוץ לפי צורך', price: '₪250.00' }
+    };
+    
     const catNameEl = document.getElementById('catName');
+    const priceBoxEl = document.getElementById('priceBox');
+    const licenseField = document.querySelector('[for="license"]').parentElement;
+    
     let name = map[cat] || 'מוצר כללי';
-    if(file) name += ' – קובץ #' + file;
+    let price = '₪25.00';
+    
+    if (cat === 'consulting' && consultingPackages[file]) {
+      name = consultingPackages[file].name;
+      price = consultingPackages[file].price;
+      // Hide license selection for consulting packages
+      licenseField.style.display = 'none';
+    } else if(file && cat !== 'consulting') {
+      const productKey = cat + '-' + file;
+      if (productDetails[productKey]) {
+        name = productDetails[productKey].name;
+      } else {
+        name += ' – קובץ #' + file;
+      }
+    }
+    
     catNameEl.textContent = name;
+    priceBoxEl.textContent = price;
+    
     document.getElementById('payForm').addEventListener('submit', e=>{
       e.preventDefault();
       alert('דף דמו: כאן יתבצע מעבר לסליקה.');

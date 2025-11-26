@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ייעוץ לגננות - גננת בר</title>
+  <meta name="description" content="פגישות ייעוץ אישיות לגננות ומטפלות - ליווי מקצועי, השראה וכלים מעשיים.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=1">
+  <link rel="stylesheet" href="css/responsive.css?v=1">
+  <style>
+    .consulting-hero { background:linear-gradient(135deg, var(--accent-light), #fff); padding:4rem 0 3rem; text-align:center; }
+    .consulting-hero h1 { font-size:2.5rem; margin-bottom:1rem; color:var(--primary-purple); }
+    .consulting-hero .subtitle { font-size:1.3rem; color:var(--text-mid); margin-bottom:2rem; }
+    .intro-text { max-width:900px; margin:0 auto 3rem; line-height:1.8; font-size:1.05rem; color:var(--text-dark); }
+    .consulting-packages { display:grid; gap:2rem; margin-top:3rem; }
+    .package-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:2rem; box-shadow:var(--shadow); transition:var(--transition); cursor:pointer; }
+    .package-card:hover { border-color:var(--primary-purple); box-shadow:0 8px 24px rgba(122,31,162,0.15); transform:translateY(-4px); }
+    .package-card h3 { font-size:1.6rem; margin-bottom:1rem; color:var(--primary-purple); }
+    .package-card .package-summary { font-size:1rem; color:var(--text-mid); margin-bottom:1.2rem; line-height:1.6; }
+    .package-card .btn { margin-top:1rem; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <div class="logo"><a href="index.html"><img src="images/logo.png" alt="לוגו" class="logo-img" /></a></div>
+      <div class="nav-wrapper">
+        <nav class="main-nav" id="mainNav">
+          <button class="nav-toggle" id="navToggle" aria-label="תפריט">☰</button>
+          <ul class="nav-list">
+            <li><a href="index.html#instagram">אינסטגרם</a></li>
+            <li><a href="index.html#about">עליי</a></li>
+            <li><a href="index.html#shop">תכנים להורדה</a></li>
+            <li><a href="consulting.html" class="active">ייעוץ</a></li>
+            <li><a href="index.html#contact">צור קשר</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="header-social">
+        <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
+        <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
+        <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="consulting-hero">
+    <div class="container">
+      <h1>פגישת ייעוץ לגננות ומטפלות</h1>
+      <p class="subtitle">ליווי אישי שמביא סדר, השראה וביטחון לעבודה בגן 💜</p>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section style="padding:3rem 0;">
+    <div class="container">
+      <div class="intro-text">
+        <p style="margin-bottom:1.5rem;">גם אני, כגננת, הרגשתי לא פעם שאני זקוקה למישהי שאוכל להתייעץ איתה. מישהי שהיא לאו דווקא מתוך המערכת, אלא כזו שאפשר לדבר איתה בכנות, להרגיש איתה בנוח, להתחבר לגננת שהיא, ולקבל ממנה הקשבה והכוונה אמיתית.</p>
+        <p style="margin-bottom:1.5rem;">הריצה אין סופית סביב כתיבת תוכניות, בניית מערכים, המצאת הגלגל מחדש, פשוט מתישות אותנו ולא נותנות לנו להתמקד במה שחשוב באמת – להיות גננות ולהעניק אהבה לילדים. פשתי גננות מדהימות – יצירתיות, מסורות, מלאות אהבה לילדים, שכל הלחץ רק יוצר אצלם בלבול ותחושת עומס.</p>
+        <p>מתוך הצורך והניסיון האישי שלי נולד הייעוץ שלי לגננות: תהליך אישי, רגוע וממוקד, שמאפשר לך לעצור רגע, לראות את הגן שלך מהצד – ולבנות יחד כלים שיתאימו בדיוק לך, לצוות ולילדים שלך 💜</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Packages -->
+  <section style="padding:2rem 0 4rem; background:#fafafa;">
+    <div class="container">
+      <h2 class="section-title" style="text-align:center; margin-bottom:2.5rem;">חבילות הייעוץ</h2>
+      <div class="consulting-packages">
+        
+        <!-- Package 1 -->
+        <div class="package-card" onclick="location.href='consulting-detail.html?package=parents-meeting'">
+          <h3>לקראת אסיפת הורים ראשונה</h3>
+          <p class="package-summary">אסיפת ההורים הראשונה היא חלון חשוב ליצירת אמון, תקשורת וחיבור בין הגן לבית ומחזקת את תחושת הביטחון של ההורים ומניחה את היסודות לשנה רגועה ומלאה בשיתוף פעולה.</p>
+          <a href="consulting-detail.html?package=parents-meeting" class="btn primary">לפרטים נוספים</a>
+        </div>
+
+        <!-- Package 2 -->
+        <div class="package-card" onclick="location.href='consulting-detail.html?package=monthly-plan'">
+          <h3>תוכנית חודשית + תכנון שבועי</h3>
+          <p class="package-summary">כשהגן מתוכנן היטב אנחנו פועלים ברוגע וזרימה בתוך סדר היום. בתהליך משותף של שתי פגישות נבנה יחד תוכנית עבודה מותאמת אישית.</p>
+          <a href="consulting-detail.html?package=monthly-plan" class="btn primary">לפרטים נוספים</a>
+        </div>
+
+        <!-- Package 3 -->
+        <div class="package-card" onclick="location.href='consulting-detail.html?package=custom'">
+          <h3>פגישת ייעוץ לפי צורך</h3>
+          <p class="package-summary">נעבוד יחד על נושא אחד לבחירתך: בניית מפגש מותאם גיל, תכנון סדר יום וחלוקת תפקידים בצוות, תכנון שולחנות יצירה, תצפיות על ילדי הגן, או נושא אחר שמעסיק אותך.</p>
+          <a href="consulting-detail.html?package=custom" class="btn primary">לפרטים נוספים</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-inner row-layout">
+      <div class="footer-col footer-right">
+        <p>© 2025 גננת בר. כל הזכויות שמורות.</p>
+      </div>
+      <div class="footer-col footer-center">
+        <div class="social-links">
+          <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram" class="social-icon"><img src="images/icon-instagram.svg" alt="Instagram"/></a>
+          <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok" class="social-icon"><img src="images/icon-tiktok.svg" alt="TikTok"/></a>
+          <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook" class="social-icon"><img src="images/icon-facebook.svg" alt="Facebook"/></a>
+        </div>
+      </div>
+      <div class="footer-col footer-left">
+        <a href="#top" class="back-to-top">↑ לראש הדף</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

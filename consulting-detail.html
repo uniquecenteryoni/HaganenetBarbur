@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>פרטי חבילת ייעוץ - גננת בר</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=1">
+  <link rel="stylesheet" href="css/responsive.css?v=1">
+  <style>
+    .detail-hero { background:linear-gradient(135deg, var(--accent-light), #fff); padding:3rem 0 2rem; }
+    .breadcrumb { font-size:.9rem; margin-bottom:1.5rem; }
+    .breadcrumb a { color:var(--primary-purple); text-decoration:none; }
+    .package-detail { background:#fff; border-radius:var(--radius); padding:2.5rem; box-shadow:var(--shadow); margin:2rem 0; }
+    .package-detail h1 { font-size:2.2rem; color:var(--primary-purple); margin-bottom:1.5rem; }
+    .package-detail .description { font-size:1.1rem; line-height:1.8; margin-bottom:2rem; color:var(--text-dark); }
+    .package-detail ul { margin:1.5rem 0; padding-right:2rem; }
+    .package-detail ul li { margin-bottom:1rem; line-height:1.7; font-size:1.05rem; }
+    .package-includes { background:var(--accent-light); padding:1.5rem; border-radius:var(--radius-sm); margin:2rem 0; }
+    .package-includes h3 { margin-bottom:1rem; color:var(--primary-purple); }
+    .price-box { text-align:center; background:var(--primary-purple); color:#fff; padding:2rem; border-radius:var(--radius); margin:2rem 0; }
+    .price-box .price { font-size:3rem; font-weight:700; margin-bottom:.5rem; }
+    .price-box .price-note { font-size:1rem; opacity:.9; }
+    .cta-section { text-align:center; margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo"><a href="index.html"><img src="images/logo.png" alt="לוגו" class="logo-img" /></a></div>
+      <div class="nav-wrapper">
+        <nav class="main-nav">
+          <ul class="nav-list">
+            <li><a href="index.html#instagram">אינסטגרם</a></li>
+            <li><a href="index.html#about">עליי</a></li>
+            <li><a href="index.html#shop">תכנים להורדה</a></li>
+            <li><a href="consulting.html" class="active">ייעוץ</a></li>
+            <li><a href="index.html#contact">צור קשר</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="header-social">
+        <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
+        <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
+        <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
+      </div>
+    </div>
+  </header>
+
+  <section class="detail-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">ראשי</a> / <a href="consulting.html">ייעוץ</a> / <span id="breadcrumbTitle">פרטי חבילה</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:2rem 0 4rem;">
+    <div class="container" style="max-width:900px;">
+      <div class="package-detail" id="packageContent">
+        <!-- Content will be loaded by JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-inner row-layout">
+      <div class="footer-col footer-right">
+        <p>© 2025 גננת בר. כל הזכויות שמורות.</p>
+      </div>
+      <div class="footer-col footer-center">
+        <div class="social-links">
+          <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram" class="social-icon"><img src="images/icon-instagram.svg" alt="Instagram"/></a>
+          <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok" class="social-icon"><img src="images/icon-tiktok.svg" alt="TikTok"/></a>
+          <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook" class="social-icon"><img src="images/icon-facebook.svg" alt="Facebook"/></a>
+        </div>
+      </div>
+      <div class="footer-col footer-left">
+        <a href="#top" class="back-to-top">↑ לראש הדף</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const packages = {
+      'parents-meeting': {
+        title: 'לקראת אסיפת הורים ראשונה',
+        description: 'אסיפת ההורים הראשונה היא חלון חשוב ליצירת אמון, תקשורת וחיבור בין הגן לבית ומחזקת את תחושת הביטחון של ההורים ומניחה את היסודות לשנה רגועה ומלאה בשיתוף פעולה.',
+        details: [
+          'איך להציג את עצמך ואת הגן בצורה ברורה ומקצועית',
+          'אילו גבולות וכללים נכון להציב מול ההורים כבר מהיום הראשון',
+          'מה חשוב לומר, ומה להשאיר לפגישות אישיות?'
+        ],
+        includes: 'פגישה של שעה בזום<br>כולל שלד כתוב למצגת/דפי סיכום שילוו אותך באסיפה.',
+        price: '200 ₪'
+      },
+      'monthly-plan': {
+        title: 'תוכנית חודשית + תכנון שבועי',
+        description: 'כשהגן מתוכנן היטב אנחנו פועלים ברוגע וזרימה בתוך סדר היום.<br>בתהליך משותף של שתי פגישות נבנה יחד תוכנית עבודה מותאמת אישית:',
+        details: [
+          'פגישת היכרות – מיפוי הגן, סדר יום, הכרת הצוות, צרכי הגן',
+          'פגישת המשך – כתיבת תוכנית חודשית ותכנון שבועי ראשון',
+          'ליווי בוואטסאפ לאורך אותו החודש לצורך שאלות ועדכונים'
+        ],
+        includes: 'שתי פגישות + ליווי חודשי<br>כולל קובץ מעוצב מותאם לך של תכנון שבועי',
+        price: '600 ₪'
+      },
+      'custom': {
+        title: 'פגישת ייעוץ לפי צורך',
+        description: 'נעבוד יחד על נושא אחד לבחירתך:',
+        details: [
+          'בניית מפגש מותאם גיל',
+          'תכנון סדר יום וחלוקת תפקידים בצוות',
+          'תכנון שולחנות יצירה – איך לעודד התנסויות מגוונות?',
+          'תצפיות על ילדי הגן והכנה לשיחת הורים אישית',
+          'נושא אחר שמעסיק אותך'
+        ],
+        includes: 'פגישה של 60-75 דקות<br>כולל קובץ סיכום מותאם לפגישה',
+        price: '250 ₪'
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const packageId = params.get('package');
+    const packageData = packages[packageId];
+
+    if (packageData) {
+      document.getElementById('breadcrumbTitle').textContent = packageData.title;
+      document.title = packageData.title + ' - גננת בר';
+      
+      let detailsHtml = '<ul>';
+      packageData.details.forEach(item => {
+        detailsHtml += `<li>${item}</li>`;
+      });
+      detailsHtml += '</ul>';
+
+      document.getElementById('packageContent').innerHTML = `
+        <h1>${packageData.title}</h1>
+        <div class="description">${packageData.description}</div>
+        ${detailsHtml}
+        <div class="package-includes">
+          <h3>החבילה כוללת:</h3>
+          <p>${packageData.includes}</p>
+        </div>
+        <div class="price-box">
+          <div class="price">${packageData.price}</div>
+          <div class="price-note">תשלום חד-פעמי</div>
+        </div>
+        <div class="cta-section">
+          <a href="purchase.html?cat=consulting&file=${packageId}" class="btn primary" style="font-size:1.1rem; padding:1rem 2.5rem;">לרכישה</a>
+          <p style="margin-top:1rem; color:var(--text-mid);">או <a href="index.html#contact" style="color:var(--primary-purple);">צרי קשר</a> לפרטים נוספים</p>
+        </div>
+      `;
+    } else {
+      document.getElementById('packageContent').innerHTML = '<p>לא נמצאה חבילת ייעוץ זו. <a href="consulting.html">חזרה לדף הייעוץ</a></p>';
+    }
+  </script>
+</body>
+</html>

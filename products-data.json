@@ -1,0 +1,154 @@
+{
+  "recipes": [
+    {
+      "id": 1,
+      "title": "עוגת יום הולדת",
+      "description": "מתכון אורייני לעוגת שוקולד – עוגת יום הולדת",
+      "price": "₪10.00",
+      "image": "images/product1-slide1.svg"
+    },
+    {
+      "id": 2,
+      "title": "עוגת תפוזים בתוך תפוז – מתכון פעיל",
+      "description": "מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז",
+      "price": "₪25.00",
+      "image": "images/product1-slide2.svg"
+    },
+    {
+      "id": 3,
+      "title": "עוגת ביסקוויטים – מתכון פעיל",
+      "description": "מתכון אורייני פעיל לעוגת ביסקוויטים",
+      "price": "₪25.00",
+      "image": "images/product1-slide3.svg"
+    },
+    {
+      "id": 4,
+      "title": "עוגת דבש – מתכון פעיל",
+      "description": "מתכון אורייני פעיל לעוגת דבש",
+      "price": "₪25.00",
+      "image": "images/product2-slide1.svg"
+    },
+    {
+      "id": 5,
+      "title": "ספר מתכונים אורייניים",
+      "description": "ספר המתכונים מכיל 32 מתכונים אורייניים גם ליום יום וגם לחגים",
+      "price": "₪60.00",
+      "image": "images/product2-slide2.svg"
+    },
+    {
+      "id": 6,
+      "title": "עוגת דבש",
+      "description": "מתכון אורייני לעוגת דבש",
+      "price": "₪10.00",
+      "image": "images/product2-slide3.svg"
+    },
+    {
+      "id": 7,
+      "title": "עוגת תמרים",
+      "description": "מתכון אורייני לעוגת תמרים",
+      "price": "₪10.00",
+      "image": "images/product3-slide1.svg"
+    }
+  ],
+  "birthday": [
+    {
+      "id": 1,
+      "title": "עוגת יום הולדת",
+      "description": "מתכון אורייני לעוגת שוקולד – עוגת יום הולדת",
+      "price": "₪10.00",
+      "image": "images/product3-slide2.svg"
+    },
+    {
+      "id": 2,
+      "title": "כרטיסיות יום הולדת",
+      "description": "כרטיסיות שירים ומשחקים ללוח יום הולדת",
+      "price": "₪10.00",
+      "image": "images/product3-slide3.svg"
+    }
+  ],
+  "holidays": [
+    {
+      "id": 1,
+      "title": "ערכת שבועות",
+      "description": "ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות",
+      "price": "₪40.00",
+      "image": "images/product4-slide1.svg"
+    },
+    {
+      "id": 2,
+      "title": "ערכת חנוכה – פעילות בקבוצה",
+      "description": "ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות \"הגעתי לגן\"",
+      "price": "₪65.00",
+      "image": "images/product4-slide2.svg"
+    },
+    {
+      "id": 3,
+      "title": "עוגת דבש",
+      "description": "מתכון אורייני לעוגת דבש",
+      "price": "₪10.00",
+      "image": "images/product4-slide3.svg"
+    }
+  ],
+  "general": [
+    {
+      "id": 1,
+      "title": "תרשים משפחות כלי נגינה",
+      "description": "תמונת תרשים משפחות כלי נגינה",
+      "price": "₪5.00",
+      "image": "images/product1-slide1.svg"
+    },
+    {
+      "id": 2,
+      "title": "כרטיסיות \"מה עוזר לי להירגע?\"",
+      "description": "כרטיסיות לניהול רגשות ורגיעה",
+      "price": "₪10.00",
+      "image": "images/product1-slide2.svg"
+    },
+    {
+      "id": 3,
+      "title": "לוח \"הגעתי לגן\"",
+      "description": "10 לוחות הגעתי לגן עם 4-6 אפשרויות",
+      "price": "₪25.00",
+      "image": "images/product1-slide3.svg"
+    }
+  ],
+  "body": [
+    {
+      "id": 1,
+      "title": "סרגל אותיות – שפת הסימנים",
+      "description": "סרגל אותיות שפת הסימנים להדפסה בעברית",
+      "price": "₪5.00",
+      "image": "images/product2-slide1.svg"
+    },
+    {
+      "id": 2,
+      "title": "איברי גוף",
+      "description": "17 כרטיסיות גדולות של איברי גוף: תמונות + שם",
+      "price": "₪20.00",
+      "image": "images/product2-slide2.svg"
+    },
+    {
+      "id": 3,
+      "title": "היגיינה אישית – פעולות ניקיון",
+      "description": "18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד",
+      "price": "₪20.00",
+      "image": "images/product2-slide3.svg"
+    }
+  ],
+  "family": [
+    {
+      "id": 1,
+      "title": "ערכת יום המשפחה",
+      "description": "ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות",
+      "price": "₪60.00",
+      "image": "images/product3-slide2.svg"
+    },
+    {
+      "id": 2,
+      "title": "משחק ליום המשפחה",
+      "description": "משחק לוח משפחתי",
+      "price": "₪25.00",
+      "image": "images/product3-slide3.svg"
+    }
+  ]
+}

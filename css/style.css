@@ -81,16 +81,23 @@ section { padding:4.5rem 0 3.5rem; position:relative; }
 .purchase-action { margin-top:1.2rem; display:flex; justify-content:center; }
 @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
-/* Shop file grid: fixed 2 columns on desktop */
-.file-grid { display:grid; gap:1.4rem; grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:1.5rem; }
+/* Shop file grid: fixed 3 columns on desktop */
+.file-grid { display:grid; gap:1.4rem; grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:1.5rem; }
+/* Tablet: 2 columns */
+@media (max-width:900px) {
+  .file-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
 /* Mobile: single column */
 @media (max-width:700px) {
   .file-grid { grid-template-columns:1fr; }
 }
-.file-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:.9rem .9rem 1.2rem; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow:var(--shadow); }
+.file-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:.9rem .9rem 1.2rem; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow:var(--shadow); transition:var(--transition); }
+.file-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(122,31,162,0.15); }
+.file-card > a:first-of-type { text-decoration:none; color:inherit; flex-grow:1; display:flex; flex-direction:column; align-items:center; width:100%; }
 .file-card img { width:100%; aspect-ratio:1/1; height:auto; object-fit:cover; border-radius:var(--radius-sm); margin-bottom:.6rem; background:#fff; border:1px solid var(--accent-light); }
-.file-card h4 { font-size:.95rem; margin:.4rem 0 .8rem; color:var(--primary-purple-dark); line-height:1.3; }
-.file-card .btn { width:100%; padding:.6rem 0; }
+.file-card h4 { font-size:.95rem; margin:.4rem 0 .5rem; color:var(--primary-purple-dark); line-height:1.3; }
+.file-card .file-desc { font-size:.8rem; color:var(--text-mid); line-height:1.4; margin:0 0 .8rem; }
+.file-card .btn { width:100%; padding:.6rem 0; margin-top:.5rem; }
 
 /* (Carousel styles removed – using grid cards now) */
 
