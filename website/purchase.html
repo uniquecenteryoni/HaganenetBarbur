@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>רכישת מוצר - גננת בר</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Heebo',sans-serif; margin:0; background:#faf9fe; color:#2f2f2f; }
+    .container { max-width:880px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+    h1 { font-size:2rem; margin:0 0 1rem; }
+    a { color:#7A1FA2; }
+    .breadcrumb { font-size:.85rem; margin-bottom:1.5rem; }
+    .panel { background:#fff; border:1px solid #e5def2; border-radius:14px; padding:1.6rem 1.4rem 2rem; box-shadow:0 4px 18px rgba(0,0,0,0.05); }
+    .summary { display:grid; gap:1rem; grid-template-columns:1fr 1fr; margin-bottom:2rem; }
+    .summary div { background:#faf7ff; border:1px solid #e7ddf5; padding:.9rem 1rem; border-radius:10px; }
+    .pay-area { display:grid; gap:1.1rem; }
+    label { font-size:.9rem; font-weight:500; }
+    input, select { width:100%; padding:.65rem .75rem; border:1px solid #d8c9ec; border-radius:8px; font-family:inherit; }
+    input:focus, select:focus { outline:2px solid #d9b8f5; }
+    .btn { background:#7A1FA2; color:#fff; border:none; padding:.85rem 1.3rem; border-radius:8px; cursor:pointer; font-size:1rem; font-family:inherit; font-weight:500; }
+    .btn:hover { background:#61187F; }
+    .note { font-size:.8rem; color:#555; line-height:1.4; }
+    footer { text-align:center; margin-top:3rem; font-size:.8rem; color:#666; }
+    .back-btn { display:inline-block; padding:.35rem .7rem; background:#fff; border:1px solid #d8c9ec; border-radius:6px; text-decoration:none; font-size:.8rem; margin-inline-end:.4rem; }
+    .back-btn:hover { background:#f3e9fb; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html" class="back-btn">← חזרה</a> / רכישה</div>
+    <h1>רכישת משאב חינוכי</h1>
+    <div class="panel">
+      <div class="summary" id="summaryBox">
+        <div>
+          <strong>קטגוריה:</strong>
+          <div id="catName">—</div>
+        </div>
+        <div>
+          <strong>מחיר:</strong>
+          <div id="priceBox">₪25.00</div>
+        </div>
+      </div>
+      <form class="pay-area" id="payForm">
+        <div>
+          <label for="buyerName">שם מלא</label>
+          <input type="text" id="buyerName" required>
+        </div>
+        <div>
+          <label for="buyerEmail">אימייל</label>
+          <input type="email" id="buyerEmail" required>
+        </div>
+        <div>
+          <label for="license">שימוש</label>
+          <select id="license" required>
+            <option value="single">כיתה / בית אחד</option>
+            <option value="multi">רישיון מרובה (3 כיתות)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn">המשך לתשלום (דמו)</button>
+        <p class="note">* זהו דף דמו. בהמשך יחובר לשירות סליקה (כגון Tranzila / Cardcom / Paddle).<br>* לאחר תשלום יישלח לינק הורדה אוטומטי למייל.</p>
+      </form>
+    </div>
+    <footer>© 2025 גננת בר</footer>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const cat = params.get('cat');
+    const file = params.get('file');
+    const map = {
+      holidays:'חגים',
+      recipes:'מתכונים',
+      emotions:'רגשות',
+      observations:'תצפיות',
+      planning:'תכנון כללי'
+    };
+    const catNameEl = document.getElementById('catName');
+    let name = map[cat] || 'מוצר כללי';
+    if(file) name += ' – קובץ #' + file;
+    catNameEl.textContent = name;
+    document.getElementById('payForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      alert('דף דמו: כאן יתבצע מעבר לסליקה.');
+    });
+  </script>
+</body>
+</html>

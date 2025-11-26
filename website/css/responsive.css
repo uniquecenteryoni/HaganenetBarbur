@@ -1,0 +1,28 @@
+/* Responsive Adjustments */
+@media (max-width: 1100px) {
+  .product-grid { gap:2.2rem; }
+}
+
+@media (max-width: 860px) {
+  .nav-toggle { display:inline-block; }
+  .nav-list { position:absolute; right:0; top:64px; background:#fff; flex-direction:column; width:240px; padding:1rem 1.25rem 1.3rem; box-shadow:0 8px 28px rgba(0,0,0,0.08); border:1px solid #eee; border-radius:12px; transform:translateY(10px); opacity:0; pointer-events:none; transition:.35s ease; gap:.9rem; }
+  .nav-list.open { transform:translateY(0); opacity:1; pointer-events:auto; }
+  .nav-list a { padding:.4rem 0; }
+  .hero h1 { font-size:2rem; }
+  .carousel-btn.prev { right:6px; }
+  .carousel-btn.next { left:6px; }
+}
+
+@media (max-width: 680px) {
+  .hero { padding:4rem 0 2.3rem; }
+  section { padding:3.4rem 0 2.4rem; }
+  .section-title { font-size:1.65rem; }
+  .product-category { padding:1.3rem 1rem 1.7rem; }
+  .slide img { height:230px; }
+}
+
+@media (max-width:480px) {
+  .hero h1 { font-size:1.7rem; }
+  .slide img { height:200px; }
+  .nav-list { width:100%; right:0; border-radius:0 0 16px 16px; }
+}
