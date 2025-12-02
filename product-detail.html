@@ -60,6 +60,31 @@
   </style>
 </head>
 <body>
+  <!-- Header -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <div class="logo"><a href="index.html"><img src="images/logo.png" alt="לוגו" class="logo-img" style="height:50px;" /></a></div>
+      <div class="nav-wrapper">
+        <nav class="main-nav" id="mainNav">
+          <ul class="nav-list" style="display:flex; gap:1.5rem; list-style:none; margin:0; padding:0;">
+            <li><a href="index.html#shop" style="text-decoration:none; color:var(--primary-purple);">חזרה לחנות</a></li>
+            <li><a href="cart.html" style="text-decoration:none; color:var(--primary-purple);">סל קניות</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="header-actions">
+        <a href="cart.html" class="cart-icon" aria-label="סל קניות" style="position:relative; width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:var(--primary-purple); border:2px solid var(--primary-purple); border-radius:50%; color:#fff; transition:all 0.3s ease; text-decoration:none;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-count" style="position:absolute; top:-5px; left:-5px; background:#e74c3c; color:#fff; font-size:0.75rem; font-weight:700; width:22px; height:22px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
   <div class="container">
     <div class="breadcrumb">
       <a href="index.html" class="back-btn">← חזרה לחנות</a> / <span id="categoryName">מוצרים</span> / <span id="productNameBreadcrumb">פרטי מוצר</span>
@@ -80,18 +105,7 @@
         </div>
         
         <div class="purchase-section">
-          <h3>בחרי סוג רישיון</h3>
-          <div class="license-options">
-            <label>
-              <input type="radio" name="license" value="single" checked>
-              <span>רישיון יחיד - לשימוש בכיתה/בית אחד (₪25)</span>
-            </label>
-            <label>
-              <input type="radio" name="license" value="multi">
-              <span>רישיון מרובה - לשימוש ב-3 כיתות (₪60)</span>
-            </label>
-          </div>
-          <button class="btn primary" onclick="goToPurchase()">המשך לרכישה</button>
+          <button class="btn primary add-to-cart-btn" id="addToCartBtn" onclick="addToCart()">הוסף לסל</button>
         </div>
       </div>
     </div>
@@ -119,140 +133,140 @@
         shortDesc: 'מתכון אורייני לעוגת שוקולד – עוגת יום הולדת',
         description: 'מתכון אורייני מפורט ומצולם לעוגת שוקולד מושלמת ליום הולדת! המתכון כולל הוראות צעד אצעד עם תמונות ברורות, רשימת מצרכים מדויקת, וטיפים חשובים להצלחת העוגה. מתאים לילדים בגיל הגן, עם דגש על חוויית בישול משפחתית וחינוכית. הקובץ כולל גם כרטיסיות להדפסה עם שלבי ההכנה, מה שהופך את הפעילות למהנה ואינטראקטיבית.',
         price: '₪10.00',
-        image: 'images/product1-slide1.svg'
+        image: 'images/Products/1-1.png'
       },
       'recipes-2': {
         title: 'עוגת תפוזים בתוך תפוז – מתכון פעיל',
         shortDesc: 'מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז',
         description: 'פעילות בישול ייחודית ומרהיבה! מתכון אורייני פעיל לעוגות תפוזים אישיות שנאפות בתוך קליפות תפוז אמיתיות. הילדים יחוו חוויה קולינרית מיוחדת, יפתחו מיומנויות מוטוריקות עדינות, ויכירו את תהליך הבישול מקרוב. המתכון כולל הדרכה מפורטת לעבודה עם הילדים, טיפי בטיחות, כרטיסיות להדפסה, ורעיונות להרחבת הפעילות. מושלם לפעילות קבוצתית או למפגש משפחתי.',
         price: '₪25.00',
-        image: 'images/product1-slide2.svg'
+        image: 'images/Products/1-2.png'
       },
       'recipes-3': {
         title: 'עוגת ביסקוויטים – מתכון פעיל',
         shortDesc: 'מתכון אורייני פעיל לעוגת ביסקוויטים',
         description: 'מתכון אורייני פעיל לעוגת ביסקוויטים קלה והמתאימה במיוחד לילדים! ללא אפייה, מתכון זה מושלם לפעילות בגן או בבית. הילדים ישתתפו בכל שלב - מריסוק הביסקוויטים ועד העיטור הסופי. המתכון כולל הוראות ברורות עם תמונות, רעיונות לווריאציות טעמים, והצעות לעיצוב יצירתי. מעולה לפיתוח מיומנויות קוגניטיביות, חברתיות ומוטוריות דקות.',
         price: '₪25.00',
-        image: 'images/product1-slide3.svg'
+        image: 'images/Products/1-3.png'
       },
       'recipes-4': {
         title: 'עוגת דבש – מתכון פעיל',
         shortDesc: 'מתכון אורייני פעיל לעוגת דבש',
         description: 'מתכון אורייני פעיל מיוחד לעוגת דבש ארומטית ומתוקה, מושלמת לקראת ראש השנה או כל אירוע מיוחד. הילדים ישתתפו בכל שלבי ההכנה, יחוו ריחות נפלאים של דבש ותבלינים, וילמדו על המשמעות התרבותית של עוגת הדבש. המתכון כולל הדרכה מפורטת, כרטיסיות עם שלבי ההכנה, טיפים להצלחה, ורעיונות לשיחות חינוכיות תוך כדי בישול.',
         price: '₪25.00',
-        image: 'images/product2-slide1.svg'
+        image: 'images/Products/2-1.png'
       },
       'recipes-5': {
         title: 'ספר מתכונים אורייניים',
         shortDesc: 'ספר המתכונים מכיל 32 מתכונים אורייניים גם ליום יום וגם לחגים',
         description: 'ספר מתכונים דיגיטלי מקיף ומרהיב הכולל 32 מתכונים אורייניים מגוונים! כל מתכון מצולם ומתועד בקפידה עם הוראות צעד אצעד, כרטיסיות להדפסה, ורעיונות לפעילויות נלוות. הספר כולל מתכונים לחגים (ראש השנה, חנוכה, פורים, פסח ועוד), מתכונים ליום יום, ומתכונים מיוחדים לימי הולדת. כל מתכון מותאם לעבודה עם ילדים בגיל הגן ומעודד למידה חווייתית, פיתוח מיומנויות חברתיות, ויצירת זיכרונות משפחתיים. משאב בלתי נדלה לגננות, הורים ומטפלים!',
         price: '₪60.00',
-        image: 'images/product2-slide2.svg'
+        image: 'images/Products/2-2.png'
       },
       'recipes-6': {
         title: 'עוגת דבש',
         shortDesc: 'מתכון אורייני לעוגת דבש',
         description: 'מתכון אורייני קלאסי לעוגת דבש ביתית ומשפחתית. מתכון זה מתאים להכנה משפחתית, עם הדרכה ברורה ופשוטה המאפשרת גם לילדים קטנים להשתתף בהכנה. כולל רשימת מצרכים, הוראות הכנה מפורטות עם תמונות, וטיפים להצלחה. מושלם לקראת החגים או לכל הזדמנות מיוחדת. הקובץ כולל גם כרטיסיות עם שלבי ההכנה שניתן להדפיס ולהציג בגן או בבית.',
         price: '₪10.00',
-        image: 'images/product2-slide3.svg'
+        image: 'images/Products/2-3.png'
       },
       'recipes-7': {
         title: 'עוגת תמרים',
         shortDesc: 'מתכון אורייני לעוגת תמרים',
         description: 'מתכון אורייני מפורט לעוגת תמרים עסיסית ובריאה! עוגה זו עשירה בטעם ובערכים תזונתיים, ומתאימה במיוחד לילדים. המתכון כולל הוראות צעד אצעד עם תמונות הדגמה, רשימת מצרכים, טיפים להכנה, ורעיונות להגשה יצירתית. מושלם לארוחת בוקר בגן, לחטיף בריא, או להכנה משפחתית. הקובץ כולל גם כרטיסיות להדפסה המלוות את תהליך ההכנה.',
         price: '₪10.00',
-        image: 'images/product3-slide1.svg'
+        image: 'images/Products/3-1.png'
       },
       'birthday-1': {
         title: 'עוגת יום הולדת',
         shortDesc: 'מתכון אורייני לעוגת שוקולד – עוגת יום הולדת',
         description: 'מתכון אורייני חגיגי ומפואר לעוגת יום הולדת מושלמת! עוגת שוקולד עשירה וטעימה שתהפוך כל יום הולדת לבלתי נשכח. המתכון כולל הוראות מפורטות להכנת העוגה, הצעות לקישוטים יצירתיים, רעיונות לעיצוב עם הילדים, וטיפים להצלחה מובטחת. מושלם לחגיגות בגן או בבית. הקובץ כולל גם כרטיסיות עם שלבי ההכנה והעיצוב, ורעיונות לפעילויות נלוות ליום ההולדת.',
         price: '₪10.00',
-        image: 'images/product3-slide2.svg'
+        image: 'images/Products/3-2.png'
       },
       'birthday-2': {
         title: 'כרטיסיות יום הולדת',
         shortDesc: 'כרטיסיות שירים ומשחקים ללוח יום הולדת',
         description: 'ערכה דיגיטלית מקיפה של כרטיסיות מעוצבות ומגוונות ללוח יום ההולדת בגן! הערכה כוללת שירי יום הולדת אהובים עם מילים מלאות, משחקים קבוצתיים מהנים, פעילויות אינטראקטיביות, והצעות לטקס יום הולדת משמעותי. כל כרטיסייה מעוצבת בצבעוניות ובבהירות, מוכנה להדפסה ולשימוש מיידי. מושלם ליצירת חגיגת יום הולדת מיוחדת ובלתי נשכחת לכל ילד וילדה. כולל גם הצעות להתאמה אישית ורעיונות לשילוב ההורים.',
         price: '₪10.00',
-        image: 'images/product3-slide3.svg'
+        image: 'images/Products/3-3.png'
       },
       'holidays-1': {
         title: 'ערכת שבועות',
         shortDesc: 'ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות',
         description: 'ערכת חג שבועות מקיפה ועשירה! הערכה כוללת 3 מערכי פעילות מפורטים המתאימים לגיל הגן, עם דגש על למידה חווייתית והכרת משמעות החג. כל מערך כולל מטרות חינוכיות, הצעות לביצוע, כרטיסיות מעוצבות להדפסה, ורעיונות להרחבה. הפעילויות כוללת הכנת אוכל, יצירה, משחקים, וסיפורים. מושלם לגננות המעוניינות ליצור חוויית חג משמעותית ומהנה לילדים. כל החומרים מוכנים להדפסה ולשימוש מיידי!',
         price: '₪40.00',
-        image: 'images/product4-slide1.svg'
+        image: 'images/Products/4-1.png'
       },
       'holidays-2': {
         title: 'ערכת חנוכה – פעילות בקבוצה',
         shortDesc: 'ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות "הגעתי לגן"',
         description: 'ערכת חנוכה עשירה ומקיפה במיוחד! כוללת 6 מערכי פעילות בקבוצה שונים ומגוונים, כרטיסיות מעוצבות להדפסה לכל פעילות, ו-2 לוחות "הגעתי לגן" מיוחדים לחג החנוכה. כל מערך פעילות כולל מטרות חינוכיות, הוראות מפורטות, רעיונות לשיחות, והצעות להרחבה. הפעילויות כוללות: הכנת סופגניות, יצירת סביבונים, משחקי חנוכה, סיפורים אינטראקטיביים, פעילות אומנותית, ועוד. מושלם לחודש כולו! כל החומרים מעוצבים להדפסה ושימוש מיידי, ומאפשרים ליצור חוויית חג מלאה ומשמעותית.',
         price: '₪65.00',
-        image: 'images/product4-slide2.svg'
+        image: 'images/Products/4-2.png'
       },
       'holidays-3': {
         title: 'עוגת דבש',
         shortDesc: 'מתכון אורייני לעוגת דבש',
         description: 'מתכון אורייני מסורתי ומיוחד לעוגת דבש לראש השנה! עוגה ארומטית ומתוקה שמסמלת שנה טובה ומתוקה. המתכון כולל הוראות מפורטות עם תמונות, רשימת מצרכים, טיפים להכנה מוצלחת, והצעות לעיצוב חגיגי. מושלם להכנה משפחתית או לפעילות בגן לקראת החגים. הקובץ כולל גם כרטיסיות עם שלבי ההכנה, רעיונות לשיחות על משמעות החג, והצעות לפעילויות נלוות.',
         price: '₪10.00',
-        image: 'images/product4-slide3.svg'
+        image: 'images/Products/13.png'
       },
       'general-1': {
         title: 'תרשים משפחות כלי נגינה',
         shortDesc: 'תמונת תרשים משפחות כלי נגינה',
         description: 'תרשים חינוכי מפואר ומעוצב של משפחות כלי הנגינה! התרשים מציג בצורה ויזואלית וברורה את כל משפחות כלי הנגינה: כלי מיתר, כלי נשיפה מעץ, כלי נשיפה מפליז, כלי הקשה, וכלי מקלדת. כל משפחה מלווה בתמונות ברורות של הכלים השייכים לה, ובהסברים קצרים ומובנים. מושלם לתלייה בגן, לשימוש בפעילויות מוזיקה, ולהעשרת הסביבה החינוכית. הקובץ מוכן להדפסה בגודל A3 או גדול יותר, ומאפשר לילדים להכיר ולזהות את כלי הנגינה השונים.',
         price: '₪5.00',
-        image: 'images/product1-slide1.svg'
+        image: 'images/Products/7.png'
       },
       'general-2': {
         title: 'כרטיסיות "מה עוזר לי להירגע?"',
         shortDesc: 'כרטיסיות לניהול רגשות ורגיעה',
         description: 'ערכת כרטיסיות חינוכית חשובה לניהול רגשות והרגעה עצמית! הכרטיסיות כוללות אסטרטגיות מגוונות להרגעה: נשימות עמוקות, ספירה, תנועות גוף, דמיון מודרך, ועוד. כל כרטיסייה מעוצבת בבהירות עם איורים ברורים והוראות פשוטות המתאימות לילדים בגיל הגן. מושלם לפינת הרגעה בגן, לשימוש במצבי לחץ או כעס, ולהוראת מיומנויות ויסות רגשי. הכרטיסיות מוכנות להדפסה, ניתן להדביק אותן על קרטון ולשמור בקופסה נגישה לילדים.',
         price: '₪10.00',
-        image: 'images/product1-slide2.svg'
+        image: 'images/Products/7.png'
       },
       'general-3': {
         title: 'לוח "הגעתי לגן"',
         shortDesc: '10 לוחות הגעתי לגן עם 4-6 אפשרויות',
         description: 'אוסף מקיף של 10 לוחות "הגעתי לגן" מגוונים ומעוצבים! כל לוח כולל 4-6 אפשרויות שונות לסימון אופן ההגעה לגן: הליכה ברגל, רכב, אוטובוס, אופניים, קורקינט, ועוד. הלוחות מעוצבים בצורה צבעונית ומזמינה, עם איורים ברורים וקלים להבנה. מושלם ליצירת שגרת בוקר, לפיתוח אחריות אישית, ולשיחות על תחבורה וסביבה. כל לוח מוכן להדפסה בגודל A4 או A3, וניתן להחליף בין העיצובים השונים לאורך השנה.',
         price: '₪25.00',
-        image: 'images/product1-slide3.svg'
+        image: 'images/Products/7.png'
       },
       'body-1': {
         title: 'סרגל אותיות – שפת הסימנים',
         shortDesc: 'סרגל אותיות שפת הסימנים להדפסה בעברית',
         description: 'סרגל אותיות ייחודי ומרהיב של שפת הסימנים בעברית! הסרגל מציג את כל 22 האותיות בעברית בשפת הסימנים הישראלית, עם תמונות ברורות ומדויקות של כל תנועת יד. מושלם לתלייה בכיתה, ללימוד שפת הסימנים, להעלאת המודעות לקהילת החירשים, ולפיתוח תקשורת חלופית. הסרגל מעוצב בצורה צבעונית ומזמינה, כולל את האות בעברית ואת התמונה המתאימה. מוכן להדפסה בגודל גדול ולתלייה בגובה עיני הילדים. משאב חינוכי חשוב ומעשיר!',
         price: '₪5.00',
-        image: 'images/product2-slide1.svg'
+        image: 'images/Products/7.png'
       },
       'body-2': {
         title: 'איברי גוף',
         shortDesc: '17 כרטיסיות גדולות של איברי גוף: תמונות + שם',
         description: 'ערכת כרטיסיות חינוכית מקיפה על איברי הגוף! הערכה כוללת 17 כרטיסיות גדולות ומעוצבות, כל אחת מציגה איבר גוף שונה עם תמונה ברורה ואיכותית ושם האיבר בעברית. הכרטיסיות כוללות: לב, ריאות, קיבה, כבד, מוח, עיניים, אוזניים, עור, עצמות, שרירים ועוד. מושלם ללימוד על גוף האדם, לפעילויות בריאות, לשיחות על תזונה נכונה, ולפיתוח מודעות גופנית. הכרטיסיות מוכנות להדפסה בגודל A5 או A4, וניתן לשלב אותן במשחקים, בחידונים, ובפעילויות למידה מגוונות.',
         price: '₪20.00',
-        image: 'images/product2-slide2.svg'
+        image: 'images/Products/7.png'
       },
       'body-3': {
         title: 'היגיינה אישית – פעולות ניקיון',
         shortDesc: '18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד',
         description: 'ערכה חינוכית חיונית לקידום היגיינה אישית אצל ילדים! הערכה כוללת 18 כרטיסיות מפורטות ומעוצבות, המחולקות לקטגוריות: שטיפת ידיים נכונה (6 שלבים), צחצוח שיניים (שלבים ברורים), רחצה, ניקיון פנים, חיתוך ציפורניים, ועוד. כל כרטיסייה כוללת תמונות הדגמה ברורות והוראות פשוטות. מושלם לתלייה ליד הכיור, בשירותים, ובפינת הטיפוח בגן. עוזר לילדים לפתח עצמאות, אחריות אישית, והרגלי ניקיון בריאים. הכרטיסיות מוכנות להדפסה ולמינציה לעמידות ארוכת שנים.',
         price: '₪20.00',
-        image: 'images/product2-slide3.svg'
+        image: 'images/Products/7.png'
       },
       'family-1': {
         title: 'ערכת יום המשפחה',
         shortDesc: 'ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות',
         description: 'ערכה מיוחדת ומרגשת ליום המשפחה! הערכה כוללת 4 מערכי פעילות שונים ומגוונים המתאימים לחגיגת יום המשפחה בגן או בבית. כל מערך כולל מטרות חינוכיות, הוראות ביצוע מפורטות, כרטיסיות מעוצבות להדפסה, ורעיונות להרחבה. הפעילויות כוללות: עץ משפחה, סיפורי משפחה, יצירה משותפת, ומשחקים משפחתיים. הערכה מעודדת שיתוף הורים, חיזוק הקשר המשפחתי, והכרת מגוון מבני משפחה. כל החומרים מוכנים להדפסה ולשימוש מיידי, ומאפשרים ליצור אירוע משפחתי משמעותי ובלתי נשכח.',
         price: '₪60.00',
-        image: 'images/product3-slide2.svg'
+        image: 'images/Products/7.png'
       },
       'family-2': {
         title: 'משחק ליום המשפחה',
         shortDesc: 'משחק לוח משפחתי',
         description: 'משחק לוח משפחתי מהנה ומקסים במיוחד! משחק זה תוכנן במיוחד ליום המשפחה ומתאים למשחק משותף של ילדים והורים. המשחק כולל לוח מעוצב וצבעוני, כרטיסיות משימות, קלפי שאלות על המשפחה, וחוקי משחק ברורים ופשוטים. המשחק מעודד שיחה, שיתוף, צחוק, והכרות מעמיקה יותר בין בני המשפחה. מתאים לגילאי 4-8, ניתן להתאים את רמת הקושי. הקובץ כולל את כל רכיבי המשחק להדפסה, והוראות הרכבה פשוטות. מושלם לאירוע יום המשפחה בגן או למשחק משפחתי בבית!',
         price: '₪25.00',
-        image: 'images/product3-slide3.svg'
+        image: 'images/Products/7.png'
       }
     };
     
@@ -270,10 +284,72 @@
       document.title = product.title + ' - גננת בר';
     }
     
-    function goToPurchase() {
-      const selectedLicense = document.querySelector('input[name="license"]:checked').value;
-      window.location.href = `purchase.html?cat=${cat}&file=${file}&license=${selectedLicense}`;
+    // Cart management functions
+    function getCart() {
+      const cart = localStorage.getItem('cart');
+      return cart ? JSON.parse(cart) : [];
     }
+    
+    function saveCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+    }
+    
+    function updateCartCount() {
+      const cart = getCart();
+      const cartCountElements = document.querySelectorAll('.cart-count');
+      cartCountElements.forEach(el => {
+        el.textContent = cart.length;
+        el.style.display = cart.length > 0 ? 'flex' : 'none';
+      });
+    }
+    
+    function addToCart() {
+      const productKey = cat + '-' + file;
+      const product = products[productKey];
+      
+      if (!product) return;
+      
+      const cart = getCart();
+      
+      // Check if product already in cart
+      const existingIndex = cart.findIndex(item => item.key === productKey);
+      
+      if (existingIndex === -1) {
+        // Add to cart
+        cart.push({
+          key: productKey,
+          title: product.title,
+          price: product.price,
+          image: product.image,
+          category: cat
+        });
+        saveCart(cart);
+        
+        // Return to shop immediately
+        window.location.href = 'index.html#shop';
+      } else {
+        // Already in cart, go back to shop
+        window.location.href = 'index.html#shop';
+      }
+    }
+    
+    function checkIfInCart() {
+      const productKey = cat + '-' + file;
+      const cart = getCart();
+      const inCart = cart.some(item => item.key === productKey);
+      
+      if (inCart) {
+        const btn = document.getElementById('addToCartBtn');
+        btn.textContent = 'המשך לקניות';
+        btn.classList.add('in-cart');
+        btn.onclick = () => window.location.href = 'index.html';
+      }
+    }
+    
+    // Initialize
+    updateCartCount();
+    checkIfInCart();
   </script>
 </body>
 </html>

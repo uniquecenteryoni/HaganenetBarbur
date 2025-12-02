@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>סל הקניות - גננת בר</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=1">
+  <link rel="stylesheet" href="css/responsive.css?v=1">
+  <style>
+    .cart-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #FFFFFF, #F9F4FC);
+      padding: 2rem 0 4rem;
+    }
+    
+    .cart-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    
+    .cart-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-top: 2rem;
+    }
+    
+    .cart-header h1 {
+      color: var(--primary-purple);
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .cart-header p {
+      color: var(--text-mid);
+      font-size: 1.1rem;
+    }
+    
+    .cart-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .cart-empty svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1.5rem;
+      color: var(--primary-purple);
+      opacity: 0.3;
+    }
+    
+    .cart-empty h2 {
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+    
+    .cart-empty p {
+      color: var(--text-mid);
+      margin-bottom: 2rem;
+    }
+    
+    .cart-items {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .cart-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto auto;
+      gap: 1.5rem;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    
+    .cart-item:hover {
+      background: #fafafa;
+    }
+    
+    .cart-item-image {
+      width: 100px;
+      height: 100px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+    
+    .cart-item-info h3 {
+      color: var(--primary-purple-dark);
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .cart-item-info p {
+      color: var(--text-mid);
+      font-size: 0.9rem;
+    }
+    
+    .cart-item-price {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--primary-purple);
+    }
+    
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: var(--transition);
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    
+    .remove-btn:hover {
+      color: #c0392b;
+      transform: scale(1.2);
+    }
+    
+    .cart-summary {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-top: 2px solid var(--primary-purple);
+      border-bottom: 2px solid var(--primary-purple);
+      margin-bottom: 2rem;
+    }
+    
+    .cart-total h2 {
+      color: var(--text-dark);
+      font-size: 1.5rem;
+    }
+    
+    .cart-total-price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-purple);
+    }
+    
+    .contact-form {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+    }
+    
+    .contact-form h2 {
+      color: var(--primary-purple);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      color: var(--text-dark);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.9rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-purple);
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      background: var(--primary-purple);
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Heebo', sans-serif;
+    }
+    
+    .submit-btn:hover {
+      background: var(--primary-purple-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(122, 31, 162, 0.3);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+    
+    .clear-cart-btn {
+      width: 100%;
+      background: #fff;
+      color: #e74c3c;
+      border: 2px solid #e74c3c;
+      padding: 0.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Heebo', sans-serif;
+      margin-top: 1rem;
+    }
+    
+    .clear-cart-btn:hover {
+      background: #e74c3c;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+    }
+    
+    .clear-cart-btn:active {
+      transform: translateY(0);
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #fff;
+      padding: 3rem 2rem;
+      border-radius: var(--radius);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-logo {
+      width: 120px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-content h2 {
+      color: var(--primary-purple);
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    
+    .modal-content p {
+      color: var(--text-mid);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    
+    .modal-close-btn {
+      background: var(--primary-purple);
+      color: #fff;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Heebo', sans-serif;
+      transition: var(--transition);
+    }
+    
+    .modal-close-btn:hover {
+      background: var(--primary-purple-dark);
+    }
+    
+    @media (max-width: 768px) {
+      .cart-item {
+        grid-template-columns: 80px 1fr;
+        gap: 1rem;
+      }
+      
+      .cart-item-price {
+        grid-column: 2;
+        justify-self: start;
+        margin-top: 0.5rem;
+      }
+      
+      .remove-btn {
+        grid-column: 2;
+        justify-self: end;
+        grid-row: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <div class="logo"><a href="index.html"><img src="images/logo.png" alt="לוגו" class="logo-img" /></a></div>
+      <div class="nav-wrapper">
+        <nav class="main-nav" id="mainNav">
+          <button class="nav-toggle" id="navToggle" aria-label="תפריט">☰</button>
+          <ul class="nav-list">
+            <li><a href="index.html#instagram">אינסטגרם</a></li>
+            <li><a href="index.html#about">עליי</a></li>
+            <li><a href="index.html#shop">תכנים להורדה</a></li>
+            <li><a href="consulting.html">ייעוץ</a></li>
+            <li><a href="index.html#contact">צור קשר</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="header-actions">
+        <a href="cart.html" class="cart-icon" aria-label="סל קניות">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-count">0</span>
+        </a>
+        <div class="header-social">
+          <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
+          <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
+          <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="cart-page">
+    <div class="cart-container">
+      <div class="cart-header">
+        <h1>🛒 סל הקניות שלי</h1>
+        <p>הקבצים שבחרת להורדה</p>
+      </div>
+
+      <!-- Empty cart message -->
+      <div class="cart-empty" id="emptyCart" style="display:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <h2>הסל ריק</h2>
+        <p>עדיין לא הוספת קבצים לסל. התחילי לקנות!</p>
+        <a href="index.html#shop" class="btn primary">חזרה לחנות</a>
+      </div>
+
+      <!-- Cart items -->
+      <div class="cart-content" id="cartContent" style="display:none;">
+        <div class="cart-items" id="cartItems">
+          <!-- Items will be inserted here by JavaScript -->
+        </div>
+
+        <div class="cart-summary">
+          <div class="cart-total">
+            <h2>סה"כ לתשלום:</h2>
+            <div class="cart-total-price" id="totalPrice">₪0.00</div>
+          </div>
+          <button class="clear-cart-btn" onclick="clearCart()">🗑️ נקה סל</button>
+        </div>
+
+        <div class="contact-form">
+          <h2>📝 פרטי ההזמנה</h2>
+          <form id="checkoutForm">
+            <div class="form-group">
+              <label for="customerName">שם מלא *</label>
+              <input type="text" id="customerName" name="customerName" required placeholder="הכניסי את שמך המלא">
+            </div>
+            
+            <div class="form-group">
+              <label for="customerPhone">מספר טלפון *</label>
+              <input type="tel" id="customerPhone" name="customerPhone" required placeholder="050-1234567">
+            </div>
+            
+            <div class="form-group">
+              <label for="customerEmail">אימייל *</label>
+              <input type="email" id="customerEmail" name="customerEmail" required placeholder="example@email.com">
+            </div>
+            
+            <div class="form-group">
+              <label for="customerMessage">רשימת הקבצים להזמנה</label>
+              <textarea id="customerMessage" name="customerMessage" readonly></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">📤 שלחי הזמנה ב-WhatsApp</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thank You Modal -->
+  <div class="modal" id="thankYouModal">
+    <div class="modal-content">
+      <img src="images/logo.png" alt="לוגו גננת בר" class="modal-logo">
+      <h2>תודה רבה לך! 💜</h2>
+      <p>חוזרת אלייך עד מחר לכל המאוחר להמשך רכישה</p>
+      <p><strong>הגננת ברבור</strong></p>
+      <button class="modal-close-btn" onclick="closeModal()">סגור</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner row-layout">
+      <div class="footer-col footer-right">
+        <p>© 2025 גננת בר. כל הזכויות שמורות.</p>
+      </div>
+      <div class="footer-col footer-center">
+        <div class="social-links">
+          <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram" class="social-icon"><img src="images/icon-instagram.svg" alt="Instagram"/></a>
+          <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok" class="social-icon"><img src="images/icon-tiktok.svg" alt="TikTok"/></a>
+          <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook" class="social-icon"><img src="images/icon-facebook.svg" alt="Facebook"/></a>
+        </div>
+      </div>
+      <div class="footer-col footer-left">
+        <a href="#top" class="back-to-top">↑ לראש הדף</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  
+  <script>
+    const WHATSAPP_NUMBER = '972526419828'; // WhatsApp number
+    
+    // Cart management functions
+    function getCart() {
+      const cart = localStorage.getItem('cart');
+      return cart ? JSON.parse(cart) : [];
+    }
+    
+    function saveCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      renderCart();
+    }
+    
+    function updateCartCount() {
+      const cart = getCart();
+      const cartCount = document.querySelector('.cart-count');
+      if (cartCount) {
+        cartCount.textContent = cart.length;
+        cartCount.style.display = cart.length > 0 ? 'flex' : 'none';
+      }
+    }
+    
+    function removeFromCart(key) {
+      const cart = getCart();
+      const newCart = cart.filter(item => item.key !== key);
+      saveCart(newCart);
+    }
+    
+    function clearCart() {
+      if (confirm('האם את בטוחה שאת רוצה לנקות את כל הסל?')) {
+        localStorage.removeItem('cart');
+        updateCartCount();
+        renderCart();
+      }
+    }
+    
+    function calculateTotal() {
+      const cart = getCart();
+      return cart.reduce((total, item) => {
+        const price = parseFloat(item.price.replace('₪', '').replace(',', ''));
+        return total + price;
+      }, 0);
+    }
+    
+    function renderCart() {
+      const cart = getCart();
+      const emptyCart = document.getElementById('emptyCart');
+      const cartContent = document.getElementById('cartContent');
+      const cartItems = document.getElementById('cartItems');
+      const totalPrice = document.getElementById('totalPrice');
+      
+      if (cart.length === 0) {
+        emptyCart.style.display = 'block';
+        cartContent.style.display = 'none';
+      } else {
+        emptyCart.style.display = 'none';
+        cartContent.style.display = 'block';
+        
+        // Render items
+        cartItems.innerHTML = cart.map(item => `
+          <div class="cart-item" data-key="${item.key}">
+            <img src="${item.image}" alt="${item.title}" class="cart-item-image">
+            <div class="cart-item-info">
+              <h3>${item.title}</h3>
+              <p>קטגוריה: ${getCategoryName(item.category)}</p>
+            </div>
+            <div class="cart-item-price">${item.price}</div>
+            <button class="remove-btn" onclick="removeFromCart('${item.key}')" title="הסר מהסל">×</button>
+          </div>
+        `).join('');
+        
+        // Update total
+        const total = calculateTotal();
+        totalPrice.textContent = `₪${total.toFixed(2)}`;
+        
+        // Update message
+        updateMessage();
+      }
+    }
+    
+    function getCategoryName(cat) {
+      const names = {
+        recipes: 'מתכונים',
+        birthday: 'יום הולדת',
+        holidays: 'חגים',
+        general: 'כללי',
+        body: 'גוף',
+        family: 'משפחה'
+      };
+      return names[cat] || cat;
+    }
+    
+    function updateMessage() {
+      const cart = getCart();
+      const total = calculateTotal();
+      
+      let message = 'היי, אלו הקבצים שאני מעוניינת לרכוש:\n\n';
+      
+      cart.forEach((item, index) => {
+        message += `${index + 1}. ${item.title} - ${item.price}\n`;
+      });
+      
+      message += `\nסה"כ: ₪${total.toFixed(2)}\n\n`;
+      message += 'אשמח שתחזרי אליי';
+      
+      document.getElementById('customerMessage').value = message;
+    }
+    
+    function closeModal() {
+      document.getElementById('thankYouModal').classList.remove('show');
+      // Redirect to homepage after closing
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 500);
+    }
+    
+    // Form submission
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('customerName').value;
+      const phone = document.getElementById('customerPhone').value;
+      const email = document.getElementById('customerEmail').value;
+      const message = document.getElementById('customerMessage').value;
+      
+      // Create WhatsApp message
+      const whatsappMessage = `שלום, אני ${name}\n\n${message}\n\nפרטי ההתקשרות:\nטלפון: ${phone}\nאימייל: ${email}`;
+      
+      // Encode message for URL
+      const encodedMessage = encodeURIComponent(whatsappMessage);
+      
+      // Open WhatsApp
+      const whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+      window.open(whatsappURL, '_blank');
+      
+      // Show thank you modal
+      document.getElementById('thankYouModal').classList.add('show');
+      
+      // Clear cart after successful order
+      setTimeout(() => {
+        localStorage.removeItem('cart');
+      }, 1000);
+    });
+    
+    // Initialize
+    updateCartCount();
+    renderCart();
+  </script>
+</body>
+</html>
