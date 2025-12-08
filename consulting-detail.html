@@ -41,10 +41,20 @@
           </ul>
         </nav>
       </div>
-      <div class="header-social">
-        <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
-        <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
-        <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
+      <div class="header-actions">
+        <a href="cart.html" class="cart-icon" aria-label="סל קניות">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-count">0</span>
+        </a>
+        <div class="header-social">
+          <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
+          <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
+          <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
+        </div>
       </div>
     </div>
   </header>
@@ -86,7 +96,7 @@
   <script>
     const packages = {
       'parents-meeting': {
-        title: 'לקראת אסיפת הורים ראשונה',
+        title: 'ייעוץ לקראת אסיפת הורים ראשונה',
         description: 'אסיפת ההורים הראשונה היא חלון חשוב ליצירת אמון, תקשורת וחיבור בין הגן לבית ומחזקת את תחושת הביטחון של ההורים ומניחה את היסודות לשנה רגועה ומלאה בשיתוף פעולה.',
         details: [
           'איך להציג את עצמך ואת הגן בצורה ברורה ומקצועית',
@@ -94,10 +104,11 @@
           'מה חשוב לומר, ומה להשאיר לפגישות אישיות?'
         ],
         includes: 'פגישה של שעה בזום<br>כולל שלד כתוב למצגת/דפי סיכום שילוו אותך באסיפה.',
-        price: '200 ₪'
+        price: '₪200.00',
+        image: 'images/logo.png'
       },
       'monthly-plan': {
-        title: 'תוכנית חודשית + תכנון שבועי',
+        title: 'בניית תוכנית חודשית + תכנון שבועי',
         description: 'כשהגן מתוכנן היטב אנחנו פועלים ברוגע וזרימה בתוך סדר היום.<br>בתהליך משותף של שתי פגישות נבנה יחד תוכנית עבודה מותאמת אישית:',
         details: [
           'פגישת היכרות – מיפוי הגן, סדר יום, הכרת הצוות, צרכי הגן',
@@ -105,7 +116,8 @@
           'ליווי בוואטסאפ לאורך אותו החודש לצורך שאלות ועדכונים'
         ],
         includes: 'שתי פגישות + ליווי חודשי<br>כולל קובץ מעוצב מותאם לך של תכנון שבועי',
-        price: '600 ₪'
+        price: '₪600.00',
+        image: 'images/logo.png'
       },
       'custom': {
         title: 'פגישת ייעוץ לפי צורך',
@@ -118,13 +130,59 @@
           'נושא אחר שמעסיק אותך'
         ],
         includes: 'פגישה של 60-75 דקות<br>כולל קובץ סיכום מותאם לפגישה',
-        price: '250 ₪'
+        price: '₪250.00',
+        image: 'images/logo.png'
       }
     };
 
     const params = new URLSearchParams(window.location.search);
     const packageId = params.get('package');
     const packageData = packages[packageId];
+    
+    // Cart management functions
+    function getCart() {
+      const cart = localStorage.getItem('cart');
+      return cart ? JSON.parse(cart) : [];
+    }
+    
+    function saveCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+    }
+    
+    function updateCartCount() {
+      const cart = getCart();
+      const cartCount = document.querySelector('.cart-count');
+      if (cartCount) {
+        cartCount.textContent = cart.length;
+        cartCount.style.display = cart.length > 0 ? 'flex' : 'none';
+      }
+    }
+    
+    function addToCart() {
+      if (!packageData || !packageId) return;
+      
+      const cart = getCart();
+      const productKey = 'consulting-' + packageId;
+      
+      // Check if already in cart
+      const existingIndex = cart.findIndex(item => item.key === productKey);
+      
+      if (existingIndex === -1) {
+        // Add to cart
+        cart.push({
+          key: productKey,
+          title: packageData.title,
+          price: packageData.price,
+          image: packageData.image,
+          category: 'consulting'
+        });
+        saveCart(cart);
+      }
+      
+      // Return to consulting page
+      window.location.href = 'consulting.html';
+    }
 
     if (packageData) {
       document.getElementById('breadcrumbTitle').textContent = packageData.title;
@@ -149,13 +207,16 @@
           <div class="price-note">תשלום חד-פעמי</div>
         </div>
         <div class="cta-section">
-          <a href="purchase.html?cat=consulting&file=${packageId}" class="btn primary" style="font-size:1.1rem; padding:1rem 2.5rem;">לרכישה</a>
+          <button onclick="addToCart()" class="btn primary" style="font-size:1.1rem; padding:1rem 2.5rem; border:none; cursor:pointer;">הוסף לסל</button>
           <p style="margin-top:1rem; color:var(--text-mid);">או <a href="index.html#contact" style="color:var(--primary-purple);">צרי קשר</a> לפרטים נוספים</p>
         </div>
       `;
     } else {
       document.getElementById('packageContent').innerHTML = '<p>לא נמצאה חבילת ייעוץ זו. <a href="consulting.html">חזרה לדף הייעוץ</a></p>';
     }
+    
+    // Initialize cart count
+    updateCartCount();
   </script>
 </body>
 </html>

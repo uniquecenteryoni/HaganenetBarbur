@@ -1,0 +1,382 @@
+/* 
+  אנימציות עדינות וידידותיות לאתר גננת בר
+  מותאם לגננות ואמהות צעירות
+  קליל ולא מכביד על ביצועים
+*/
+
+/* ========== Keyframe Animations ========== */
+
+/* אנימציית כניסה מלמטה */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* אנימציית כניסה עם סקייל */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* אנימציית ריחוף עדינה */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* נצנוץ עדין */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(122, 31, 162, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(122, 31, 162, 0);
+  }
+}
+
+/* הרחבה עדינה */
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ניעור עדין (לכפתורים חשובים) */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+
+/* ========== כניסה לאלמנטים בגלילה ========== */
+
+/* אנימציית כניסה כללית */
+.animate-on-scroll {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* עיכובים שונים לאלמנטים */
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+.animate-delay-4 { animation-delay: 0.4s; }
+
+
+/* ========== כרטיסי מוצרים ========== */
+
+.file-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInScale 0.6s ease-out backwards;
+}
+
+/* עיכוב מדורג לכרטיסים */
+.file-card:nth-child(1) { animation-delay: 0.05s; }
+.file-card:nth-child(2) { animation-delay: 0.1s; }
+.file-card:nth-child(3) { animation-delay: 0.15s; }
+.file-card:nth-child(4) { animation-delay: 0.2s; }
+.file-card:nth-child(5) { animation-delay: 0.25s; }
+.file-card:nth-child(6) { animation-delay: 0.3s; }
+
+.file-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(122, 31, 162, 0.15);
+}
+
+/* תמונות מוצרים */
+.file-card img {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.file-card:hover img {
+  transform: scale(1.08);
+}
+
+
+/* ========== כפתורים ========== */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* אפקט גל בלחיצה */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn.primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(122, 31, 162, 0.3);
+}
+
+.btn.secondary:hover {
+  transform: scale(1.05);
+}
+
+
+/* ========== כותרות ========== */
+
+.section-title {
+  animation: fadeInUp 0.8s ease-out;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-purple), var(--accent-mid));
+  border-radius: 2px;
+  animation: expandWidth 1s ease-out 0.3s forwards;
+}
+
+@keyframes expandWidth {
+  to { width: 100%; }
+}
+
+
+/* ========== Hero Section ========== */
+
+.hero-text {
+  animation: fadeInScale 1s ease-out;
+}
+
+.hero h1 {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero p {
+  animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+.hero .btn {
+  animation: fadeInUp 0.8s ease-out 0.4s backwards;
+}
+
+
+/* ========== עגלת קניות ========== */
+
+.cart-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cart-icon:hover {
+  transform: scale(1.1);
+  animation: pulseGlow 1.5s infinite;
+}
+
+.cart-count {
+  animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+
+/* ========== תגי מתנה ========== */
+
+.free-gift-badge {
+  animation: fadeInScale 0.6s ease-out 0.3s backwards;
+}
+
+/* אנימציית נדנוד מתמשכת לאייקון המתנה */
+.free-gift-badge::before {
+  display: inline-block;
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+.free-gift-badge:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+
+/* ========== טפסים ========== */
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 3px rgba(122, 31, 162, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* הודעת הצלחה */
+#form-status {
+  animation: fadeInScale 0.5s ease-out;
+}
+
+
+/* ========== Social Icons ========== */
+
+.social-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.social-icon:hover {
+  transform: translateY(-5px) scale(1.1);
+}
+
+.header-social .social-icon:hover img {
+  filter: drop-shadow(0 4px 8px rgba(122, 31, 162, 0.3));
+}
+
+
+/* ========== קטגוריות חנות ========== */
+
+.shop-cat-btn {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-cat-btn::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 80%;
+  height: 3px;
+  background: var(--primary-purple);
+  transition: transform 0.3s ease;
+}
+
+.shop-cat-btn:hover::before,
+.shop-cat-btn.active::before {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.shop-cat-btn:hover {
+  transform: translateY(-2px);
+}
+
+
+/* ========== Preview System ========== */
+
+.preview-icon {
+  transition: all 0.3s ease;
+}
+
+.preview-icon:hover {
+  transform: scale(1.2);
+  background: rgba(122, 31, 162, 0.9);
+}
+
+
+/* ========== אופטימיזציה לנייד ========== */
+
+@media (max-width: 768px) {
+  /* הפחתת אנימציות בנייד לביצועים טובים יותר */
+  .file-card {
+    animation-duration: 0.4s;
+  }
+  
+  .file-card:hover {
+    transform: translateY(-5px) scale(1.01);
+  }
+  
+  /* ביטול אנימציות כבדות בנייד */
+  .hero h1,
+  .hero p,
+  .hero .btn {
+    animation: fadeInUp 0.5s ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* כיבוד העדפת המשתמש להפחתת תנועה */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ========== Loading States ========== */
+
+.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 3px solid var(--primary-purple);
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ========== Smooth Transitions ========== */
+
+/* מעברים חלקים לכל האלמנטים האינטראקטיביים */
+a, button, input, textarea, select {
+  transition: all 0.3s ease;
+}
+
+/* ========== Scroll Animations ========== */
+
+/* קלאס שיתווסף על ידי JavaScript כשאלמנט נכנס לתצוגה */
+.fade-in-view {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-view.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}

@@ -19,6 +19,15 @@
   .section-title { font-size:1.65rem; }
   .product-category { padding:1.3rem 1rem 1.7rem; }
   .slide img { height:230px; }
+  .modal-content {
+    padding: 2rem 1.5rem;
+  }
+  .modal-logo {
+    width: 100px;
+  }
+  .modal-content h2 {
+    font-size: 1.5rem;
+  }
 }
 
 @media (max-width:480px) {

@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=1">
   <link rel="stylesheet" href="css/responsive.css?v=1">
+  <link rel="stylesheet" href="css/animations.css?v=1">
   <style>
     .consulting-hero { background:linear-gradient(135deg, var(--accent-light), #fff); padding:4rem 0 3rem; text-align:center; }
     .consulting-hero h1 { font-size:2.5rem; margin-bottom:1rem; color:var(--primary-purple); }
@@ -40,10 +41,20 @@
           </ul>
         </nav>
       </div>
-      <div class="header-social">
-        <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
-        <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
-        <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
+      <div class="header-actions">
+        <a href="cart.html" class="cart-icon" aria-label="סל קניות">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-count">0</span>
+        </a>
+        <div class="header-social">
+          <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
+          <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
+          <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
+        </div>
       </div>
     </div>
   </header>
@@ -61,7 +72,7 @@
     <div class="container">
       <div class="intro-text">
         <p style="margin-bottom:1.5rem;">גם אני, כגננת, הרגשתי לא פעם שאני זקוקה למישהי שאוכל להתייעץ איתה. מישהי שהיא לאו דווקא מתוך המערכת, אלא כזו שאפשר לדבר איתה בכנות, להרגיש איתה בנוח, להתחבר לגננת שהיא, ולקבל ממנה הקשבה והכוונה אמיתית.</p>
-        <p style="margin-bottom:1.5rem;">הריצה אין סופית סביב כתיבת תוכניות, בניית מערכים, המצאת הגלגל מחדש, פשוט מתישות אותנו ולא נותנות לנו להתמקד במה שחשוב באמת – להיות גננות ולהעניק אהבה לילדים. פשתי גננות מדהימות – יצירתיות, מסורות, מלאות אהבה לילדים, שכל הלחץ רק יוצר אצלם בלבול ותחושת עומס.</p>
+        <p style="margin-bottom:1.5rem;">הריצה אין סופית סביב כתיבת תוכניות, בניית מערכים, המצאת הגלגל מחדש, פשוט מתישות אותנו ולא נותנות לנו להתמקד במה שחשוב באמת – להיות גננות ולהעניק אהבה לילדים. פגשתי גננות מדהימות – יצירתיות, מסורות, מלאות אהבה לילדים, שכל הלחץ רק יוצר אצלם בלבול ותחושת עומס.</p>
         <p>מתוך הצורך והניסיון האישי שלי נולד הייעוץ שלי לגננות: תהליך אישי, רגוע וממוקד, שמאפשר לך לעצור רגע, לראות את הגן שלך מהצד – ולבנות יחד כלים שיתאימו בדיוק לך, לצוות ולילדים שלך 💜</p>
       </div>
     </div>
@@ -75,14 +86,14 @@
         
         <!-- Package 1 -->
         <div class="package-card" onclick="location.href='consulting-detail.html?package=parents-meeting'">
-          <h3>לקראת אסיפת הורים ראשונה</h3>
+          <h3>ייעוץ לקראת אסיפת הורים ראשונה</h3>
           <p class="package-summary">אסיפת ההורים הראשונה היא חלון חשוב ליצירת אמון, תקשורת וחיבור בין הגן לבית ומחזקת את תחושת הביטחון של ההורים ומניחה את היסודות לשנה רגועה ומלאה בשיתוף פעולה.</p>
           <a href="consulting-detail.html?package=parents-meeting" class="btn primary">לפרטים נוספים</a>
         </div>
 
         <!-- Package 2 -->
         <div class="package-card" onclick="location.href='consulting-detail.html?package=monthly-plan'">
-          <h3>תוכנית חודשית + תכנון שבועי</h3>
+          <h3>בניית תוכנית חודשית + תכנון שבועי</h3>
           <p class="package-summary">כשהגן מתוכנן היטב אנחנו פועלים ברוגע וזרימה בתוך סדר היום. בתהליך משותף של שתי פגישות נבנה יחד תוכנית עבודה מותאמת אישית.</p>
           <a href="consulting-detail.html?package=monthly-plan" class="btn primary">לפרטים נוספים</a>
         </div>
@@ -117,5 +128,27 @@
   </footer>
 
   <script src="js/main.js"></script>
+  
+  <script>
+    // Cart management
+    function getCart() {
+      const cart = localStorage.getItem('cart');
+      return cart ? JSON.parse(cart) : [];
+    }
+    
+    function updateCartCount() {
+      const cart = getCart();
+      const cartCount = document.querySelector('.cart-count');
+      if (cartCount) {
+        cartCount.textContent = cart.length;
+        cartCount.style.display = cart.length > 0 ? 'flex' : 'none';
+      }
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartCount();
+    });
+  </script>
 </body>
 </html>

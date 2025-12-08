@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=1">
   <link rel="stylesheet" href="css/responsive.css?v=1">
+  <link rel="stylesheet" href="css/animations.css?v=1">
 </head>
 <body>
   <!-- Header -->
@@ -51,7 +52,7 @@
       <div class="hero-content-plain">
         <h1 class="hero-inline-title">הגננת ברבור: כל מה שגננת צריכה במקום אחד.</h1>
         <p class="hero-inline-sub">יוצרים סביבה חינוכית מעשירה בלי לבזבז שעות על הכנות ועיצוב</p>
-  <a href="#shop" class="btn primary hero-inline-btn">הורדת תכנים מקצועיים</a>
+  <a href="#shop" class="btn primary hero-inline-btn" style="margin-top: 1.5rem;">הורדת תכנים מקצועיים</a>
       </div>
   </section>
 
@@ -101,7 +102,6 @@
           <li><button class="shop-cat-btn" data-target="holidays">חגים</button></li>
           <li><button class="shop-cat-btn" data-target="general">כללי</button></li>
           <li><button class="shop-cat-btn" data-target="body">אני וגופי</button></li>
-          <li><button class="shop-cat-btn" data-target="family">יום המשפחה</button></li>
         </ul>
       </nav>
       <div class="product-panels">
@@ -111,18 +111,17 @@
             <div class="file-card"><a href="product-detail.html?cat=recipes&file=1"><img src="images/Products/1-1.png" alt="עוגת יום הולדת"><h4>עוגת יום הולדת</h4><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=1">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=recipes&file=2"><img src="images/Products/1-2.png" alt="עוגת תפוזים בתוך תפוז"><h4>עוגת תפוזים בתוך תפוז – מתכון פעיל</h4><p class="file-desc">מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=2">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=recipes&file=3"><img src="images/Products/1-3.png" alt="עוגת ביסקוויטים"><h4>עוגת ביסקוויטים – מתכון פעיל</h4><p class="file-desc">מתכון אורייני פעיל לעוגת ביסקוויטים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=3">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=4"><img src="images/Products/2-1.png" alt="עוגת דבש פעיל"><h4>עוגת דבש – מתכון פעיל</h4><p class="file-desc">מתכון אורייני פעיל לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=4">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/2-1.png" alt="עוגת דבש"><h4>עוגת דבש</h4><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=recipes&file=5"><img src="images/Products/2-2.png" alt="ספר מתכונים"><h4>ספר מתכונים אורייניים</h4><p class="file-desc">ספר המתכונים מכיל 32 מתכונים אורייניים גם ליום יום וגם לחגים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=5">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=6"><img src="images/Products/2-3.png" alt="עוגת דבש"><h4>עוגת דבש</h4><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=6">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=7"><img src="images/Products/3-1.png" alt="עוגת תמרים"><h4>עוגת תמרים</h4><p class="file-desc">מתכון אורייני לעוגת תמרים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=7">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=7"><div class="free-gift-badge">מתנה</div><img src="images/Products/3-1.png" alt="עוגת תמרים"><h4>עוגת תמרים</h4><p class="file-desc">מתכון אורייני לעוגת תמרים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=7">לפרטים</a></div>
           </div>
         </div>
         
         <!-- Birthday Panel -->
         <div class="product-panel hidden" data-panel="birthday">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=birthday&file=1"><img src="images/Products/3-2.png" alt="עוגת יום הולדת"><h4>עוגת יום הולדת</h4><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=birthday&file=2"><img src="images/Products/3-3.png" alt="כרטיסיות יום הולדת"><h4>כרטיסיות יום הולדת</h4><p class="file-desc">כרטיסיות שירים ומשחקים ללוח יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=birthday&file=1"><img src="images/Products/1-1.png" alt="עוגת יום הולדת"><h4>עוגת יום הולדת</h4><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=birthday&file=2"><div class="free-gift-badge">מתנה</div><img src="images/Products/15.png" alt="כרטיסיות יום הולדת"><h4>כרטיסיות יום הולדת</h4><p class="file-desc">כרטיסיות שירים ומשחקים ללוח יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=2">לפרטים</a></div>
           </div>
         </div>
         
@@ -131,33 +130,28 @@
           <div class="file-grid">
             <div class="file-card"><a href="product-detail.html?cat=holidays&file=1"><img src="images/Products/4-1.png" alt="ערכת שבועות"><h4>ערכת שבועות</h4><p class="file-desc">ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=1">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=holidays&file=2"><img src="images/Products/4-2.png" alt="ערכת חנוכה"><h4>ערכת חנוכה – פעילות בקבוצה</h4><p class="file-desc">ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות "הגעתי לגן"</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=2">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/13.png" alt="עוגת דבש"><h4>עוגת דבש</h4><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/2-1.png" alt="עוגת דבש"><h4>עוגת דבש</h4><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=4"><img src="images/Products/3-2.png" alt="ערכת יום המשפחה"><h4>ערכת יום המשפחה</h4><p class="file-desc">ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=4">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=5"><img src="images/Products/3-3.png" alt="משחק ליום המשפחה"><h4>משחק ליום המשפחה</h4><p class="file-desc">משחק לוח משפחתי</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=5">לפרטים</a></div>
           </div>
         </div>
         
         <!-- General Panel -->
         <div class="product-panel hidden" data-panel="general">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=general&file=1"><img src="images/Products/7.png" alt="תרשים משפחות כלי נגינה"><h4>תרשים משפחות כלי נגינה</h4><p class="file-desc">תמונת תרשים משפחות כלי נגינה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=general&file=2"><img src="images/Products/7.png" alt="כרטיסיות מה עוזר לי להירגע"><h4>כרטיסיות "מה עוזר לי להירגע?"</h4><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=general&file=2">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=general&file=3"><img src="images/Products/7.png" alt="לוח הגעתי לגן"><h4>לוח "הגעתי לגן"</h4><p class="file-desc">10 לוחות הגעתי לגן עם 4-6 אפשרויות</p></a><a class="btn primary" href="product-detail.html?cat=general&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/18.png" alt="תרשים משפחות כלי נגינה"><h4>תרשים משפחות כלי נגינה</h4><p class="file-desc">תמונת תרשים משפחות כלי נגינה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=2"><img src="images/Products/14.png" alt="כרטיסיות מה עוזר לי להירגע"><h4>כרטיסיות "מה עוזר לי להירגע?"</h4><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=3"><img src="images/Products/16.png" alt="לוח הגעתי לגן"><h4>לוח "הגעתי לגן"</h4><p class="file-desc">10 לוחות הגעתי לגן עם 4-6 אפשרויות</p></a><a class="btn primary" href="product-detail.html?cat=general&file=3">לפרטים</a></div>
           </div>
         </div>
         
         <!-- Body Panel -->
         <div class="product-panel hidden" data-panel="body">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=body&file=1"><img src="images/Products/7.png" alt="סרגל אותיות"><h4>סרגל אותיות – שפת הסימנים</h4><p class="file-desc">סרגל אותיות שפת הסימנים להדפסה בעברית</p></a><a class="btn primary" href="product-detail.html?cat=body&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=body&file=2"><img src="images/Products/7.png" alt="איברי גוף"><h4>איברי גוף</h4><p class="file-desc">17 כרטיסיות גדולות של איברי גוף: תמונות + שם</p></a><a class="btn primary" href="product-detail.html?cat=body&file=2">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=body&file=3"><img src="images/Products/7.png" alt="היגיינה אישית"><h4>היגיינה אישית – פעולות ניקיון</h4><p class="file-desc">18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד</p></a><a class="btn primary" href="product-detail.html?cat=body&file=3">לפרטים</a></div>
-          </div>
-        </div>
-        
-        <!-- Family Day Panel -->
-        <div class="product-panel hidden" data-panel="family">
-          <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=family&file=1"><img src="images/Products/7.png" alt="ערכת יום המשפחה"><h4>ערכת יום המשפחה</h4><p class="file-desc">ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות</p></a><a class="btn primary" href="product-detail.html?cat=family&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=family&file=2"><img src="images/Products/7.png" alt="משחק ליום המשפחה"><h4>משחק ליום המשפחה</h4><p class="file-desc">משחק לוח משפחתי</p></a><a class="btn primary" href="product-detail.html?cat=family&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/17.png" alt="סרגל אותיות"><h4>סרגל אותיות – שפת הסימנים</h4><p class="file-desc">סרגל אותיות שפת הסימנים להדפסה בעברית</p></a><a class="btn primary" href="product-detail.html?cat=body&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=2"><img src="images/Products/13.png" alt="איברי גוף"><h4>איברי גוף</h4><p class="file-desc">17 כרטיסיות גדולות של איברי גוף: תמונות + שם</p></a><a class="btn primary" href="product-detail.html?cat=body&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=3"><img src="images/Products/2-3.png" alt="היגיינה אישית"><h4>היגיינה אישית – פעולות ניקיון</h4><p class="file-desc">18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד</p></a><a class="btn primary" href="product-detail.html?cat=body&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=4"><img src="images/Products/14.png" alt="כרטיסיות מה עוזר לי להירגע"><h4>כרטיסיות "מה עוזר לי להירגע?"</h4><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=body&file=4">לפרטים</a></div>
           </div>
         </div>
       </div>
@@ -168,21 +162,27 @@
   <section class="contact" id="contact">
     <div class="container">
   <h2 class="section-title">רוצים לשמוע עוד? כתבו לי!</h2>
-      <form class="contact-form" id="contactForm">
+      <form class="contact-form" id="contactForm" action="https://hooks.zapier.com/hooks/catch/25633253/uftqsm6/" method="POST">
         <div class="form-row">
-          <label for="name">שם</label>
-          <input type="text" id="name" required>
+          <label for="contactName">שם</label>
+          <input type="text" id="contactName" name="name" required>
         </div>
         <div class="form-row">
-          <label for="email">אימייל</label>
-          <input type="email" id="email" required>
+          <label for="contactPhone">מספר טלפון</label>
+          <input type="tel" id="contactPhone" name="phone" placeholder="050-1234567">
         </div>
         <div class="form-row">
-          <label for="message">הודעה</label>
-          <textarea id="message" rows="4" required></textarea>
+          <label for="contactEmail">אימייל</label>
+          <input type="email" id="contactEmail" name="email" required>
         </div>
+        <div class="form-row">
+          <label for="contactMessage">הודעה</label>
+          <textarea id="contactMessage" name="message" rows="4" required></textarea>
+        </div>
+        <input type="hidden" name="source_type" value="INTEREST">
         <button type="submit" class="btn secondary">שליחה</button>
       </form>
+      <div id="form-status" style="display:none; margin-top:1rem; padding:1rem; border-radius:8px; text-align:center;"></div>
     </div>
   </section>
 
@@ -225,10 +225,26 @@
     </div>
   </footer>
 
+  <!-- Thank You Modal -->
+  <div class="modal" id="thankYouModal">
+    <div class="modal-content">
+      <img src="images/logo.png" alt="לוגו גננת בר" class="modal-logo">
+      <h2>תודה רבה לך! 💜</h2>
+      <p>ההודעה נשלחה בהצלחה<br>אחזור אלייך בהקדם האפשרי</p>
+      <p><strong>הגננת ברבור</strong></p>
+      <button class="modal-close-btn" onclick="closeContactModal()">סגור</button>
+    </div>
+  </div>
+
   <script src="js/main.js"></script>
   <script src="https://elfsightcdn.com/platform.js" async></script>
   
   <script>
+    // Close contact modal
+    function closeContactModal() {
+      document.getElementById('thankYouModal').classList.remove('show');
+    }
+
     // Cart management
     function getCart() {
       const cart = localStorage.getItem('cart');
@@ -244,13 +260,23 @@
       }
     }
     
+    function removeFromCart(productKey) {
+      const cart = getCart();
+      const newCart = cart.filter(item => item.key !== productKey);
+      localStorage.setItem('cart', JSON.stringify(newCart));
+      updateCartCount();
+      markProductsInCart();
+    }
+    
     function markProductsInCart() {
       const cart = getCart();
       const cartKeys = cart.map(item => item.key);
       
       document.querySelectorAll('.file-card').forEach(card => {
         const link = card.querySelector('a[href*="product-detail.html"]');
-        if (link) {
+        const button = card.querySelector('.btn');
+        
+        if (link && button) {
           const url = new URL(link.href);
           const cat = url.searchParams.get('cat');
           const file = url.searchParams.get('file');
@@ -258,8 +284,17 @@
           
           if (cartKeys.includes(productKey)) {
             card.classList.add('in-cart');
+            button.textContent = 'הסר מהסל';
+            button.onclick = function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              removeFromCart(productKey);
+              return false;
+            };
           } else {
             card.classList.remove('in-cart');
+            button.textContent = 'לפרטים';
+            button.onclick = null;
           }
         }
       });
@@ -269,7 +304,233 @@
     document.addEventListener('DOMContentLoaded', () => {
       updateCartCount();
       markProductsInCart();
+      initPreviewSystem();
+      initFormspree();
     });
+
+    // Formspree contact form handler
+    function initFormspree() {
+      const contactForm = document.getElementById('contactForm');
+      const statusDiv = document.getElementById('form-status');
+      
+      if (contactForm && statusDiv) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalBtnText = submitBtn.textContent;
+          
+          // Disable button and show loading state
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'שולח...';
+          
+          try {
+            const formData = new FormData(this);
+            
+            const response = await fetch(this.action, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'Accept': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              // Show thank you modal
+              document.getElementById('thankYouModal').classList.add('show');
+              this.reset();
+            } else {
+              const data = await response.json();
+              throw new Error(data.error || 'שגיאה בשליחה');
+            }
+          } catch (error) {
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#f8d7da';
+            statusDiv.style.color = '#721c24';
+            statusDiv.style.border = '1px solid #f5c6cb';
+            statusDiv.innerHTML = '❌ אופס! משהו השתבש. נסי שוב או שלחי לי הודעה ישירות באינסטגרם.';
+          } finally {
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+          }
+        });
+      }
+    }
+
+    // Preview System
+    function initPreviewSystem() {
+      // Add preview icons and hover events to all product images
+      document.querySelectorAll('.file-card').forEach(card => {
+        const link = card.querySelector('a[href*="product-detail.html"]');
+        if (!link) return;
+
+        const img = link.querySelector('img');
+        if (!img) return;
+
+        const url = new URL(link.href);
+        const cat = url.searchParams.get('cat');
+        const file = url.searchParams.get('file');
+        
+        // Create container for image
+        const imgSrc = img.src;
+        const imgAlt = img.alt;
+        const originalSrc = imgSrc;
+        
+        const container = document.createElement('div');
+        container.className = 'product-image-container';
+        
+        // Add preview icon
+        const icon = document.createElement('div');
+        icon.className = 'preview-icon';
+        icon.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        `;
+        
+        // Wrap image
+        img.parentNode.insertBefore(container, img);
+        container.appendChild(icon);
+        container.appendChild(img);
+
+        // Get preview file path
+        const basePath = imgSrc.substring(0, imgSrc.lastIndexOf('.'));
+        const previewImagePath = basePath + '_p.png';
+        const previewVideoPath = basePath + '.mov';
+
+        let previewElement = null;
+        let isVideoPreview = false;
+
+        // Preload preview to check if it exists
+        const testVideo = document.createElement('video');
+        testVideo.src = previewVideoPath;
+        
+        testVideo.addEventListener('loadedmetadata', () => {
+          isVideoPreview = true;
+          previewElement = document.createElement('video');
+          previewElement.src = previewVideoPath;
+          previewElement.autoplay = true;
+          previewElement.loop = true;
+          previewElement.muted = true;
+          previewElement.style.width = '100%';
+          previewElement.style.height = '100%';
+          previewElement.style.aspectRatio = '1/1';
+          previewElement.style.objectFit = 'cover';
+          previewElement.style.borderRadius = 'var(--radius-sm)';
+          previewElement.style.marginBottom = '.6rem';
+          previewElement.style.background = '#fff';
+          previewElement.style.border = '1px solid var(--accent-light)';
+        });
+        
+        testVideo.addEventListener('error', () => {
+          // Video failed, try image
+          const testImg = new Image();
+          testImg.onload = () => {
+            previewElement = document.createElement('img');
+            previewElement.src = previewImagePath;
+            previewElement.alt = imgAlt + ' - תצוגה מקדימה';
+            previewElement.style.width = '100%';
+            previewElement.style.height = '100%';
+            previewElement.style.aspectRatio = '1/1';
+            previewElement.style.objectFit = 'cover';
+            previewElement.style.borderRadius = 'var(--radius-sm)';
+            previewElement.style.marginBottom = '.6rem';
+            previewElement.style.background = '#fff';
+            previewElement.style.border = '1px solid var(--accent-light)';
+          };
+          testImg.src = previewImagePath;
+        });
+        
+        testVideo.load();
+
+        // Add hover events
+        container.addEventListener('mouseenter', () => {
+          if (previewElement) {
+            const currentImg = container.querySelector('img, video');
+            if (currentImg && (currentImg.tagName === 'IMG' && currentImg.src === originalSrc)) {
+              // Fade out current image
+              currentImg.classList.add('fade-out');
+              
+              // Immediate transition - no delay
+              setTimeout(() => {
+                previewElement.classList.add('fade-in');
+                container.replaceChild(previewElement, currentImg);
+                if (isVideoPreview) {
+                  previewElement.play();
+                }
+              }, 200); // קוצר מ-400 ל-200 למעבר מהיר יותר
+            }
+          }
+        });
+
+        container.addEventListener('mouseleave', () => {
+          if (previewElement && container.contains(previewElement)) {
+            if (isVideoPreview) {
+              previewElement.pause();
+            }
+            // Fade out preview
+            previewElement.classList.remove('fade-in');
+            previewElement.classList.add('fade-out');
+            
+            // Wait for fade out, then replace - מהיר יותר
+            setTimeout(() => {
+              const newImg = document.createElement('img');
+              newImg.src = originalSrc;
+              newImg.alt = imgAlt;
+              newImg.style.width = '100%';
+              newImg.style.aspectRatio = '1/1';
+              newImg.style.height = 'auto';
+              newImg.style.objectFit = 'cover';
+              newImg.style.borderRadius = 'var(--radius-sm)';
+              newImg.style.marginBottom = '.6rem';
+              newImg.style.background = '#fff';
+              newImg.style.border = '1px solid var(--accent-light)';
+              newImg.classList.add('fade-in');
+              container.replaceChild(newImg, previewElement);
+            }, 200); // קוצר מ-400 ל-200
+          }
+        });
+      });
+    }
+
+    // Scroll animations - קליל ואופטימלי
+    function initScrollAnimations() {
+      // בדיקה אם המשתמש מעדיף הפחתת תנועה
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      const observerOptions = {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            // ביטול התצפית אחרי הופעה (לביצועים)
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      // הוספת קלאס לאלמנטים שצריכים אנימציה
+      document.querySelectorAll('.about, .shop, .contact, .faq').forEach(section => {
+        section.classList.add('fade-in-view');
+        observer.observe(section);
+      });
+    }
+
+    // הפעלת אנימציות גלילה
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initScrollAnimations);
+    } else {
+      initScrollAnimations();
+    }
   </script>
 </body>
 </html>

@@ -22,17 +22,6 @@
   onScroll();
 })();
 
-// Simple contact form handler (placeholder)
-(function(){
-  const form=document.getElementById('contactForm');
-  if(!form) return;
-  form.addEventListener('submit', e=>{
-    e.preventDefault();
-    alert('הטופס נשלח (דמו) – ניתן לחבר לשירות אימייל בהמשך.');
-    form.reset();
-  });
-})();
-
 
 // Products search filter
 // Shop category navigation (horizontal buttons)
