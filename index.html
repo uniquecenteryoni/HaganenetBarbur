@@ -45,7 +45,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=3">
-  <link rel="stylesheet" href="css/responsive.css?v=4">
+  <link rel="stylesheet" href="css/responsive.css?v=5">
   <link rel="stylesheet" href="css/animations.css?v=1">
   <link rel="stylesheet" href="css/toast.css?v=1">
   <script src="https://elfsightcdn.com/platform.js" defer></script>
@@ -468,10 +468,8 @@
         
         console.log('Setting up preview for:', cat, file);
         
-        // Create container for image - use getAttribute for relative path
-        const imgPath = img.getAttribute('src');
+        // Get image path for preview system
         const imgAlt = img.alt;
-        const originalSrc = imgPath;
         
         const container = document.createElement('div');
         container.className = 'product-image-container';
@@ -498,6 +496,7 @@
 
         // Get preview file path - use getAttribute to get the actual path, not full URL
         const imgPath = img.getAttribute('src');
+        const originalSrc = imgPath;
         const basePath = imgPath.substring(0, imgPath.lastIndexOf('.'));
         const previewImagePath = basePath + '_p.webp';
         const previewVideoPath = basePath + '.mp4';
