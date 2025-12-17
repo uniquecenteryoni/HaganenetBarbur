@@ -591,11 +591,10 @@
         
         videoTest.src = previewVideoPath;
 
-        // Add hover events
-        container.addEventListener('mouseenter', () => {
-          console.log('Mouse entered container');
+        // Function to show preview
+        const showPreview = () => {
+          console.log('Showing preview');
           if (previewElement) {
-            console.log('Showing preview');
             const currentImg = container.querySelector('img, video');
             if (currentImg && currentImg !== previewElement) {
               // Replace with preview
@@ -608,12 +607,12 @@
           } else {
             console.log('No preview element available');
           }
-        });
+        };
 
-        container.addEventListener('mouseleave', () => {
-          console.log('Mouse left container');
+        // Function to hide preview
+        const hidePreview = () => {
+          console.log('Hiding preview');
           if (previewElement && container.contains(previewElement)) {
-            console.log('Restoring original image');
             if (isVideoPreview) {
               previewElement.pause();
               previewElement.currentTime = 0;
@@ -633,7 +632,32 @@
             container.replaceChild(newImg, previewElement);
             container.appendChild(icon); // Keep icon on top
           }
-        });
+        };
+
+        // Mouse events for desktop
+        container.addEventListener('mouseenter', showPreview);
+        container.addEventListener('mouseleave', hidePreview);
+
+        // Touch events for mobile
+        let touchStarted = false;
+        container.addEventListener('touchstart', (e) => {
+          touchStarted = true;
+          showPreview();
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+          if (touchStarted) {
+            setTimeout(hidePreview, 100); // Small delay before hiding
+            touchStarted = false;
+          }
+        }, { passive: true });
+
+        container.addEventListener('touchcancel', (e) => {
+          if (touchStarted) {
+            hidePreview();
+            touchStarted = false;
+          }
+        }, { passive: true });
       });
       console.log('Preview system initialized');
     }
