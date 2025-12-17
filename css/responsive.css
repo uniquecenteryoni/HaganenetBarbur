@@ -4,15 +4,25 @@
 }
 
 @media (max-width: 860px) {
-  .nav-toggle { display:inline-block; position: relative; z-index: 1001; }
-  .nav-list { position:absolute; right:0; top:64px; background:#fff; flex-direction:column; width:240px; padding:1rem 1.25rem 1.3rem; box-shadow:0 8px 28px rgba(0,0,0,0.08); border:1px solid #eee; border-radius:12px; transform:translateY(10px); opacity:0; pointer-events:none; transition:.35s ease; gap:.9rem; z-index:1000; }
-  .nav-list.open { transform:translateY(0); opacity:1; pointer-events:auto; }
-  .nav-list a { padding:.4rem 0; }
+  .nav-toggle { 
+    display: inline-block; 
+    position: fixed !important;
+    top: 80px;
+    right: 15px;
+    z-index: 1001;
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .nav-list { position:fixed; right:0; top:0; background:#fff; flex-direction:column; width:280px; height:100vh; padding:4rem 1.5rem 2rem; box-shadow:-4px 0 20px rgba(0,0,0,0.15); transform:translateX(100%); opacity:0; pointer-events:none; transition:.35s ease; gap:1.2rem; z-index:1000; overflow-y: auto; }
+  .nav-list.open { transform:translateX(0); opacity:1; pointer-events:auto; }
+  .nav-list a { padding:.6rem 0; font-size: 1.1rem; }
   .hero h1 { font-size:2rem; }
   .carousel-btn.prev { right:6px; }
   .carousel-btn.next { left:6px; }
   /* הגדלת הלוגו במובייל */
-  .logo-img { height:90px !important; max-height:90px; width:auto; object-fit:contain; }
+  .logo-img { height:100px !important; max-height:100px; width:auto !important; object-fit:contain; }
   .header-social { gap:.4rem; margin-inline-start:.5rem; }
   .header-social a { width:34px; height:34px; }
   .header-social img { width:22px; height:22px; }
@@ -22,11 +32,34 @@
     padding: 0 1rem;
   }
   
+  /* פוטר אנכי במובייל */
+  .footer-inner.row-layout {
+    flex-direction: column !important;
+    gap: 1.5rem;
+  }
+  
+  .footer-col {
+    width: 100%;
+    justify-content: center !important;
+  }
+  
   /* אייקונים אופקיים בפוטר */
-  .footer-center .social-links {
+  .site-footer .social-links {
     flex-direction: row !important;
-    justify-content: center;
-    gap: 1rem;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    flex-wrap: nowrap !important;
+  }
+  
+  .site-footer .social-icon {
+    width: 50px !important;
+    height: 50px !important;
+    flex-shrink: 0;
+  }
+  
+  .site-footer .social-icon img {
+    width: 28px !important;
+    height: 28px !important;
   }
 }
 
@@ -47,23 +80,52 @@
   }
   
   /* תיקון תצוגת תכנים להורדה */
+  .shop {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
   .shop-cat-list {
     flex-wrap: wrap;
     gap: 0.5rem;
     justify-content: center;
   }
+  
   .shop-cat-btn {
     font-size: 0.85rem;
     padding: 0.55rem 1rem;
   }
+  
+  .product-panels {
+    display: block !important;
+  }
+  
+  .product-panel {
+    display: block !important;
+  }
+  
+  .product-panel.hidden {
+    display: none !important;
+  }
+  
   .file-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem;
+    gap: 1rem !important;
+    visibility: visible !important;
   }
+  
   .file-card {
+    display: flex !important;
     padding: 0.8rem;
   }
+  
+  .file-card img {
+    display: block !important;
+    width: 100% !important;
+  }
+  
   .file-desc {
     font-size: 0.9rem;
   }
@@ -73,6 +135,29 @@
   .hero h1 { font-size:1.7rem; }
   .slide img { height:200px; }
   .nav-list { width:100%; right:0; border-radius:0 0 16px 16px; }
+  
+  /* שמירת גודל הלוגו גם במסכים קטנים */
+  .logo-img { 
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    width: auto !important;
+  }
+  
+  /* רווחים קטנים יותר בפוטר */
+  .site-footer .social-links {
+    gap: 0.3rem !important;
+  }
+  
+  .site-footer .social-icon {
+    width: 45px !important;
+    height: 45px !important;
+  }
+  
+  .site-footer .social-icon img {
+    width: 26px !important;
+    height: 26px !important;
+  }
   
   /* מובייל קטן - עמודה אחת */
   .file-grid {
