@@ -468,10 +468,10 @@
         
         console.log('Setting up preview for:', cat, file);
         
-        // Create container for image
-        const imgSrc = img.src;
+        // Create container for image - use getAttribute for relative path
+        const imgPath = img.getAttribute('src');
         const imgAlt = img.alt;
-        const originalSrc = imgSrc;
+        const originalSrc = imgPath;
         
         const container = document.createElement('div');
         container.className = 'product-image-container';
@@ -496,10 +496,14 @@
         container.appendChild(img);
         container.appendChild(icon);
 
-        // Get preview file path
-        const basePath = imgSrc.substring(0, imgSrc.lastIndexOf('.'));
+        // Get preview file path - use getAttribute to get the actual path, not full URL
+        const imgPath = img.getAttribute('src');
+        const basePath = imgPath.substring(0, imgPath.lastIndexOf('.'));
         const previewImagePath = basePath + '_p.webp';
         const previewVideoPath = basePath + '.mp4';
+        
+        console.log('Image path:', imgPath);
+        console.log('Preview paths:', {image: previewImagePath, video: previewVideoPath});
 
         let previewElement = null;
         let isVideoPreview = false;
@@ -508,9 +512,11 @@
         // Try to load video preview
         const videoTest = document.createElement('video');
         videoTest.style.display = 'none';
+        document.body.appendChild(videoTest); // Add to DOM for testing
         
         videoTest.addEventListener('loadedmetadata', () => {
-          console.log('Video loaded successfully:', previewVideoPath);
+          console.log('✓ Video loaded successfully:', previewVideoPath);
+          document.body.removeChild(videoTest); // Clean up
           isVideoPreview = true;
           previewLoaded = true;
           previewElement = document.createElement('video');
@@ -529,12 +535,13 @@
           previewElement.style.border = '1px solid var(--accent-light)';
         });
         
-        videoTest.addEventListener('error', () => {
-          console.log('Video not found, trying image:', previewImagePath);
+        videoTest.addEventListener('error', (e) => {
+          console.log('✗ Video not found or error:', previewVideoPath, e);
+          if (videoTest.parentNode) document.body.removeChild(videoTest); // Clean up
           // Video failed, try image
           const imgTest = new Image();
           imgTest.onload = () => {
-            console.log('Preview image loaded successfully:', previewImagePath);
+            console.log('✓ Preview image loaded successfully:', previewImagePath);
             previewLoaded = true;
             previewElement = document.createElement('img');
             previewElement.src = previewImagePath;
@@ -549,7 +556,7 @@
             previewElement.style.border = '1px solid var(--accent-light)';
           };
           imgTest.onerror = () => {
-            console.log('No preview available for this product');
+            console.log('✗ No preview available for this product (neither video nor image found)');
           };
           imgTest.src = previewImagePath;
         });
