@@ -458,38 +458,44 @@
       
       cards.forEach((card, index) => {
         console.log(`Checking card ${index + 1}:`, card);
-        // Get the first link in the card (the one with the image)
-        const links = card.querySelectorAll('a[href*="product-detail.html"]');
-        console.log(`  Found ${links.length} links in card ${index + 1}`);
         
-        // Try alternative: get all links
+        // Get all links in the card
         const allLinks = card.querySelectorAll('a');
         console.log(`  Total links in card: ${allLinks.length}`, allLinks);
         
-        if (links.length === 0) {
-          console.log(`  ✗ No product-detail link found in card ${index + 1}`);
-          return;
+        // Find the first link that contains an image
+        let link = null;
+        let img = null;
+        
+        for (let i = 0; i < allLinks.length; i++) {
+          const testImg = allLinks[i].querySelector('img');
+          if (testImg) {
+            link = allLinks[i];
+            img = testImg;
+            console.log(`  ✓ Found link with image at index ${i}:`, link.href);
+            break;
+          }
         }
-        const link = links[0]; // First link contains the image
-        console.log(`  ✓ Using link:`, link.href);
-
-        const img = link.querySelector('img');
-        if (!img) {
-          console.log('No image found in link');
+        
+        if (!link || !img) {
+          console.log(`  ✗ No link with image found in card ${index + 1}`);
           return;
         }
         
         // Skip if already initialized
         if (img.parentNode.classList && img.parentNode.classList.contains('product-image-container')) {
-          console.log('Already initialized, skipping');
+          console.log(`  ℹ️ Card ${index + 1} already initialized, skipping`);
           return;
         }
 
-        const url = new URL(link.href);
-        const cat = url.searchParams.get('cat');
-        const file = url.searchParams.get('file');
-        
-        console.log('Setting up preview for:', cat, file);
+        try {
+          const url = new URL(link.href);
+          const cat = url.searchParams.get('cat');
+          const file = url.searchParams.get('file');
+          console.log(`  Setting up preview for cat: ${cat}, file: ${file}`);
+        } catch (e) {
+          console.log(`  ⚠️ Could not parse URL:`, link.href, e);
+        }
         
         // Get image path for preview system
         const imgAlt = img.alt;
