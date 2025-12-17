@@ -4,12 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>סל הקניות - גננת בר</title>
+  <meta name="description" content="סל קניות - השלימו את ההזמנה שלכם לקבצים חינוכיים איכותיים">
+  <link rel="canonical" href="https://haganenet-barbur.com/cart.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=1">
   <link rel="stylesheet" href="css/responsive.css?v=1">
   <link rel="stylesheet" href="css/animations.css?v=1">
+  <link rel="stylesheet" href="css/toast.css?v=1">
   <style>
     .cart-page {
       min-height: 100vh;
@@ -167,6 +170,7 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 2rem;
+      max-width: 100% !important;
     }
     
     .contact-form h2 {
@@ -399,12 +403,12 @@
   <!-- Header -->
   <header class="site-header" id="top">
     <div class="container header-inner">
-      <div class="logo"><a href="index.html"><img src="images/logo.png" alt="לוגו" class="logo-img" /></a></div>
+      <div class="logo"><a href="index.html"><img src="images/logo.webp" alt="לוגו" class="logo-img" /></a></div>
       <div class="nav-wrapper">
         <nav class="main-nav" id="mainNav">
           <button class="nav-toggle" id="navToggle" aria-label="תפריט">☰</button>
           <ul class="nav-list">
-            <li><a href="index.html#instagram">אינסטגרם</a></li>
+            <li><a href="index.html#instagram">גלריה</a></li>
             <li><a href="index.html#about">עליי</a></li>
             <li><a href="index.html#shop">תכנים להורדה</a></li>
             <li><a href="consulting.html">ייעוץ</a></li>
@@ -422,6 +426,7 @@
           <span class="cart-count">0</span>
         </a>
         <div class="header-social">
+          <a href="https://wa.me/972526419828" target="_blank" aria-label="WhatsApp"><img src="images/icon-whatsapp.svg" alt="WhatsApp" /></a>
           <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
           <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
           <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
@@ -432,9 +437,9 @@
 
   <div class="cart-page">
     <div class="cart-container">
-      <div class="cart-header">
+      <div class="cart-header" style="position:relative;">
         <h1>🛒 סל הקניות שלי</h1>
-        <p>הקבצים שבחרת להורדה</p>
+        <a href="index.html#shop" style="position:absolute; top:0; left:0; text-decoration:none; padding:.4rem .8rem; font-size:.8rem; background:transparent; color:#999; border:1px solid #ddd; border-radius:6px; transition:all .3s ease;">← חזרה</a>
       </div>
 
       <!-- Empty cart message -->
@@ -452,33 +457,28 @@
       <!-- Cart items -->
       <div class="cart-content" id="cartContent" style="display:none;">
         <div class="cart-items" id="cartItems">
-          <!-- Items will be inserted here by JavaScript -->
-        </div>
-
-        <div class="cart-summary">
-          <div class="cart-total">
-            <h2>סה"כ לתשלום:</h2>
-            <div class="cart-total-price" id="totalPrice">₪0.00</div>
-          </div>
-          <button class="clear-cart-btn" onclick="clearCart()">🗑️ נקה סל</button>
+          <!-- Items and total will be inserted here by JavaScript -->
         </div>
 
         <div class="contact-form">
-          <h2>📝 פרטי ההזמנה</h2>
+          <div class="cart-info-notice" style="background: linear-gradient(135deg, #f8f0ff, #fff5f8); border-right: 4px solid var(--primary-purple); padding: 1.5rem; border-radius: var(--radius-sm); margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            <p style="margin: 0; font-size: 1.05rem; line-height: 1.7; color: var(--text-dark);">💡 <strong>שימי לב:</strong> לחיצה על "הזמיני" תשלח אליי את פרטי ההזמנה שלך. זה עדיין לא תשלום! לאחר קבלת ההזמנה, אצור איתך קשר כדי לסגור את הפרטים ולבצע את הרכישה.<br>אם יש לך הערות נוספות, את מוזמנת להוסיף אותן בגוף ההודעה למטה ☺️</p>
+          </div>
+          <h2>📝 הזמיני כאן</h2>
           <form id="checkoutForm" action="https://hooks.zapier.com/hooks/catch/25633253/uftqsm6/" method="POST">
             <div class="form-group">
               <label for="customerName">שם מלא *</label>
-              <input type="text" id="customerName" name="name" required placeholder="הכניסי את שמך המלא">
+              <input type="text" id="customerName" name="name" required>
             </div>
             
             <div class="form-group">
               <label for="customerPhone">מספר טלפון *</label>
-              <input type="tel" id="customerPhone" name="phone" required placeholder="050-1234567">
+              <input type="tel" id="customerPhone" name="phone" required>
             </div>
             
             <div class="form-group">
               <label for="customerEmail">אימייל *</label>
-              <input type="email" id="customerEmail" name="email" required placeholder="example@email.com">
+              <input type="email" id="customerEmail" name="email" required>
             </div>
             
             <div class="form-group">
@@ -493,14 +493,14 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:middle; margin-left:8px;">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                 </svg>
-                שלחי ב-WhatsApp
+                הזמיני בWhatsApp
               </button>
               <button type="submit" class="submit-btn email-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-left:8px;">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                   <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
-                שלחי במייל
+                הזמיני במייל
               </button>
             </div>
           </form>
@@ -513,7 +513,7 @@
   <!-- Thank You Modal -->
   <div class="modal" id="thankYouModal">
     <div class="modal-content">
-      <img src="images/logo.png" alt="לוגו גננת בר" class="modal-logo">
+      <img src="images/logo.webp" alt="לוגו גננת בר" class="modal-logo">
       <h2>תודה רבה לך! 💜</h2>
       <p>חוזרת אלייך עד מחר לכל המאוחר להמשך רכישה</p>
       <p><strong>הגננת ברבור</strong></p>
@@ -528,13 +528,14 @@
       </div>
       <div class="footer-col footer-center">
         <div class="social-links">
+          <a href="https://wa.me/972526419828" target="_blank" aria-label="WhatsApp" class="social-icon"><img src="images/icon-whatsapp.svg" alt="WhatsApp"/></a>
           <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram" class="social-icon"><img src="images/icon-instagram.svg" alt="Instagram"/></a>
           <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok" class="social-icon"><img src="images/icon-tiktok.svg" alt="TikTok"/></a>
           <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook" class="social-icon"><img src="images/icon-facebook.svg" alt="Facebook"/></a>
         </div>
       </div>
       <div class="footer-col footer-left">
-        <a href="#top" class="back-to-top">↑ לראש הדף</a>
+        <a href="#top" class="back-to-top" onclick="event.preventDefault(); document.getElementById('top').scrollIntoView({behavior: 'smooth'});">↑ לראש הדף</a>
       </div>
     </div>
   </footer>
@@ -607,8 +608,8 @@
         emptyCart.style.display = 'none';
         cartContent.style.display = 'block';
         
-        // Render items
-        cartItems.innerHTML = cart.map(item => `
+        // Render items with total at the bottom
+        const itemsHTML = cart.map(item => `
           <div class="cart-item" data-key="${item.key}">
             <img src="${item.image}" alt="${item.title}" class="cart-item-image">
             <div class="cart-item-info">
@@ -620,9 +621,16 @@
           </div>
         `).join('');
         
-        // Update total
+        // Add total section at the bottom
         const total = calculateTotal();
-        totalPrice.textContent = `₪${total.toFixed(2)}`;
+        const totalHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem 0; margin-top:1rem; border-top:2px solid #e5def2;">
+            <h2 style="font-size:1.3rem; color:var(--text-dark); margin:0; font-weight:600;">סה"כ לתשלום:</h2>
+            <div style="font-size:1.8rem; font-weight:700; color:var(--primary-purple);">₪${total.toFixed(2)}</div>
+          </div>
+        `;
+        
+        cartItems.innerHTML = itemsHTML + totalHTML;
         
         // Update message
         updateMessage();

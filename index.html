@@ -4,24 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>גננת בר - חנות קבצים חינוכיים</title>
-  <meta name="description" content="קבצים חינוכיים איכותיים להורדה לגיל הרך. יצירה, למידה ומשחק.">
+  <meta name="description" content="קבצים חינוכיים איכותיים להורדה לגיל הרך - מתכונים אוריינים, ערכות חגים, כרטיסיות ולוחות, ייעוץ מקצועי לגננות. כל מה שגננת צריכה במקום אחד.">
+  
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://haganenet-barbur.com/">
+  <meta property="og:title" content="גננת בר - כל מה שגננת צריכה במקום אחד">
+  <meta property="og:description" content="קבצים חינוכיים איכותיים, מתכונים, ערכות חגים וייעוץ מקצועי לגננות">
+  <meta property="og:image" content="https://haganenet-barbur.com/images/logo.webp">
+  <meta property="og:image:width" content="800">
+  <meta property="og:image:height" content="800">
+  <meta property="og:locale" content="he_IL">
+  <meta property="og:site_name" content="גננת בר">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://haganenet-barbur.com/">
+  
+  <!-- Language and Region -->
+  <meta name="language" content="Hebrew">
+  <meta name="geo.region" content="IL">
+  <meta name="geo.placename" content="Israel">
+  
+  <!-- Additional SEO -->
+  <meta name="keywords" content="גננת, גן ילדים, קבצים חינוכיים, מתכונים אוריינים, ערכות חגים, ייעוץ לגננות, חומרי למידה, גיל הרך">
+  <meta name="author" content="גננת בר">
+  <meta name="robots" content="index, follow">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=1">
   <link rel="stylesheet" href="css/responsive.css?v=1">
   <link rel="stylesheet" href="css/animations.css?v=1">
+  <link rel="stylesheet" href="css/toast.css?v=1">
+  <script src="https://elfsightcdn.com/platform.js" defer></script>
 </head>
 <body>
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="toastNotification">
+    <span class="toast-icon">✓</span>
+    <span class="toast-message">המוצר נוסף לעגלה בהצלחה!</span>
+  </div>
   <!-- Header -->
   <header class="site-header" id="top">
     <div class="container header-inner">
-      <div class="logo"><img src="images/logo.png" alt="לוגו" class="logo-img" /></div>
+      <div class="logo"><a href="#top"><img src="images/logo.webp" alt="לוגו" class="logo-img" /></a></div>
       <div class="nav-wrapper">
         <nav class="main-nav" id="mainNav">
           <button class="nav-toggle" id="navToggle" aria-label="תפריט">☰</button>
           <ul class="nav-list">
-            <li><a href="#instagram">אינסטגרם</a></li>
+            <li><a href="#instagram">גלריה</a></li>
             <li><a href="#about">עליי</a></li>
             <li><a href="#shop">תכנים להורדה</a></li>
             <li><a href="consulting.html">ייעוץ</a></li>
@@ -39,6 +71,7 @@
           <span class="cart-count">0</span>
         </a>
         <div class="header-social">
+          <a href="https://wa.me/972526419828" target="_blank" aria-label="WhatsApp"><img src="images/icon-whatsapp.svg" alt="WhatsApp" /></a>
           <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
           <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
           <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
@@ -61,11 +94,10 @@
     <div class="container">
       <h2 class="section-title"></h2>
       <div class="instagram-feed-wrapper standalone">
-        <div class="elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87" data-elfsight-app-lazy></div>
+        <div class="elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87"></div>
       </div>
     </div>
   </section>
-
 
   <!-- About -->
   <section class="about" id="about">
@@ -86,7 +118,7 @@
         </p>
       </div>
       <div class="about-image-wrapper">
-        <img src="images/whoami.jpeg" alt="בר – גננת בפעילות" class="about-image" />
+        <img src="images/whoami.webp" alt="בר – גננת בפעילות" class="about-image" />
       </div>
     </div>
   </section>
@@ -97,61 +129,91 @@
   <h2 class="section-title">תכנים להורדה</h2>
       <nav class="shop-category-nav" aria-label="קטגוריות חנות">
         <ul class="shop-cat-list">
-          <li><button class="shop-cat-btn active" data-target="recipes">מתכונים</button></li>
+          <li><button class="shop-cat-btn active" data-target="all">הכל</button></li>
+          <li><button class="shop-cat-btn" data-target="recipes">מתכונים</button></li>
           <li><button class="shop-cat-btn" data-target="birthday">יום הולדת</button></li>
           <li><button class="shop-cat-btn" data-target="holidays">חגים</button></li>
-          <li><button class="shop-cat-btn" data-target="general">כללי</button></li>
           <li><button class="shop-cat-btn" data-target="body">אני וגופי</button></li>
+          <li><button class="shop-cat-btn" data-target="general">כללי</button></li>
         </ul>
       </nav>
       <div class="product-panels">
-        <!-- Recipes Panel -->
-        <div class="product-panel" data-panel="recipes">
+        <!-- All Products Panel -->
+        <div class="product-panel" data-panel="all">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=1"><img src="images/Products/1-1.png" alt="עוגת יום הולדת"><h4>עוגת יום הולדת</h4><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=2"><img src="images/Products/1-2.png" alt="עוגת תפוזים בתוך תפוז"><h4>עוגת תפוזים בתוך תפוז – מתכון פעיל</h4><p class="file-desc">מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=2">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=3"><img src="images/Products/1-3.png" alt="עוגת ביסקוויטים"><h4>עוגת ביסקוויטים – מתכון פעיל</h4><p class="file-desc">מתכון אורייני פעיל לעוגת ביסקוויטים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=3">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/2-1.png" alt="עוגת דבש"><h4>עוגת דבש</h4><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=5"><img src="images/Products/2-2.png" alt="ספר מתכונים"><h4>ספר מתכונים אורייניים</h4><p class="file-desc">ספר המתכונים מכיל 32 מתכונים אורייניים גם ליום יום וגם לחגים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=5">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=recipes&file=7"><div class="free-gift-badge">מתנה</div><img src="images/Products/3-1.png" alt="עוגת תמרים"><h4>עוגת תמרים</h4><p class="file-desc">מתכון אורייני לעוגת תמרים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=7">לפרטים</a></div>
+            <!-- מתכונים -->
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=1"><img src="images/Products/1-1.webp" alt="עוגת יום הולדת"><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=2"><img src="images/Products/1-2.webp" alt="עוגת תפוזים בתוך תפוז"><p class="file-desc">מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=3"><img src="images/Products/1-3.webp" alt="עוגת ביסקוויטים"><p class="file-desc">מתכון אורייני פעיל לעוגת ביסקוויטים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=5"><img src="images/Products/2-2.webp" alt="ספר מתכונים"><p class="file-desc">ספר מתכונים המכיל 32 מתכונים אוריינים ליום יום ולחגים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=5">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=7"><div class="free-gift-badge">מתנה</div><img src="images/Products/3-1.webp" alt="עוגת תמרים"><p class="file-desc">מתכון אורייני לעוגת תמרים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=7">לפרטים</a></div>
+            <!-- יום הולדת -->
+            <div class="file-card"><a href="product-detail.html?cat=birthday&file=2"><div class="free-gift-badge">מתנה</div><img src="images/Products/15.webp" alt="כרטיסיות יום הולדת"><p class="file-desc">כרטיסיות שירים ומשחקים ללוח יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=2">לפרטים</a></div>
+            <!-- חגים -->
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=1"><img src="images/Products/4-1.webp" alt="ערכת שבועות"><p class="file-desc">ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=2"><img src="images/Products/4-2.webp" alt="ערכת חנוכה"><p class="file-desc">ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות "הגעתי לגן"</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/2-1.webp" alt="עוגת דבש"><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=4"><img src="images/Products/3-2.webp" alt="ערכת יום המשפחה"><p class="file-desc">ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=4">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=5"><img src="images/Products/3-3.webp" alt="משחק ליום המשפחה"><p class="file-desc">משחק לוח משפחתי</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=5">לפרטים</a></div>
+            <!-- כללי -->
+            <div class="file-card"><a href="product-detail.html?cat=general&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/18.webp" alt="תרשים משפחות כלי נגינה"><p class="file-desc">תמונת תרשים משפחות כלי נגינה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=2"><img src="images/Products/14.webp" alt="כרטיסיות מה עוזר לי להירגע"><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=3"><img src="images/Products/16.webp" alt="לוח הגעתי לגן"><p class="file-desc">10 לוחות הגעתי לגן עם 4-6 אפשרויות</p></a><a class="btn primary" href="product-detail.html?cat=general&file=3">לפרטים</a></div>
+            <!-- אני וגופי -->
+            <div class="file-card"><a href="product-detail.html?cat=body&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/17.webp" alt="סרגל אותיות"><p class="file-desc">סרגל אותיות שפת הסימנים להדפסה בעברית</p></a><a class="btn primary" href="product-detail.html?cat=body&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=2"><img src="images/Products/13.webp" alt="איברי גוף"><p class="file-desc">17 כרטיסיות גדולות של איברי גוף: תמונות + שם</p></a><a class="btn primary" href="product-detail.html?cat=body&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=3"><img src="images/Products/2-3.webp" alt="היגיינה אישית"><p class="file-desc">18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד</p></a><a class="btn primary" href="product-detail.html?cat=body&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=4"><img src="images/Products/14.webp" alt="כרטיסיות מה עוזר לי להירגע"><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=body&file=4">לפרטים</a></div>
+          </div>
+        </div>
+        
+        <!-- Recipes Panel -->
+        <div class="product-panel hidden" data-panel="recipes">
+          <div class="file-grid">
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=1"><img src="images/Products/1-1.webp" alt="עוגת יום הולדת"><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=2"><img src="images/Products/1-2.webp" alt="עוגת תפוזים בתוך תפוז"><p class="file-desc">מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=3"><img src="images/Products/1-3.webp" alt="עוגת ביסקוויטים"><p class="file-desc">מתכון אורייני פעיל לעוגת ביסקוויטים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/2-1.webp" alt="עוגת דבש"><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=5"><img src="images/Products/2-2.webp" alt="ספר מתכונים"><p class="file-desc">ספר מתכונים המכיל 32 מתכונים אוריינים ליום יום ולחגים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=5">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=recipes&file=7"><div class="free-gift-badge">מתנה</div><img src="images/Products/3-1.webp" alt="עוגת תמרים"><p class="file-desc">מתכון אורייני לעוגת תמרים</p></a><a class="btn primary" href="product-detail.html?cat=recipes&file=7">לפרטים</a></div>
           </div>
         </div>
         
         <!-- Birthday Panel -->
         <div class="product-panel hidden" data-panel="birthday">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=birthday&file=1"><img src="images/Products/1-1.png" alt="עוגת יום הולדת"><h4>עוגת יום הולדת</h4><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=birthday&file=2"><div class="free-gift-badge">מתנה</div><img src="images/Products/15.png" alt="כרטיסיות יום הולדת"><h4>כרטיסיות יום הולדת</h4><p class="file-desc">כרטיסיות שירים ומשחקים ללוח יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=birthday&file=1"><img src="images/Products/1-1.webp" alt="עוגת יום הולדת"><p class="file-desc">מתכון אורייני לעוגת שוקולד – עוגת יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=birthday&file=2"><div class="free-gift-badge">מתנה</div><img src="images/Products/15.webp" alt="כרטיסיות יום הולדת"><p class="file-desc">כרטיסיות שירים ומשחקים ללוח יום הולדת</p></a><a class="btn primary" href="product-detail.html?cat=birthday&file=2">לפרטים</a></div>
           </div>
         </div>
         
         <!-- Holidays Panel -->
         <div class="product-panel hidden" data-panel="holidays">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=holidays&file=1"><img src="images/Products/4-1.png" alt="ערכת שבועות"><h4>ערכת שבועות</h4><p class="file-desc">ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=holidays&file=2"><img src="images/Products/4-2.png" alt="ערכת חנוכה"><h4>ערכת חנוכה – פעילות בקבוצה</h4><p class="file-desc">ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות "הגעתי לגן"</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=2">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/2-1.png" alt="עוגת דבש"><h4>עוגת דבש</h4><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=holidays&file=4"><img src="images/Products/3-2.png" alt="ערכת יום המשפחה"><h4>ערכת יום המשפחה</h4><p class="file-desc">ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=4">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=holidays&file=5"><img src="images/Products/3-3.png" alt="משחק ליום המשפחה"><h4>משחק ליום המשפחה</h4><p class="file-desc">משחק לוח משפחתי</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=5">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=1"><img src="images/Products/4-1.webp" alt="ערכת שבועות"><p class="file-desc">ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=2"><img src="images/Products/4-2.webp" alt="ערכת חנוכה"><p class="file-desc">ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות "הגעתי לגן"</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=3"><img src="images/Products/2-1.webp" alt="עוגת דבש"><p class="file-desc">מתכון אורייני לעוגת דבש</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=4"><img src="images/Products/3-2.webp" alt="ערכת יום המשפחה"><p class="file-desc">ערכת יום המשפחה הכוללת 4 פעילויות + כרטיסיות להדפסה בהתאמה לפעילויות</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=4">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=holidays&file=5"><img src="images/Products/3-3.webp" alt="משחק ליום המשפחה"><p class="file-desc">משחק לוח משפחתי</p></a><a class="btn primary" href="product-detail.html?cat=holidays&file=5">לפרטים</a></div>
           </div>
         </div>
         
         <!-- General Panel -->
         <div class="product-panel hidden" data-panel="general">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=general&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/18.png" alt="תרשים משפחות כלי נגינה"><h4>תרשים משפחות כלי נגינה</h4><p class="file-desc">תמונת תרשים משפחות כלי נגינה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=general&file=2"><img src="images/Products/14.png" alt="כרטיסיות מה עוזר לי להירגע"><h4>כרטיסיות "מה עוזר לי להירגע?"</h4><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=2">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=general&file=3"><img src="images/Products/16.png" alt="לוח הגעתי לגן"><h4>לוח "הגעתי לגן"</h4><p class="file-desc">10 לוחות הגעתי לגן עם 4-6 אפשרויות</p></a><a class="btn primary" href="product-detail.html?cat=general&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/18.webp" alt="תרשים משפחות כלי נגינה"><p class="file-desc">תמונת תרשים משפחות כלי נגינה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=2"><img src="images/Products/14.webp" alt="כרטיסיות מה עוזר לי להירגע"><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=general&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=3"><img src="images/Products/16.webp" alt="לוח הגעתי לגן"><p class="file-desc">10 לוחות הגעתי לגן עם 4-6 אפשרויות</p></a><a class="btn primary" href="product-detail.html?cat=general&file=3">לפרטים</a></div>
           </div>
         </div>
         
         <!-- Body Panel -->
         <div class="product-panel hidden" data-panel="body">
           <div class="file-grid">
-            <div class="file-card"><a href="product-detail.html?cat=body&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/17.png" alt="סרגל אותיות"><h4>סרגל אותיות – שפת הסימנים</h4><p class="file-desc">סרגל אותיות שפת הסימנים להדפסה בעברית</p></a><a class="btn primary" href="product-detail.html?cat=body&file=1">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=body&file=2"><img src="images/Products/13.png" alt="איברי גוף"><h4>איברי גוף</h4><p class="file-desc">17 כרטיסיות גדולות של איברי גוף: תמונות + שם</p></a><a class="btn primary" href="product-detail.html?cat=body&file=2">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=body&file=3"><img src="images/Products/2-3.png" alt="היגיינה אישית"><h4>היגיינה אישית – פעולות ניקיון</h4><p class="file-desc">18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד</p></a><a class="btn primary" href="product-detail.html?cat=body&file=3">לפרטים</a></div>
-            <div class="file-card"><a href="product-detail.html?cat=body&file=4"><img src="images/Products/14.png" alt="כרטיסיות מה עוזר לי להירגע"><h4>כרטיסיות "מה עוזר לי להירגע?"</h4><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=body&file=4">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/17.webp" alt="סרגל אותיות"><p class="file-desc">סרגל אותיות שפת הסימנים להדפסה בעברית</p></a><a class="btn primary" href="product-detail.html?cat=body&file=1">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=2"><img src="images/Products/13.webp" alt="איברי גוף"><p class="file-desc">17 כרטיסיות גדולות של איברי גוף: תמונות + שם</p></a><a class="btn primary" href="product-detail.html?cat=body&file=2">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=3"><img src="images/Products/2-3.webp" alt="היגיינה אישית"><p class="file-desc">18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד</p></a><a class="btn primary" href="product-detail.html?cat=body&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=body&file=4"><img src="images/Products/14.webp" alt="כרטיסיות מה עוזר לי להירגע"><p class="file-desc">כרטיסיות לניהול רגשות ורגיעה</p></a><a class="btn primary" href="product-detail.html?cat=body&file=4">לפרטים</a></div>
           </div>
         </div>
       </div>
@@ -164,15 +226,15 @@
   <h2 class="section-title">רוצים לשמוע עוד? כתבו לי!</h2>
       <form class="contact-form" id="contactForm" action="https://hooks.zapier.com/hooks/catch/25633253/uftqsm6/" method="POST">
         <div class="form-row">
-          <label for="contactName">שם</label>
+          <label for="contactName">שם *</label>
           <input type="text" id="contactName" name="name" required>
         </div>
         <div class="form-row">
-          <label for="contactPhone">מספר טלפון</label>
-          <input type="tel" id="contactPhone" name="phone" placeholder="050-1234567">
+          <label for="contactPhone">מספר טלפון *</label>
+          <input type="tel" id="contactPhone" name="phone" required>
         </div>
         <div class="form-row">
-          <label for="contactEmail">אימייל</label>
+          <label for="contactEmail">אימייל *</label>
           <input type="email" id="contactEmail" name="email" required>
         </div>
         <div class="form-row">
@@ -193,7 +255,7 @@
       <div class="faq-list">
         <details>
           <summary>איך מקבלים את הקובץ אחרי רכישה?</summary>
-          <p>מיד אחרי הרכישה יופיע קישור להורדה וגם יישלח אימייל אוטומטי.</p>
+          <p>הוסיפו את המוצרים לסל ולאחר מכן שלחו אליי את ההזמנה בטופס הזמנה בתחתית סל הקניות. לאחר מכן אצור איתכם קשר לרכישה.</p>
         </details>
         <details>
           <summary>באיזה פורמט הקבצים?</summary>
@@ -214,6 +276,7 @@
       </div>
       <div class="footer-col footer-center">
         <div class="social-links">
+          <a href="https://wa.me/972526419828" target="_blank" aria-label="WhatsApp" class="social-icon"><img src="images/icon-whatsapp.svg" alt="WhatsApp"/></a>
           <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram" class="social-icon"><img src="images/icon-instagram.svg" alt="Instagram"/></a>
           <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok" class="social-icon"><img src="images/icon-tiktok.svg" alt="TikTok"/></a>
           <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook" class="social-icon"><img src="images/icon-facebook.svg" alt="Facebook"/></a>
@@ -228,7 +291,7 @@
   <!-- Thank You Modal -->
   <div class="modal" id="thankYouModal">
     <div class="modal-content">
-      <img src="images/logo.png" alt="לוגו גננת בר" class="modal-logo">
+      <img src="images/logo.webp" alt="לוגו גננת בר" class="modal-logo">
       <h2>תודה רבה לך! 💜</h2>
       <p>ההודעה נשלחה בהצלחה<br>אחזור אלייך בהקדם האפשרי</p>
       <p><strong>הגננת ברבור</strong></p>
@@ -237,7 +300,6 @@
   </div>
 
   <script src="js/main.js"></script>
-  <script src="https://elfsightcdn.com/platform.js" async></script>
   
   <script>
     // Close contact modal
@@ -307,6 +369,11 @@
       initPreviewSystem();
       initFormspree();
     });
+    
+    // Re-initialize preview system after all images loaded
+    window.addEventListener('load', () => {
+      initPreviewSystem();
+    });
 
     // Formspree contact form handler
     function initFormspree() {
@@ -360,17 +427,35 @@
 
     // Preview System
     function initPreviewSystem() {
+      console.log('Initializing preview system...');
       // Add preview icons and hover events to all product images
-      document.querySelectorAll('.file-card').forEach(card => {
+      const cards = document.querySelectorAll('.file-card');
+      console.log('Found cards:', cards.length);
+      
+      cards.forEach(card => {
         const link = card.querySelector('a[href*="product-detail.html"]');
-        if (!link) return;
+        if (!link) {
+          console.log('No link found in card');
+          return;
+        }
 
         const img = link.querySelector('img');
-        if (!img) return;
+        if (!img) {
+          console.log('No image found in link');
+          return;
+        }
+        
+        // Skip if already initialized
+        if (img.parentNode.classList && img.parentNode.classList.contains('product-image-container')) {
+          console.log('Already initialized, skipping');
+          return;
+        }
 
         const url = new URL(link.href);
         const cat = url.searchParams.get('cat');
         const file = url.searchParams.get('file');
+        
+        console.log('Setting up preview for:', cat, file);
         
         // Create container for image
         const imgSrc = img.src;
@@ -379,10 +464,13 @@
         
         const container = document.createElement('div');
         container.className = 'product-image-container';
+        container.style.position = 'relative';
+        container.style.width = '100%';
         
         // Add preview icon
         const icon = document.createElement('div');
         icon.className = 'preview-icon';
+        icon.style.pointerEvents = 'none'; // Important! Don't block mouse events
         icon.innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
@@ -394,28 +482,32 @@
         
         // Wrap image
         img.parentNode.insertBefore(container, img);
-        container.appendChild(icon);
         container.appendChild(img);
+        container.appendChild(icon);
 
         // Get preview file path
         const basePath = imgSrc.substring(0, imgSrc.lastIndexOf('.'));
-        const previewImagePath = basePath + '_p.png';
-        const previewVideoPath = basePath + '.mov';
+        const previewImagePath = basePath + '_p.webp';
+        const previewVideoPath = basePath + '.mp4';
 
         let previewElement = null;
         let isVideoPreview = false;
+        let previewLoaded = false;
 
-        // Preload preview to check if it exists
-        const testVideo = document.createElement('video');
-        testVideo.src = previewVideoPath;
+        // Try to load video preview
+        const videoTest = document.createElement('video');
+        videoTest.style.display = 'none';
         
-        testVideo.addEventListener('loadedmetadata', () => {
+        videoTest.addEventListener('loadedmetadata', () => {
+          console.log('Video loaded successfully:', previewVideoPath);
           isVideoPreview = true;
+          previewLoaded = true;
           previewElement = document.createElement('video');
           previewElement.src = previewVideoPath;
-          previewElement.autoplay = true;
+          previewElement.autoplay = false;
           previewElement.loop = true;
           previewElement.muted = true;
+          previewElement.playsInline = true;
           previewElement.style.width = '100%';
           previewElement.style.height = '100%';
           previewElement.style.aspectRatio = '1/1';
@@ -426,10 +518,13 @@
           previewElement.style.border = '1px solid var(--accent-light)';
         });
         
-        testVideo.addEventListener('error', () => {
+        videoTest.addEventListener('error', () => {
+          console.log('Video not found, trying image:', previewImagePath);
           // Video failed, try image
-          const testImg = new Image();
-          testImg.onload = () => {
+          const imgTest = new Image();
+          imgTest.onload = () => {
+            console.log('Preview image loaded successfully:', previewImagePath);
+            previewLoaded = true;
             previewElement = document.createElement('img');
             previewElement.src = previewImagePath;
             previewElement.alt = imgAlt + ' - תצוגה מקדימה';
@@ -442,59 +537,59 @@
             previewElement.style.background = '#fff';
             previewElement.style.border = '1px solid var(--accent-light)';
           };
-          testImg.src = previewImagePath;
+          imgTest.onerror = () => {
+            console.log('No preview available for this product');
+          };
+          imgTest.src = previewImagePath;
         });
         
-        testVideo.load();
+        videoTest.src = previewVideoPath;
 
         // Add hover events
         container.addEventListener('mouseenter', () => {
+          console.log('Mouse entered container');
           if (previewElement) {
+            console.log('Showing preview');
             const currentImg = container.querySelector('img, video');
-            if (currentImg && (currentImg.tagName === 'IMG' && currentImg.src === originalSrc)) {
-              // Fade out current image
-              currentImg.classList.add('fade-out');
-              
-              // Immediate transition - no delay
-              setTimeout(() => {
-                previewElement.classList.add('fade-in');
-                container.replaceChild(previewElement, currentImg);
-                if (isVideoPreview) {
-                  previewElement.play();
-                }
-              }, 200); // קוצר מ-400 ל-200 למעבר מהיר יותר
+            if (currentImg && currentImg !== previewElement) {
+              // Replace with preview
+              container.replaceChild(previewElement, currentImg);
+              container.appendChild(icon); // Keep icon on top
+              if (isVideoPreview) {
+                previewElement.play().catch(e => console.log('Video play failed:', e));
+              }
             }
+          } else {
+            console.log('No preview element available');
           }
         });
 
         container.addEventListener('mouseleave', () => {
+          console.log('Mouse left container');
           if (previewElement && container.contains(previewElement)) {
+            console.log('Restoring original image');
             if (isVideoPreview) {
               previewElement.pause();
+              previewElement.currentTime = 0;
             }
-            // Fade out preview
-            previewElement.classList.remove('fade-in');
-            previewElement.classList.add('fade-out');
-            
-            // Wait for fade out, then replace - מהיר יותר
-            setTimeout(() => {
-              const newImg = document.createElement('img');
-              newImg.src = originalSrc;
-              newImg.alt = imgAlt;
-              newImg.style.width = '100%';
-              newImg.style.aspectRatio = '1/1';
-              newImg.style.height = 'auto';
-              newImg.style.objectFit = 'cover';
-              newImg.style.borderRadius = 'var(--radius-sm)';
-              newImg.style.marginBottom = '.6rem';
-              newImg.style.background = '#fff';
-              newImg.style.border = '1px solid var(--accent-light)';
-              newImg.classList.add('fade-in');
-              container.replaceChild(newImg, previewElement);
-            }, 200); // קוצר מ-400 ל-200
+            // Replace with original image
+            const newImg = document.createElement('img');
+            newImg.src = originalSrc;
+            newImg.alt = imgAlt;
+            newImg.style.width = '100%';
+            newImg.style.aspectRatio = '1/1';
+            newImg.style.height = 'auto';
+            newImg.style.objectFit = 'cover';
+            newImg.style.borderRadius = 'var(--radius-sm)';
+            newImg.style.marginBottom = '.6rem';
+            newImg.style.background = '#fff';
+            newImg.style.border = '1px solid var(--accent-light)';
+            container.replaceChild(newImg, previewElement);
+            container.appendChild(icon); // Keep icon on top
           }
         });
       });
+      console.log('Preview system initialized');
     }
 
     // Scroll animations - קליל ואופטימלי

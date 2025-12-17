@@ -5,12 +5,16 @@
 
 @media (max-width: 860px) {
   .nav-toggle { display:inline-block; }
-  .nav-list { position:absolute; right:0; top:64px; background:#fff; flex-direction:column; width:240px; padding:1rem 1.25rem 1.3rem; box-shadow:0 8px 28px rgba(0,0,0,0.08); border:1px solid #eee; border-radius:12px; transform:translateY(10px); opacity:0; pointer-events:none; transition:.35s ease; gap:.9rem; }
+  .nav-list { position:absolute; right:0; top:64px; background:#fff; flex-direction:column; width:240px; padding:1rem 1.25rem 1.3rem; box-shadow:0 8px 28px rgba(0,0,0,0.08); border:1px solid #eee; border-radius:12px; transform:translateY(10px); opacity:0; pointer-events:none; transition:.35s ease; gap:.9rem; z-index:100; }
   .nav-list.open { transform:translateY(0); opacity:1; pointer-events:auto; }
   .nav-list a { padding:.4rem 0; }
   .hero h1 { font-size:2rem; }
   .carousel-btn.prev { right:6px; }
   .carousel-btn.next { left:6px; }
+  .logo-img { height:70px !important; max-height:70px; width:auto; object-fit:contain; }
+  .header-social { gap:.4rem; margin-inline-start:.5rem; }
+  .header-social a { width:34px; height:34px; }
+  .header-social img { width:22px; height:22px; }
 }
 
 @media (max-width: 680px) {

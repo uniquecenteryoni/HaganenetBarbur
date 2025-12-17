@@ -4,11 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>פרטי חבילת ייעוץ - גננת בר</title>
+  <meta name="description" content="פרטי חבילת ייעוץ מקצועי לגננות - בניית תוכנית עבודה, הכנה לאסיפת הורים ופגישות ייעוץ אישיות">
+  <link rel="canonical" href="https://haganenet-barbur.com/consulting-detail.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=1">
   <link rel="stylesheet" href="css/responsive.css?v=1">
+  <link rel="stylesheet" href="css/toast.css?v=1">
   <style>
     .detail-hero { background:linear-gradient(135deg, var(--accent-light), #fff); padding:3rem 0 2rem; }
     .breadcrumb { font-size:.9rem; margin-bottom:1.5rem; }
@@ -29,11 +32,11 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <div class="logo"><a href="index.html"><img src="images/logo.png" alt="לוגו" class="logo-img" /></a></div>
+      <div class="logo"><a href="index.html"><img src="images/logo.webp" alt="לוגו" class="logo-img" /></a></div>
       <div class="nav-wrapper">
         <nav class="main-nav">
           <ul class="nav-list">
-            <li><a href="index.html#instagram">אינסטגרם</a></li>
+            <li><a href="index.html#instagram">גלריה</a></li>
             <li><a href="index.html#about">עליי</a></li>
             <li><a href="index.html#shop">תכנים להורדה</a></li>
             <li><a href="consulting.html" class="active">ייעוץ</a></li>
@@ -51,6 +54,7 @@
           <span class="cart-count">0</span>
         </a>
         <div class="header-social">
+          <a href="https://wa.me/972526419828" target="_blank" aria-label="WhatsApp"><img src="images/icon-whatsapp.svg" alt="WhatsApp" /></a>
           <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram"><img src="images/icon-instagram.svg" alt="Instagram" /></a>
           <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok"><img src="images/icon-tiktok.svg" alt="TikTok" /></a>
           <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook"><img src="images/icon-facebook.svg" alt="Facebook" /></a>
@@ -82,13 +86,14 @@
       </div>
       <div class="footer-col footer-center">
         <div class="social-links">
+          <a href="https://wa.me/972526419828" target="_blank" aria-label="WhatsApp" class="social-icon"><img src="images/icon-whatsapp.svg" alt="WhatsApp"/></a>
           <a href="https://www.instagram.com/lapidotbar/" target="_blank" aria-label="Instagram" class="social-icon"><img src="images/icon-instagram.svg" alt="Instagram"/></a>
           <a href="https://www.tiktok.com/@lapidotbar" target="_blank" aria-label="TikTok" class="social-icon"><img src="images/icon-tiktok.svg" alt="TikTok"/></a>
           <a href="https://www.facebook.com/haganenet.barbur" target="_blank" aria-label="Facebook" class="social-icon"><img src="images/icon-facebook.svg" alt="Facebook"/></a>
         </div>
       </div>
       <div class="footer-col footer-left">
-        <a href="#top" class="back-to-top">↑ לראש הדף</a>
+        <a href="#top" class="back-to-top" onclick="event.preventDefault(); document.getElementById('top').scrollIntoView({behavior: 'smooth'});">↑ לראש הדף</a>
       </div>
     </div>
   </footer>
@@ -96,32 +101,29 @@
   <script>
     const packages = {
       'parents-meeting': {
-        title: 'ייעוץ לקראת אסיפת הורים ראשונה',
-        description: 'אסיפת ההורים הראשונה היא חלון חשוב ליצירת אמון, תקשורת וחיבור בין הגן לבית ומחזקת את תחושת הביטחון של ההורים ומניחה את היסודות לשנה רגועה ומלאה בשיתוף פעולה.',
+        title: 'פגישת הכנה לקראת אסיפת הורים ראשונה',
+        description: 'אסיפת ההורים הראשונה היא חלון הזדמנויות חשוב ליצירת אמון; תקשורת וחיבור בין הגן לבית; מחזקת את תחושת הביטחון של ההורים ומניחה את היסודות לשנה רגועה ומלאה בשיתוף פעולה.<br><br>בפגישה אנחנו נדייק את ה<strong>"אני מאמין"</strong> שלך כגננת ומנהלת הגן, נארגן את הנקודות החשובות לך ולצוות, ונבנה יחד בסיס למצגת מקצועית שתלווה את אסיפת ההורים עם כל הנקודות החשובות שיעניקו לך ולהורים ביטחון ותחושת שותפות בתהליך של תחילת השנה.',
         details: [
-          'איך להציג את עצמך ואת הגן בצורה ברורה ומקצועית',
-          'אילו גבולות וכללים נכון להציב מול ההורים כבר מהיום הראשון',
-          'מה חשוב לומר, ומה להשאיר לפגישות אישיות?'
+          'איך להציג את עצמך ואת הגן בצורה ברורה ומקצועית?',
+          'אילו גבולות וכללים נכון להציב מול ההורים כבר מהיום הראשון?',
+          'מה חשוב לומר, ומה להשאיר לפגישות אישיות?',
+          'טיפים לימים הראשונים'
         ],
-        includes: 'פגישה של שעה בזום<br>כולל שלד כתוב למצגת/דפי סיכום שילוו אותך באסיפה.',
+        includes: 'פגישה של 60-75 דקות בזום<br>קובץ התחלתי כתוב למצגת/דפי סיכום שילוו אותך באסיפה.',
         price: '₪200.00',
-        image: 'images/logo.png'
+        image: 'images/logo.webp'
       },
       'monthly-plan': {
         title: 'בניית תוכנית חודשית + תכנון שבועי',
-        description: 'כשהגן מתוכנן היטב אנחנו פועלים ברוגע וזרימה בתוך סדר היום.<br>בתהליך משותף של שתי פגישות נבנה יחד תוכנית עבודה מותאמת אישית:',
-        details: [
-          'פגישת היכרות – מיפוי הגן, סדר יום, הכרת הצוות, צרכי הגן',
-          'פגישת המשך – כתיבת תוכנית חודשית ותכנון שבועי ראשון',
-          'ליווי בוואטסאפ לאורך אותו החודש לצורך שאלות ועדכונים'
-        ],
-        includes: 'שתי פגישות + ליווי חודשי<br>כולל קובץ מעוצב מותאם לך של תכנון שבועי',
+        description: 'כשהגן מתוכנן היטב אנו פועלות ברוגע וזרימה בתוך סדר היום, במעברים ובעבודת הצוות - מה שמשפיע באופן ישיר גם על אקלים הגן והתנהלות הילדים במהלך היום.<br><br>בתהליך משותף של שתי פגישות נבנה יחד תוכנית עבודה מותאמת אישית, נדבר על איך לבנות תוכנית חודשית המאפשרת גמישות אך גם בנויה על התפתחות נכונה של נושא למידה; החשיבות בבניית תוכנית חודשית ושבועית שיש ביניהן התאמה, הקשבה לרצונות הפדגוגיים שלך ולצורכי הגן.<br><br>התכנון יתבסס על עקרונות של <strong>רצף, חזרתיות והעמקה</strong>, כך שהתוכנית החודשית והשבועית יתמכו בהתפתחות הלמידה מבלי ליצור הצפה תוך כדי עידוד סקרנות, חיבור הילדים והצוות לנושא ופעילות זורמת במרחבי הגן.',
+        details: [],
+        includes: 'פגישה ראשונה (כ-45 דקות) - מיפוי הגן, סדר יום, הכרת הצוות, צרכי הגן<br>פגישה שנייה (כ-60 דקות) - כתיבת בסיס לתוכנית חודשית ותכנון שבועי ראשון<br>ליווי בוואטסאפ לאורך אותו החודש לצורך שאלות ועדכונים<br>קובץ מעוצב ומותאם של תכנון שבועי',
         price: '₪600.00',
-        image: 'images/logo.png'
+        image: 'images/logo.webp'
       },
       'custom': {
         title: 'פגישת ייעוץ לפי צורך',
-        description: 'נעבוד יחד על נושא אחד לבחירתך:',
+        description: 'לפעמים הכל עובד אבל <strong>כמעט</strong> ורק צריך לשייף קצת את הקצוות.<br>אני מזמינה אותך לפגישה ממוקדת בה נעבוד יחד על נושא אחד לבחירתך:',
         details: [
           'בניית מפגש מותאם גיל',
           'תכנון סדר יום וחלוקת תפקידים בצוות',
@@ -129,9 +131,9 @@
           'תצפיות על ילדי הגן והכנה לשיחת הורים אישית',
           'נושא אחר שמעסיק אותך'
         ],
-        includes: 'פגישה של 60-75 דקות<br>כולל קובץ סיכום מותאם לפגישה',
+        includes: 'פגישה של 60-75 דקות בזום<br>כולל קובץ סיכום מותאם לפגישה',
         price: '₪250.00',
-        image: 'images/logo.png'
+        image: 'images/logo.webp'
       }
     };
 
@@ -208,7 +210,7 @@
         </div>
         <div class="cta-section">
           <button onclick="addToCart()" class="btn primary" style="font-size:1.1rem; padding:1rem 2.5rem; border:none; cursor:pointer;">הוסף לסל</button>
-          <p style="margin-top:1rem; color:var(--text-mid);">או <a href="index.html#contact" style="color:var(--primary-purple);">צרי קשר</a> לפרטים נוספים</p>
+          <p style="margin-top:1.5rem;"><a href="index.html#contact" class="btn secondary" style="display:inline-block; padding:0.9rem 2rem; font-size:1.05rem; text-decoration:none;">צרי קשר לפרטים נוספים</a></p>
         </div>
       `;
     } else {
@@ -218,5 +220,6 @@
     // Initialize cart count
     updateCartCount();
   </script>
+  <script src="js/main.js"></script>
 </body>
 </html>

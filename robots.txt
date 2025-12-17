@@ -1,0 +1,15 @@
+# robots.txt for haganenet-barbur.com
+
+User-agent: *
+Allow: /
+
+# Prevent indexing of cart page (not useful for search)
+Disallow: /cart.html
+
+# Allow all CSS, JS and images
+Allow: /css/
+Allow: /js/
+Allow: /images/
+
+# Sitemap location
+Sitemap: https://haganenet-barbur.com/sitemap.xml

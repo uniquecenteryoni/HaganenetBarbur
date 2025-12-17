@@ -70,48 +70,33 @@
 }
 
 
-/* ========== כניסה לאלמנטים בגלילה ========== */
+/* ========== כניסה לאלמנטים בגלילה - מבוטל ========== */
 
-/* אנימציית כניסה כללית */
+/* אנימציית כניסה כללית - מבוטלת */
 .animate-on-scroll {
-  opacity: 0;
-  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 1;
 }
-
-/* עיכובים שונים לאלמנטים */
-.animate-delay-1 { animation-delay: 0.1s; }
-.animate-delay-2 { animation-delay: 0.2s; }
-.animate-delay-3 { animation-delay: 0.3s; }
-.animate-delay-4 { animation-delay: 0.4s; }
 
 
 /* ========== כרטיסי מוצרים ========== */
 
 .file-card {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: fadeInScale 0.6s ease-out backwards;
 }
-
-/* עיכוב מדורג לכרטיסים */
-.file-card:nth-child(1) { animation-delay: 0.05s; }
-.file-card:nth-child(2) { animation-delay: 0.1s; }
-.file-card:nth-child(3) { animation-delay: 0.15s; }
-.file-card:nth-child(4) { animation-delay: 0.2s; }
-.file-card:nth-child(5) { animation-delay: 0.25s; }
 .file-card:nth-child(6) { animation-delay: 0.3s; }
 
 .file-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(122, 31, 162, 0.15);
+  transform: none;
+  box-shadow: 0 4px 16px rgba(122,31,162,0.12);
 }
 
 /* תמונות מוצרים */
 .file-card img {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: none;
 }
 
 .file-card:hover img {
-  transform: scale(1.08);
+  transform: none;
 }
 
 
