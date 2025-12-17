@@ -45,7 +45,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=3">
-  <link rel="stylesheet" href="css/responsive.css?v=5">
+  <link rel="stylesheet" href="css/responsive.css?v=6">
   <link rel="stylesheet" href="css/animations.css?v=1">
   <link rel="stylesheet" href="css/toast.css?v=1">
   <script src="https://elfsightcdn.com/platform.js" defer></script>
@@ -62,7 +62,13 @@
       <div class="logo"><a href="#top"><img src="images/logo.webp" alt="לוגו" class="logo-img" /></a></div>
       <div class="nav-wrapper">
         <nav class="main-nav" id="mainNav">
-          <button class="nav-toggle" id="navToggle" aria-label="תפריט">☰</button>
+          <button class="nav-toggle" id="navToggle" aria-label="תפריט">
+            <div class="hamburger-icon">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </button>
           <ul class="nav-list">
             <li><a href="#instagram">גלריה</a></li>
             <li><a href="#about">עליי</a></li>
@@ -444,11 +450,13 @@
       console.log('Found cards:', cards.length);
       
       cards.forEach(card => {
-        const link = card.querySelector('a[href*="product-detail.html"]');
-        if (!link) {
+        // Get the first link in the card (the one with the image)
+        const links = card.querySelectorAll('a[href*="product-detail.html"]');
+        if (links.length === 0) {
           console.log('No link found in card');
           return;
         }
+        const link = links[0]; // First link contains the image
 
         const img = link.querySelector('img');
         if (!img) {
