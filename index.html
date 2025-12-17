@@ -449,14 +449,29 @@
       const cards = document.querySelectorAll('.file-card');
       console.log('Found cards:', cards.length);
       
-      cards.forEach(card => {
+      if (cards.length === 0) {
+        console.warn('⚠️ No .file-card elements found! Checking DOM structure...');
+        console.log('Product panels:', document.querySelectorAll('.product-panel'));
+        console.log('File grids:', document.querySelectorAll('.file-grid'));
+        return;
+      }
+      
+      cards.forEach((card, index) => {
+        console.log(`Checking card ${index + 1}:`, card);
         // Get the first link in the card (the one with the image)
         const links = card.querySelectorAll('a[href*="product-detail.html"]');
+        console.log(`  Found ${links.length} links in card ${index + 1}`);
+        
+        // Try alternative: get all links
+        const allLinks = card.querySelectorAll('a');
+        console.log(`  Total links in card: ${allLinks.length}`, allLinks);
+        
         if (links.length === 0) {
-          console.log('No link found in card');
+          console.log(`  ✗ No product-detail link found in card ${index + 1}`);
           return;
         }
         const link = links[0]; // First link contains the image
+        console.log(`  ✓ Using link:`, link.href);
 
         const img = link.querySelector('img');
         if (!img) {
