@@ -4,17 +4,30 @@
 }
 
 @media (max-width: 860px) {
-  .nav-toggle { display:inline-block; }
-  .nav-list { position:absolute; right:0; top:64px; background:#fff; flex-direction:column; width:240px; padding:1rem 1.25rem 1.3rem; box-shadow:0 8px 28px rgba(0,0,0,0.08); border:1px solid #eee; border-radius:12px; transform:translateY(10px); opacity:0; pointer-events:none; transition:.35s ease; gap:.9rem; z-index:100; }
+  .nav-toggle { display:inline-block; position: relative; z-index: 1001; }
+  .nav-list { position:absolute; right:0; top:64px; background:#fff; flex-direction:column; width:240px; padding:1rem 1.25rem 1.3rem; box-shadow:0 8px 28px rgba(0,0,0,0.08); border:1px solid #eee; border-radius:12px; transform:translateY(10px); opacity:0; pointer-events:none; transition:.35s ease; gap:.9rem; z-index:1000; }
   .nav-list.open { transform:translateY(0); opacity:1; pointer-events:auto; }
   .nav-list a { padding:.4rem 0; }
   .hero h1 { font-size:2rem; }
   .carousel-btn.prev { right:6px; }
   .carousel-btn.next { left:6px; }
-  .logo-img { height:70px !important; max-height:70px; width:auto; object-fit:contain; }
+  /* הגדלת הלוגו במובייל */
+  .logo-img { height:90px !important; max-height:90px; width:auto; object-fit:contain; }
   .header-social { gap:.4rem; margin-inline-start:.5rem; }
   .header-social a { width:34px; height:34px; }
   .header-social img { width:22px; height:22px; }
+  
+  /* תיקון ריווח אינסטגרם */
+  .elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87 {
+    padding: 0 1rem;
+  }
+  
+  /* אייקונים אופקיים בפוטר */
+  .footer-center .social-links {
+    flex-direction: row !important;
+    justify-content: center;
+    gap: 1rem;
+  }
 }
 
 @media (max-width: 680px) {
@@ -32,10 +45,37 @@
   .modal-content h2 {
     font-size: 1.5rem;
   }
+  
+  /* תיקון תצוגת תכנים להורדה */
+  .shop-cat-list {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .shop-cat-btn {
+    font-size: 0.85rem;
+    padding: 0.55rem 1rem;
+  }
+  .file-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem;
+  }
+  .file-card {
+    padding: 0.8rem;
+  }
+  .file-desc {
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width:480px) {
   .hero h1 { font-size:1.7rem; }
   .slide img { height:200px; }
   .nav-list { width:100%; right:0; border-radius:0 0 16px 16px; }
+  
+  /* מובייל קטן - עמודה אחת */
+  .file-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
