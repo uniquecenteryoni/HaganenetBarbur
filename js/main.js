@@ -71,7 +71,17 @@
     navButtons.forEach(b=> b.classList.toggle('active', b.dataset.target===key));
   }
   navButtons.forEach(btn=> btn.addEventListener('click', ()=> showPanel(btn.dataset.target)));
-  // Ensure first is visible
-  const first = navButtons[0];
-  if(first) showPanel(first.dataset.target);
+  
+  // Check if returning from product detail page
+  const returnToCategory = sessionStorage.getItem('returnToCategory');
+  if (returnToCategory) {
+    // Show the category panel that was active before
+    showPanel(returnToCategory);
+    // Clear the stored category
+    sessionStorage.removeItem('returnToCategory');
+  } else {
+    // Ensure first is visible
+    const first = navButtons[0];
+    if(first) showPanel(first.dataset.target);
+  }
 })();

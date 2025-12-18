@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/animations.css?v=1">
   <link rel="stylesheet" href="css/style.css?v=3">
-  <link rel="stylesheet" href="css/responsive.css?v=6">
+  <link rel="stylesheet" href="css/responsive.css?v=3">
   <style>
     :root {
       --primary-purple: #7A1FA2;
@@ -115,6 +115,11 @@
     .btn.primary { background:var(--primary-purple); color:#fff; box-shadow:var(--shadow); width:100%; }
     .btn.primary:hover { background:var(--primary-purple-dark); transform:translateY(-2px); box-shadow:0 6px 20px rgba(122,31,162,0.25); }
     
+    .btn.facebook { background:#1877f2; color:#fff; font-size:0.9rem; padding:0.65rem 1.2rem; box-shadow:0 2px 8px rgba(24,119,242,0.2); width:auto; display:inline-flex; align-items:center; gap:0.5rem; border-radius:8px; margin-left:auto; margin-right:auto; }
+    .btn.facebook:hover { background:#0c63d4; transform:translateY(-1px); box-shadow:0 4px 12px rgba(24,119,242,0.3); }
+    .btn.facebook svg { width:1.1rem; height:1.1rem; fill:currentColor; flex-shrink:0; }
+    .facebook-btn-wrapper { text-align:center; margin-top:1rem; }
+    
     .product-image-wrapper { 
       background:#fff; 
       border:1px solid var(--border); 
@@ -179,7 +184,7 @@
 
   <div class="container">
     <div class="breadcrumb" style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
-      <a href="index.html#shop" style="text-decoration:none; padding:.5rem 1rem; font-size:.85rem; background:#f5f5f5; color:#666; border:1px solid #ddd; border-radius:8px; transition:all .3s ease;">← חזרה לחנות</a>
+      <a href="index.html#shop" id="backToShop" style="text-decoration:none; padding:.5rem 1rem; font-size:.85rem; background:#f5f5f5; color:#666; border:1px solid #ddd; border-radius:8px; transition:all .3s ease;">← חזרה לחנות</a>
       <span><span id="categoryName">מוצרים</span> / <span id="productNameBreadcrumb">פרטי מוצר</span></span>
     </div>
     
@@ -211,6 +216,20 @@
     const cat = params.get('cat');
     const file = params.get('file');
     
+    // Update back button to return to the correct category
+    const backBtn = document.getElementById('backToShop');
+    if (backBtn && cat) {
+      // Store the category in sessionStorage when navigating to product detail
+      sessionStorage.setItem('lastCategory', cat);
+      // Set the href to include the category filter
+      backBtn.href = `index.html#shop`;
+      backBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sessionStorage.setItem('returnToCategory', cat);
+        window.location.href = 'index.html#shop';
+      });
+    }
+    
     const categoryNames = {
       recipes: 'מתכונים',
       birthday: 'יום הולדת',
@@ -224,21 +243,40 @@
       'recipes-1': {
         title: 'עוגת יום הולדת',
         shortDesc: 'מתכון אורייני לעוגת שוקולד – עוגת יום הולדת',
-        description: 'מתכון אורייני מפורט ומצולם לעוגת שוקולד מושלמת ליום הולדת! המתכון כולל הוראות צעד אצעד עם תמונות ברורות, רשימת מצרכים מדויקת, וטיפים חשובים להצלחת העוגה. מתאים לילדים בגיל הגן, עם דגש על חוויית בישול משפחתית וחינוכית. הקובץ כולל גם כרטיסיות להדפסה עם שלבי ההכנה, מה שהופך את הפעילות למהנה ואינטראקטיבית.',
+        description: `מתכון אורייני מפורט לעוגת שוקולד מושלמת ליום הולדת!<br><br>
+<strong>הילדים הם השפים:</strong> בזכות איורים ברורים של המצרכים והכמויות, הילדים מפתחים עצמאות, "קוראים" את השלבים ומרגישים שותפים מלאים לתהליך ההכנה.<br><br>
+<strong>למידה תוך כדי הנאה:</strong> המתכון משלב אוריינות חזותית, הכרת כמויות וסדר פעולות – אידיאלי לגילאי הגן וכיתה א'.<br><br>
+<strong>הכל בדף אחד:</strong> קובץ ממוקד ונוח הכולל את רשימת המצרכים - כתובה ומאוירת, ואת שלבי ההכנה המפורטים להובלת הגננת או ההורה.`,
         price: '₪10.00',
         image: 'images/Products/1-1.webp'
       },
       'recipes-2': {
         title: 'עוגת תפוזים בתוך תפוז – מתכון פעיל',
         shortDesc: 'מתכון אורייני פעיל לעוגות תפוזים אישיות בתוך קליפות תפוז',
-        description: 'פעילות בישול ייחודית ומרהיבה! מתכון אורייני פעיל לעוגות תפוזים אישיות שנאפות בתוך קליפות תפוז אמיתיות. הילדים יחוו חוויה קולינרית מיוחדת, יפתחו מיומנויות מוטוריקות עדינות, ויכירו את תהליך הבישול מקרוב. המתכון כולל הדרכה מפורטת לעבודה עם הילדים, טיפי בטיחות, כרטיסיות להדפסה, ורעיונות להרחבת הפעילות. מושלם לפעילות קבוצתית או למפגש משפחתי.',
+        description: `מתכון אורייני פעיל: עוגת תפוזים מיוחדת במינה! 🍊<br><br>
+<strong>המתכון האורייני הפעיל לוקח את הילדים צעד אחד קדימה!</strong> הם לא רק עוזרים, הם "בונים" את המתכון בעצמם!<br><br>
+<strong>פעילים מהרגע הראשון:</strong> הילדים יכולים לגזור ולעזור בהכנה המוקדמת של הפעילות. בפעילות עצמה הם מזהים ומצמידים את המצרכים והשלבים למקומם. חוויה שמעודדת אוריינות חזותית, מוטוריקה עדינה ותחושת מסוגלות.<br><br>
+<strong>הבנה עמוקה של התהליך:</strong> בעזרת ההצמדה הפיזית של התמונות, הילדים עוקבים בקלות אחרי סדר הפעולות ומרגישים שהם "קוראים" את המתכון כמו גדולים.<br><br>
+<strong>גמישות בפעילות:</strong> תוכלו להכין את דף המתכון מראש או להצמיד כל שלב תוך כדי עבודה – הכל לפי הקצב שלכן והיכולות של הילדים.<br><br>
+<strong>מה בקובץ (6 עמודים)?</strong><br>
+• מדריך וטיפים: כל מה שצריך לדעת כדי להפיק את המקסימום מהפעילות.<br>
+• עמודי "גזור והדבק": תמונות ברורות של מצרכים ושלבי הכנה המיועדים לגזירה.<br>
+• לוחות פעילות: עמודים מעוצבים עליהם מצמידים את התמונות הגזורות.`,
         price: '₪25.00',
         image: 'images/Products/1-2.webp'
       },
       'recipes-3': {
         title: 'עוגת ביסקוויטים – מתכון פעיל',
         shortDesc: 'מתכון אורייני פעיל לעוגת ביסקוויטים',
-        description: 'מתכון אורייני פעיל לעוגת ביסקוויטים קלה והמתאימה במיוחד לילדים! ללא אפייה, מתכון זה מושלם לפעילות בגן או בבית. הילדים ישתתפו בכל שלב - מריסוק הביסקוויטים ועד העיטור הסופי. המתכון כולל הוראות ברורות עם תמונות, רעיונות לווריאציות טעמים, והצעות לעיצוב יצירתי. מעולה לפיתוח מיומנויות קוגניטיביות, חברתיות ומוטוריות דקות.',
+        description: `מתכון אורייני פעיל לעוגת ביסקוויטים אישית!<br><br>
+<strong>המתכון האורייני הפעיל לוקח את הילדים צעד אחד קדימה!</strong> הם לא רק עוזרים, הם "בונים" את המתכון בעצמם!<br><br>
+<strong>פעילים מהרגע הראשון:</strong> הילדים יכולים לגזור ולעזור בהכנה המוקדמת של הפעילות. בפעילות עצמה הם מזהים ומצמידים את המצרכים והשלבים למקומם. חוויה שמעודדת אוריינות חזותית, מוטוריקה עדינה ותחושת מסוגלות.<br><br>
+<strong>הבנה עמוקה של התהליך:</strong> בעזרת ההצמדה הפיזית של התמונות, הילדים עוקבים בקלות אחרי סדר הפעולות ומרגישים שהם "קוראים" את המתכון כמו גדולים.<br><br>
+<strong>גמישות בפעילות:</strong> תוכלו להכין את דף המתכון מראש או להצמיד כל שלב תוך כדי עבודה – הכל לפי הקצב שלכן והיכולות של הילדים.<br><br>
+<strong>מה בקובץ (8 עמודים)?</strong><br>
+• מדריך וטיפים: כל מה שצריך לדעת כדי להפיק את המקסימום מהפעילות.<br>
+• עמודי "גזור והדבק": תמונות ברורות של מצרכים ושלבי הכנה המיועדים לגזירה.<br>
+• לוחות פעילות: עמודים מעוצבים עליהם מצמידים את התמונות הגזורות.`,
         price: '₪25.00',
         image: 'images/Products/1-3.webp'
       },
@@ -266,7 +304,10 @@
       'recipes-7': {
         title: 'עוגת תמרים',
         shortDesc: 'מתכון אורייני לעוגת תמרים',
-        description: 'מתכון אורייני מפורט לעוגת תמרים עסיסית ובריאה! עוגה זו עשירה בטעם ובערכים תזונתיים, ומתאימה במיוחד לילדים. המתכון כולל הוראות צעד אצעד עם תמונות הדגמה, רשימת מצרכים, טיפים להכנה, ורעיונות להגשה יצירתית. מושלם לארוחת בוקר בגן, לחטיף בריא, או להכנה משפחתית. הקובץ כולל גם כרטיסיות להדפסה המלוות את תהליך ההכנה.',
+        description: `מתכון אורייני מפורט לעוגת תמרים בחושה וטעימה!<br><br>
+<strong>הילדים הם השפים:</strong> בזכות איורים ברורים של המצרכים והכמויות, הילדים מפתחים עצמאות, "קוראים" את השלבים ומרגישים שותפים מלאים לתהליך ההכנה.<br><br>
+<strong>למידה תוך כדי הנאה:</strong> המתכון משלב אוריינות חזותית, הכרת כמויות וסדר פעולות – אידיאלי לגילאי הגן וכיתה א'.<br><br>
+<strong>הכל בדף אחד:</strong> קובץ ממוקד ונוח הכולל את רשימת המצרכים - כתובה ומאוירת, ואת שלבי ההכנה המפורטים להובלת הגננת או ההורה.`,
         price: '<span class="price-strike">₪10.00</span> <span class="free-price">חינם</span>',
         isFree: true,
         image: 'images/Products/3-1.webp'
@@ -274,14 +315,26 @@
       'birthday-1': {
         title: 'עוגת יום הולדת',
         shortDesc: 'מתכון אורייני לעוגת שוקולד – עוגת יום הולדת',
-        description: 'מתכון אורייני חגיגי ומפואר לעוגת יום הולדת מושלמת! עוגת שוקולד עשירה וטעימה שתהפוך כל יום הולדת לבלתי נשכח. המתכון כולל הוראות מפורטות להכנת העוגה, הצעות לקישוטים יצירתיים, רעיונות לעיצוב עם הילדים, וטיפים להצלחה מובטחת. מושלם לחגיגות בגן או בבית. הקובץ כולל גם כרטיסיות עם שלבי ההכנה והעיצוב, ורעיונות לפעילויות נלוות ליום ההולדת.',
+        description: `מתכון אורייני מפורט לעוגת שוקולד מושלמת ליום הולדת!<br><br>
+<strong>הילדים הם השפים:</strong> בזכות איורים ברורים של המצרכים והכמויות, הילדים מפתחים עצמאות, "קוראים" את השלבים ומרגישים שותפים מלאים לתהליך ההכנה.<br><br>
+<strong>למידה תוך כדי הנאה:</strong> המתכון משלב אוריינות חזותית, הכרת כמויות וסדר פעולות – אידיאלי לגילאי הגן וכיתה א'.<br><br>
+<strong>הכל בדף אחד:</strong> קובץ ממוקד ונוח הכולל את רשימת המצרכים - כתובה ומאוירת, ואת שלבי ההכנה המפורטים להובלת הגננת או ההורה.`,
         price: '₪10.00',
         image: 'images/Products/1-1.webp'
       },
       'birthday-2': {
         title: 'כרטיסיות יום הולדת',
         shortDesc: 'כרטיסיות שירים ומשחקים ללוח יום הולדת',
-        description: 'ערכה דיגיטלית מקיפה של כרטיסיות מעוצבות ומגוונות ללוח יום ההולדת בגן! הערכה כוללת שירי יום הולדת אהובים עם מילים מלאות, משחקים קבוצתיים מהנים, פעילויות אינטראקטיביות, והצעות לטקס יום הולדת משמעותי. כל כרטיסייה מעוצבת בצבעוניות ובבהירות, מוכנה להדפסה ולשימוש מיידי. מושלם ליצירת חגיגת יום הולדת מיוחדת ובלתי נשכחת לכל ילד וילדה. כולל גם הצעות להתאמה אישית ורעיונות לשילוב ההורים.',
+        description: `ערכה דיגיטלית מקיפה של כרטיסיות מעוצבות ומגוונות ללוח יום ההולדת בגן!<br><br>
+<strong>הערכה כוללת:</strong><br>
+• 9 כרטיסיות של שירי יום הולדת אהובים<br>
+• 12 כרטיסיות של משחקים קבוצתיים מהנים בתוכם גם הצעות לפעילויות שיעשירו את טקס יום ההולדת<br><br>
+כל כרטיסייה מעוצבת בצבעוניות ובבהירות, מוכנה להדפסה ולשימוש מיידי.<br><br>
+<strong>יתרונות:</strong><br>
+• מושלם ליצירת חגיגת יום הולדת מיוחדת ובלתי נשכחת<br>
+• מאפשר לילדים בחירה בבניית תוכנית המסיבה תוך שמירה על מבנה אחיד<br>
+• מעודד את הילדים להיות חלק מתכנון המסיבה שלהם עצמם<br><br>
+<div class="facebook-btn-wrapper"><a href="https://www.facebook.com/haganenet.barbur/posts/pfbid02RQPcYnCs2o8PRrH9E5WF5c8psk2sTWEcM3zBdkaCURntyxKKnikw2j9j3ZScjRkil" target="_blank" class="btn facebook"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> קראו בפייסבוק - לוח יום הולדת</a></div>`,
         price: '<span class="price-strike">₪10.00</span> <span class="free-price">חינם</span>',
         isFree: true,
         image: 'images/Products/15.webp'
@@ -289,21 +342,42 @@
       'holidays-1': {
         title: 'ערכת שבועות',
         shortDesc: 'ערכת חג שכוללת 3 מערכי פעילות + כרטיסיות להדפסה בהתאם לכל פעילות',
-        description: 'ערכת חג שבועות מקיפה ועשירה! הערכה כוללת 3 מערכי פעילות מפורטים המתאימים לגיל הגן, עם דגש על למידה חווייתית והכרת משמעות החג. כל מערך כולל מטרות חינוכיות, הצעות לביצוע, כרטיסיות מעוצבות להדפסה, ורעיונות להרחבה. הפעילויות כוללת הכנת אוכל, יצירה, משחקים, וסיפורים. מושלם לגננות המעוניינות ליצור חוויית חג משמעותית ומהנה לילדים. כל החומרים מוכנים להדפסה ולשימוש מיידי!',
+        description: `ערכת חג שבועות מקיפה ועשירה!<br><br>
+הערכה כוללת 3 מערכי פעילות מפורטים המתאימים לגיל הגן לפעילות בקבוצה ובמפגש, עם דגש על למידה חווייתית וחיבור עם החג. כל מערך כולל מטרות חינוכיות, הצעות לביצוע, כרטיסיות מעוצבות להדפסה, ורעיונות להרחבה.<br><br>
+<strong>בקובץ:</strong> סך הכל 63 עמודים - כולל דף הסבר לכל הערכה, הפעילויות ודפי הסבר לכל פעילות.<br><br>
+<strong>הפעילויות המצורפות:</strong><br>
+• 4 פאזלים של שמות החג<br>
+• 14 כרטיסיות התאמה: שבעת המינים ותוצריהם<br>
+• 6 לוחות למשחק בינגו של שבעת המינים + 14 כרטיסיות קופה<br><br>
+מושלם לגננות המעוניינות ליצור חוויית חג משמעותית ומהנה לילדים. כל החומרים מוכנים להדפסה ולשימוש מיידי!`,
         price: '₪40.00',
         image: 'images/Products/4-1.webp'
       },
       'holidays-2': {
         title: 'ערכת חנוכה – פעילות בקבוצה',
         shortDesc: 'ערכת חג שכוללת 6 מערכי פעילות בקבוצה + כרטיסיות להדפסה בהתאם לכל פעילות + 2 לוחות "הגעתי לגן"',
-        description: 'ערכת חנוכה עשירה ומקיפה במיוחד! כוללת 6 מערכי פעילות בקבוצה שונים ומגוונים, כרטיסיות מעוצבות להדפסה לכל פעילות, ו-2 לוחות "הגעתי לגן" מיוחדים לחג החנוכה. כל מערך פעילות כולל מטרות חינוכיות, הוראות מפורטות, רעיונות לשיחות, והצעות להרחבה. הפעילויות כוללות: הכנת סופגניות, יצירת סביבונים, משחקי חנוכה, סיפורים אינטראקטיביים, פעילות אומנותית, ועוד. מושלם לחודש כולו! כל החומרים מעוצבים להדפסה ושימוש מיידי, ומאפשרים ליצור חוויית חג מלאה ומשמעותית.',
+        description: `ערכת חנוכה עשירה ומקיפה במיוחד!<br><br>
+כוללת 6 מערכים שונים ומגוונים לפעילות בקבוצה או מפגש, כרטיסיות מעוצבות להדפסה לכל פעילות, ובנוסף - <strong>2 לוחות "הגעתי לגן"</strong> מיוחדים לחג החנוכה!<br><br>
+כל מערך פעילות כולל מטרות חינוכיות, הוראות מפורטות, והצעות להרחבה. הערכה נוגעת בתחומי למידה רבים: מתמטי, שפתי, מוטוריקה עדינה, ספרות ועוד.<br><br>
+<strong>בקובץ:</strong> סך הכל 33 עמודים - כולל דף הסבר לכל הערכה, הפעילויות ודפי הסבר לכל פעילות.<br><br>
+<strong>הפעילויות המצורפות:</strong><br>
+• דגם סביבונים - התאמת צבעים<br>
+• משחק מסלול בעקבות הסיפור "גברת קרש ומר מערוך": משחק לוח לשולחן + משחק רצפה בתנועה<br>
+• מה במשבצת? סמלי החג<br>
+• משחק הזיכרון - יחיד רבים<br>
+• התאמת כמות למספר - נרות לחנוכייה<br>
+• סימטריה סמלי החג<br><br>
+מושלם כבסיס לתכנון נושא "חג החנוכה"! כל החומרים מוכנים להדפסה ושימוש מיידי, ומאפשרים ליצור חוויית חג מלאה ומשמעותית.`,
         price: '₪60.00',
         image: 'images/Products/4-2.webp'
       },
       'holidays-3': {
         title: 'עוגת דבש',
         shortDesc: 'מתכון אורייני לעוגת דבש',
-        description: 'מתכון אורייני מסורתי ומיוחד לעוגת דבש לראש השנה! עוגה ארומטית ומתוקה שמסמלת שנה טובה ומתוקה. המתכון כולל הוראות מפורטות עם תמונות, רשימת מצרכים, טיפים להכנה מוצלחת, והצעות לעיצוב חגיגי. מושלם להכנה משפחתית או לפעילות בגן לקראת החגים. הקובץ כולל גם כרטיסיות עם שלבי ההכנה, רעיונות לשיחות על משמעות החג, והצעות לפעילויות נלוות.',
+        description: `מתכון אורייני מפורט לעוגת דבש פשוטה וחגיגית לראש השנה (ולא רק)!<br><br>
+<strong>הילדים הם השפים:</strong> בזכות איורים ברורים של המצרכים והכמויות, הילדים מפתחים עצמאות, "קוראים" את השלבים ומרגישים שותפים מלאים לתהליך ההכנה.<br><br>
+<strong>למידה תוך כדי הנאה:</strong> המתכון משלב אוריינות חזותית, הכרת כמויות וסדר פעולות – אידיאלי לגילאי הגן וכיתה א'.<br><br>
+<strong>הכל בדף אחד:</strong> קובץ ממוקד ונוח הכולל את רשימת המצרכים - כתובה ומאוירת, ואת שלבי ההכנה המפורטים להובלת הגננת או ההורה.`,
         price: '₪10.00',
         image: 'images/Products/2-1.webp'
       },
@@ -317,14 +391,28 @@
       'holidays-5': {
         title: 'משחק ליום המשפחה',
         shortDesc: 'משחק לוח משפחתי',
-        description: 'משחק לוח משפחתי מהנה ומקסים במיוחד! משחק זה תוכנן במיוחד ליום המשפחה ומתאים למשחק משותף של ילדים והורים. המשחק כולל לוח מעוצב וצבעוני, כרטיסיות משימות, קלפי שאלות על המשפחה, וחוקי משחק ברורים ופשוטים. המשחק מעודד שיחה, שיתוף, צחוק, והכרות מעמיקה יותר בין בני המשפחה. מתאים לגילאי 4-8, ניתן להתאים את רמת הקושי. הקובץ כולל את כל רכיבי המשחק להדפסה, והוראות הרכבה פשוטות. מושלם לאירוע יום המשפחה בגן או למשחק משפחתי בבית!',
+        description: `משחק לוח משפחתי מהנה ומקסים במיוחד!<br><br>
+משחק זה תוכנן במיוחד ליום המשפחה ומתאים למשחק משותף של ילדים והורים.<br><br>
+<strong>המשחק כולל:</strong><br>
+• לוח מעוצב וצבעוני<br>
+• כרטיסיות משימות<br>
+• קלפי שאלות על המשפחה<br>
+• חוקי משחק ברורים ופשוטים<br><br>
+המשחק מעודד שיחה, שיתוף, צחוק, והכרות מעמיקה יותר בין בני המשפחה. מתאים לגילאי 4-8.<br><br>
+הקובץ כולל את כל רכיבי המשחק להדפסה, והוראות פשוטות. מושלם לאירוע יום המשפחה בגן או למשחק משפחתי בבית!`,
         price: '₪15.00',
         image: 'images/Products/3-3.webp'
       },
       'general-1': {
         title: 'תרשים משפחות כלי נגינה',
         shortDesc: 'תמונת תרשים משפחות כלי נגינה',
-        description: 'תרשים חינוכי מפואר ומעוצב של משפחות כלי הנגינה! התרשים מציג בצורה ויזואלית וברורה את כל משפחות כלי הנגינה: כלי מיתר, כלי נשיפה מעץ, כלי נשיפה מפליז, כלי הקשה, וכלי מקלדת. כל משפחה מלווה בתמונות ברורות של הכלים השייכים לה, ובהסברים קצרים ומובנים. מושלם לתלייה בגן, לשימוש בפעילויות מוזיקה, ולהעשרת הסביבה החינוכית. הקובץ מוכן להדפסה בגודל A3 או גדול יותר, ומאפשר לילדים להכיר ולזהות את כלי הנגינה השונים.',
+        description: `תרשים חינוכי מעוצב של משפחות כלי הנגינה!<br><br>
+התרשים מציג בצורה ויזואלית וברורה את 3 המשפחות הגדולות של כלי הנגינה ובכל אחת שתי תתי משפחות:<br><br>
+<strong>כלי נשיפה:</strong> כלי נשיפה ממתכת; כלי נשיפה מעץ<br>
+<strong>כלי מיתר:</strong> כלי פריטה; כלי קשת<br>
+<strong>כלי הקשה</strong><br><br>
+כל משפחה מלווה בתמונות ברורות של הכלים השייכים לה.<br><br>
+מושלם לתלייה בגן, לשימוש בפעילויות מוזיקה, ולהעשרת הסביבה החינוכית. הקובץ מוכן להדפסה בגודל A4 או גדול יותר, ומאפשר לילדים להכיר ולזהות את כלי הנגינה השונים.`,
         price: '<span class="price-strike">₪5.00</span> <span class="free-price">חינם</span>',
         isFree: true,
         image: 'images/Products/18.webp'
@@ -332,21 +420,43 @@
       'general-2': {
         title: 'כרטיסיות "מה עוזר לי להירגע?"',
         shortDesc: 'כרטיסיות לניהול רגשות ורגיעה',
-        description: 'ערכת כרטיסיות חינוכית חשובה לניהול רגשות והרגעה עצמית! הכרטיסיות כוללות אסטרטגיות מגוונות להרגעה: נשימות עמוקות, ספירה, תנועות גוף, דמיון מודרך, ועוד. כל כרטיסייה מעוצבת בבהירות עם איורים ברורים והוראות פשוטות המתאימות לילדים בגיל הגן. מושלם לפינת הרגעה בגן, לשימוש במצבי לחץ או כעס, ולהוראת מיומנויות ויסות רגשי. הכרטיסיות מוכנות להדפסה, ניתן להדביק אותן על קרטון ולשמור בקופסה נגישה לילדים.',
+        description: `ערכת כרטיסיות חינוכית לניהול רגשות ולימוד מיומנויות של ויסוט רגשי!<br><br>
+הכרטיסיות כוללות פתרונות מגוונים להרגעה שהילדים יכולים לבחור מתוכם: נשימות עמוקות, משחק עם פלסטלינה, תנועות גוף, בקשת חיבוק, ועוד. כל כרטיסייה מעוצבת בבהירות עם איורים ברורים וכותרות המתאימות לילדים בגיל הגן.<br><br>
+מושלם לפינת רוגע בגן, לשימוש במצבי לחץ או כעס, בפרידות קשות ועוד, ולתיווך והנגשת מיומנויות ויסוט רגשי והכרת הרגשות.<br><br>
+<strong>הקובץ מכיל:</strong><br>
+•19 כרטיסיות של פתרונות שתוכלו לבחור מתוכן<br>
+•6 כרטיסיות רגשות<br><br>
+הכרטיסיות מוכנות להדפסה, ניתן להדביק אותן על קרטון או לניילץ וליצור ספרון ולשמור בקופסה נגישה לילדים.<br><br>
+<div class="facebook-btn-wrapper"><a href="https://www.facebook.com/haganenet.barbur/posts/pfbid02tU4u2xegKw2ZADgqD8yWDN1w2DvZDg4sjk4Fh7rcypLJfWR1tPeHxFUqvzLybpALl" target="_blank" class="btn facebook"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> קראו בפייסבוק - תיבות רוגע</a></div>`,
         price: '₪20.00',
         image: 'images/Products/14.webp'
       },
       'general-3': {
         title: 'לוח "הגעתי לגן"',
         shortDesc: '10 לוחות הגעתי לגן עם 4-6 אפשרויות',
-        description: 'אוסף מקיף של 10 לוחות "הגעתי לגן" מגוונים ומעוצבים! כל לוח כולל 4-6 אפשרויות שונות לסימון אופן ההגעה לגן: הליכה ברגל, רכב, אוטובוס, אופניים, קורקינט, ועוד. הלוחות מעוצבים בצורה צבעונית ומזמינה, עם איורים ברורים וקלים להבנה. מושלם ליצירת שגרת בוקר, לפיתוח אחריות אישית, ולשיחות על תחבורה וסביבה. כל לוח מוכן להדפסה בגודל A4 או A3, וניתן להחליף בין העיצובים השונים לאורך השנה.',
+        description: `אוסף מקיף של 9 לוחות "הגעתי לגן" מגוונים ומעוצבים!<br><br>
+כל עמוד כולל כרטיסיות להדפסה: שאלה ככותרת+ 4-8 אפשרויות שונות.<br><br>
+<strong>הלוחות המצורפים בקובץ:</strong><br>
+• איך נפרדתי הבוקר?<br>
+• איך אני רוצה להגיד "שלום" הבוקר?<br>
+• מה הרגשתי הבוקר?<br>
+• מה הפעילות האהובה עליי בגן?<br>
+• מה טעם הגלידה האהוב עליי?<br>
+• כמה נקודות יצאו לי בקובייה? (התאמת כמות למספר)<br>
+• מה המספר שיצא לי בקובייה? (התאמת כמות למספר)<br>
+• כמה הברות יש בשם שלי?<br>
+• מה עשיתי בחופשה?<br><br>
+הלוחות מעוצבים בצורה צבעונית ומזמינה, עם איורים ברורים וקלים להבנה. מושלם ליצירת שגרת בוקר, לפיתוח אחריות אישית, ולשיחה על השאלות המופיעות. כל עמוד מוכן להדפסה בגודל A4, וניתן להחליף בין העיצובים השונים לאורך השנה.`,
         price: '₪25.00',
         image: 'images/Products/16.webp'
       },
       'body-1': {
         title: 'סרגל אותיות – שפת הסימנים',
         shortDesc: 'סרגל אותיות שפת הסימנים להדפסה בעברית',
-        description: 'סרגל אותיות ייחודי ומרהיב של שפת הסימנים בעברית! הסרגל מציג את כל 22 האותיות בעברית בשפת הסימנים הישראלית, עם תמונות ברורות ומדויקות של כל תנועת יד. מושלם לתלייה בכיתה, ללימוד שפת הסימנים, להעלאת המודעות לקהילת החירשים, ולפיתוח תקשורת חלופית. הסרגל מעוצב בצורה צבעונית ומזמינה, כולל את האות בעברית ואת התמונה המתאימה. מוכן להדפסה בגודל גדול ולתלייה בגובה עיני הילדים. משאב חינוכי חשוב ומעשיר!',
+        description: `סרגל אותיות של שפת הסימנים בעברית!<br><br>
+הסרגל מציג את כל 22 האותיות בעברית בשפת הסימנים הישראלית, עם תמונות ברורות ומדויקות של כל תנועת יד.<br><br>
+מושלם לתלייה בכיתה, ללימוד שפת הסימנים, לעבוד ולימוד בנושא "אני וגופי", להעלאת המודעות לקהילת החירשים ולקויי שמיעה, וללמידה על דרכי תקשורת.<br><br>
+הסרגל כולל את האות בעברית ואת התמונה המתאימה.`,
         price: '<span class="price-strike">₪5.00</span> <span class="free-price">חינם</span>',
         isFree: true,
         image: 'images/Products/17.webp'
@@ -354,14 +464,24 @@
       'body-2': {
         title: 'איברי גוף',
         shortDesc: '17 כרטיסיות גדולות של איברי גוף: תמונות + שם',
-        description: 'ערכת כרטיסיות חינוכית מקיפה על איברי הגוף! הערכה כוללת 17 כרטיסיות גדולות ומעוצבות, כל אחת מציגה איבר גוף שונה עם תמונה ברורה ואיכותית ושם האיבר בעברית. הכרטיסיות כוללות: לב, ריאות, קיבה, כבד, מוח, עיניים, אוזניים, עור, עצמות, שרירים ועוד. מושלם ללימוד על גוף האדם, לפעילויות בריאות, לשיחות על תזונה נכונה, ולפיתוח מודעות גופנית. הכרטיסיות מוכנות להדפסה בגודל A5 או A4, וניתן לשלב אותן במשחקים, בחידונים, ובפעילויות למידה מגוונות.',
+        description: `ערכת כרטיסיות חינוכית מקיפה על איברי הגוף!<br><br>
+מתאימה לעבודה במפגש, קבוצה או להוסיף לפינת הספורט או התעמלות הבוקר.<br><br>
+הערכה כוללת 17 כרטיסיות גדולות ומעוצבות, כל אחת מציגה איבר גוף שונה עם תמונה ברורה ואיכותית ושם האיבר בעברית. הכרטיסיות כוללות: איברי פנים, כפות ידיים, כפות רגליים, בטן, גב ועוד.<br><br>
+מושלם ללימוד על גוף האדם, אני וגופי, לפעילויות התעמלות, ספורט ושכלול מיומנויות מוטוריות, ולפיתוח מודעות גופנית. הכרטיסיות מוכנות להדפסה בגודל A4, וניתן לשלב אותן במשחקים, במעברים, ובפעילויות למידה מגוונות.`,
         price: '₪20.00',
         image: 'images/Products/13.webp'
       },
       'body-3': {
         title: 'היגיינה אישית – פעולות ניקיון',
         shortDesc: '18 כרטיסיות מחולקות לקטגוריות: שטיפת ידיים, צחצוח שיניים ועוד',
-        description: 'ערכה חינוכית חיונית לקידום היגיינה אישית אצל ילדים! הערכה כוללת 18 כרטיסיות מפורטות ומעוצבות, המחולקות לקטגוריות: שטיפת ידיים נכונה (6 שלבים), צחצוח שיניים (שלבים ברורים), רחצה, ניקיון פנים, חיתוך ציפורניים, ועוד. כל כרטיסייה כוללת תמונות הדגמה ברורות והוראות פשוטות. מושלם לתלייה ליד הכיור, בשירותים, ובפינת הטיפוח בגן. עוזר לילדים לפתח עצמאות, אחריות אישית, והרגלי ניקיון בריאים. הכרטיסיות מוכנות להדפסה ולמינציה לעמידות ארוכת שנים.',
+        description: `ערכה חינוכית חיונית לקידום היגיינה אישית אצל ילדים!<br><br>
+הערכה כוללת 17 כרטיסיות מפורטות ומעוצבות, המחולקות לקטגוריות בכל אחד י כרטיסית כותרת וכרטיסיות של הפריטים בהם אנו משתמשים:<br><br>
+<strong>מקלחת</strong> - 5 כרטיסיות<br>
+<strong>צחצוח שיניים</strong> - 4 כרטיסיות<br>
+<strong>שטיפת ידיים</strong> - 4 כרטיסיות<br>
+<strong>להתפנות בשירותים</strong> - 4 כרטיסיות<br><br>
+הערכה מושלמת לעבוד על הנושא "אני וגופי", העלאת המודעות להיגיינה אישית ופיתוח עצמאות ואחריות אישית ומעודד שיח על הנושא. מתאימה לעבודה בקבוצה או במפגש.<br><br>
+הכרטיסיות מוכנות להדפסה בגודל A4.`,
         price: '₪20.00',
         image: 'images/Products/2-3.webp'
       },
@@ -378,13 +498,7 @@
         description: 'משחק לוח משפחתי מהנה ומקסים במיוחד! משחק זה תוכנן במיוחד ליום המשפחה ומתאים למשחק משותף של ילדים והורים. המשחק כולל לוח מעוצב וצבעוני, כרטיסיות משימות, קלפי שאלות על המשפחה, וחוקי משחק ברורים ופשוטים. המשחק מעודד שיחה, שיתוף, צחוק, והכרות מעמיקה יותר בין בני המשפחה. מתאים לגילאי 4-8, ניתן להתאים את רמת הקושי. הקובץ כולל את כל רכיבי המשחק להדפסה, והוראות הרכבה פשוטות. מושלם לאירוע יום המשפחה בגן או למשחק משפחתי בבית!',
         price: '₪15.00',
         image: 'images/Products/3-3.webp'
-      },
-      'body-4': {
-        title: 'כרטיסיות "מה עוזר לי להירגע?"',
-        shortDesc: 'כרטיסיות לניהול רגשות ורגיעה',
-        description: 'ערכת כרטיסיות חינוכית חשובה לניהול רגשות והרגעה עצמית! הכרטיסיות כוללות אסטרטגיות מגוונות להרגעה: נשימות עמוקות, ספירה, תנועות גוף, דמיון מודרך, ועוד. כל כרטיסייה מעוצבת בבהירות עם איורים ברורים והוראות פשוטות המתאימות לילדים בגיל הגן. מושלם לפינת הרגעה בגן, לשימוש במצבי לחץ או כעס, ולהוראת מיומנויות ויסות רגשי. הכרטיסיות מוכנות להדפסה, ניתן להדביק אותן על קרטון ולשמור בקופסה נגישה לילדים.',
-        price: '₪20.00',
-        image: 'images/Products/14.webp'
+
       }
     };
     
@@ -410,7 +524,7 @@
         document.getElementById('productPrice').innerHTML = product.price;
       }
       
-      document.getElementById('productDescription').textContent = product.description;
+      document.getElementById('productDescription').innerHTML = product.description;
       document.getElementById('productImage').src = product.image;
       document.getElementById('productImage').alt = product.title;
       document.title = product.title + ' - גננת בר';
@@ -501,6 +615,184 @@
     // Initialize
     updateCartCount();
     checkIfInCart();
+    initPreviewSystem();
+
+    // Preview System for Product Detail Page
+    function initPreviewSystem() {
+      console.log('🔍 Initializing Preview System for Product Detail Page');
+      
+      const imageWrapper = document.querySelector('.product-image-wrapper');
+      const img = document.querySelector('#productImage');
+      
+      if (!imageWrapper || !img) {
+        console.log('⚠️ Product image elements not found');
+        return;
+      }
+      
+      console.log('Found product image:', img.src);
+      
+      // Create preview container
+      const container = document.createElement('div');
+      container.className = 'product-image-container';
+      container.style.position = 'relative';
+      container.style.width = '100%';
+      
+      // Add preview icon
+      const icon = document.createElement('div');
+      icon.className = 'preview-icon';
+      icon.style.position = 'absolute';
+      icon.style.top = '1rem';
+      icon.style.left = '1rem';
+      icon.style.background = 'rgba(255,255,255,0.95)';
+      icon.style.borderRadius = '50%';
+      icon.style.width = '2.5rem';
+      icon.style.height = '2.5rem';
+      icon.style.display = 'flex';
+      icon.style.alignItems = 'center';
+      icon.style.justifyContent = 'center';
+      icon.style.color = 'var(--primary-purple)';
+      icon.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+      icon.style.pointerEvents = 'none';
+      icon.style.zIndex = '10';
+      icon.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2rem;height:1.2rem;">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+          <line x1="11" y1="8" x2="11" y2="14"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+      `;
+      
+      // Wrap the existing image
+      img.parentNode.insertBefore(container, img);
+      container.appendChild(img);
+      container.appendChild(icon);
+      
+      // Get preview file paths based on current product
+      const imgPath = img.getAttribute('src');
+      const originalSrc = imgPath;
+      const basePath = imgPath.substring(0, imgPath.lastIndexOf('.'));
+      const previewImagePath = basePath + '_p.webp';
+      const previewVideoPath = basePath + '.mp4';
+      
+      console.log('Original image:', imgPath);
+      console.log('Preview paths:', {image: previewImagePath, video: previewVideoPath});
+      
+      let previewElement = null;
+      let isVideoPreview = false;
+      let previewLoaded = false;
+      
+      // Try to load video preview first
+      const videoTest = document.createElement('video');
+      videoTest.style.display = 'none';
+      document.body.appendChild(videoTest);
+      
+      videoTest.addEventListener('loadedmetadata', () => {
+        console.log('✓ Video preview loaded:', previewVideoPath);
+        document.body.removeChild(videoTest);
+        isVideoPreview = true;
+        previewLoaded = true;
+        previewElement = document.createElement('video');
+        previewElement.src = previewVideoPath;
+        previewElement.autoplay = false;
+        previewElement.loop = true;
+        previewElement.muted = true;
+        previewElement.playsInline = true;
+        previewElement.style.width = '100%';
+        previewElement.style.height = 'auto';
+        previewElement.style.aspectRatio = '1/1';
+        previewElement.style.objectFit = 'cover';
+        previewElement.style.borderRadius = 'var(--radius-sm)';
+      });
+      
+      videoTest.addEventListener('error', (e) => {
+        console.log('✗ Video not found, trying image:', previewVideoPath);
+        if (videoTest.parentNode) document.body.removeChild(videoTest);
+        
+        // Try image preview
+        const imgTest = new Image();
+        imgTest.onload = () => {
+          console.log('✓ Image preview loaded:', previewImagePath);
+          previewLoaded = true;
+          previewElement = document.createElement('img');
+          previewElement.src = previewImagePath;
+          previewElement.alt = img.alt + ' - תצוגה מקדימה';
+          previewElement.style.width = '100%';
+          previewElement.style.height = 'auto';
+          previewElement.style.aspectRatio = '1/1';
+          previewElement.style.objectFit = 'cover';
+          previewElement.style.borderRadius = 'var(--radius-sm)';
+        };
+        imgTest.onerror = () => {
+          console.log('✗ No preview available for this product');
+        };
+        imgTest.src = previewImagePath;
+      });
+      
+      videoTest.src = previewVideoPath;
+      
+      // Show preview function
+      const showPreview = () => {
+        if (previewElement && previewLoaded) {
+          const currentImg = container.querySelector('img, video');
+          if (currentImg && currentImg !== previewElement) {
+            container.replaceChild(previewElement, currentImg);
+            container.appendChild(icon);
+            if (isVideoPreview) {
+              previewElement.play().catch(e => console.log('Video play failed:', e));
+            }
+          }
+        }
+      };
+      
+      // Hide preview function
+      const hidePreview = () => {
+        if (previewElement && container.contains(previewElement)) {
+          if (isVideoPreview) {
+            previewElement.pause();
+            previewElement.currentTime = 0;
+          }
+          const newImg = document.createElement('img');
+          newImg.id = 'productImage';
+          newImg.src = originalSrc;
+          newImg.alt = img.alt;
+          newImg.style.width = '100%';
+          newImg.style.height = 'auto';
+          newImg.style.aspectRatio = '1/1';
+          newImg.style.objectFit = 'cover';
+          newImg.style.borderRadius = 'var(--radius-sm)';
+          container.replaceChild(newImg, previewElement);
+          container.appendChild(icon);
+        }
+      };
+      
+      // Mouse events for desktop
+      container.addEventListener('mouseenter', showPreview);
+      container.addEventListener('mouseleave', hidePreview);
+      
+      // Touch events for mobile
+      let touchStarted = false;
+      container.addEventListener('touchstart', (e) => {
+        touchStarted = true;
+        showPreview();
+      }, { passive: true });
+      
+      container.addEventListener('touchend', (e) => {
+        if (touchStarted) {
+          setTimeout(hidePreview, 100);
+          touchStarted = false;
+        }
+      }, { passive: true });
+      
+      container.addEventListener('touchcancel', (e) => {
+        if (touchStarted) {
+          hidePreview();
+          touchStarted = false;
+        }
+      }, { passive: true });
+      
+      console.log('✅ Preview system initialized for product detail page');
+    }
   </script>
   <script src="js/main.js"></script>
 </body>
