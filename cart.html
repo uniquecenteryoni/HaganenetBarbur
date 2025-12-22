@@ -470,7 +470,7 @@
             <p style="margin: 0; font-size: 1.05rem; line-height: 1.7; color: var(--text-dark);">💡 <strong>שימי לב:</strong> לחיצה על "הזמיני" תשלח אליי את פרטי ההזמנה שלך. זה עדיין לא תשלום! לאחר קבלת ההזמנה, אצור איתך קשר כדי לסגור את הפרטים ולבצע את הרכישה.<br>אם יש לך הערות נוספות, את מוזמנת להוסיף אותן בגוף ההודעה למטה ☺️</p>
           </div>
           <h2>📝 הזמיני כאן</h2>
-          <form id="checkoutForm" action="https://hooks.zapier.com/hooks/catch/25633253/uftqsm6/" method="POST">
+          <form id="checkoutForm" action="https://formspree.io/f/mdanpoqb" method="POST">
             <div class="form-group">
               <label for="customerName">שם מלא *</label>
               <input type="text" id="customerName" name="name" required>
@@ -491,7 +491,8 @@
               <textarea id="customerMessage" name="message"></textarea>
             </div>
             
-            <input type="hidden" name="source_type" value="PURCHASE">
+            <input type="hidden" name="_subject" value="[PURCHASE] הזמנה חדשה מהאתר" />
+            <input type="hidden" name="tag" value="PURCHASE" />
             
             <div class="submit-buttons">
               <button type="button" class="submit-btn whatsapp-btn" onclick="sendViaWhatsApp()">
@@ -695,19 +696,23 @@
         return;
       }
       
-      // Send to Zapier webhook
+      // Send to Formspree
       const formData = new FormData();
       formData.append('name', name);
       formData.append('phone', phone);
       formData.append('email', email);
       formData.append('message', message);
-      formData.append('source_type', 'PURCHASE_WHATSAPP');
+      formData.append('_subject', '[PURCHASE_WHATSAPP] הזמנה דרך WhatsApp');
+      formData.append('tag', 'PURCHASE_WHATSAPP');
       
-      // Send to Zapier (don't wait for response)
-      fetch('https://hooks.zapier.com/hooks/catch/25633253/uftqsm6/', {
+      // Send to Formspree (don't wait for response)
+      fetch('https://formspree.io/f/mdanpoqb', {
         method: 'POST',
-        body: formData
-      }).catch(err => console.log('Zapier error:', err));
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).catch(err => console.log('Formspree error:', err));
       
       // Create WhatsApp message
       const whatsappMessage = `שלום, אני ${name}\n\n${message}\n\nפרטי ההתקשרות:\nטלפון: ${phone}\nאימייל: ${email}`;

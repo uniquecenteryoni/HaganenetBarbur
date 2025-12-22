@@ -240,7 +240,7 @@
   <section class="contact" id="contact">
     <div class="container">
   <h2 class="section-title">רוצים לשמוע עוד? כתבו לי!</h2>
-      <form class="contact-form" id="contactForm" action="https://hooks.zapier.com/hooks/catch/25633253/uftqsm6/" method="POST">
+      <form class="contact-form" id="contactForm" action="https://formspree.io/f/mdanpoqb" method="POST">
         <div class="form-row">
           <label for="contactName">שם *</label>
           <input type="text" id="contactName" name="name" required>
@@ -257,7 +257,8 @@
           <label for="contactMessage">הודעה</label>
           <textarea id="contactMessage" name="message" rows="4" required></textarea>
         </div>
-        <input type="hidden" name="source_type" value="INTEREST">
+        <input type="hidden" name="_subject" value="[INTERESTED] יצירת קשר חדשה מהאתר" />
+        <input type="hidden" name="tag" value="INTERESTED" />
         <button type="submit" class="btn secondary">שליחה</button>
       </form>
       <div id="form-status" style="display:none; margin-top:1rem; padding:1rem; border-radius:8px; text-align:center;"></div>
