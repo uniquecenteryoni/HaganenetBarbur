@@ -110,12 +110,21 @@
     <div class="container">
       <h2 class="section-title"></h2>
       <div class="instagram-feed-wrapper standalone">
-        <!-- SnapWidget -->
-        <script src="https://snapwidget.com/js/snapwidget.js"></script>
-        <iframe src="https://snapwidget.com/embed/1115197" class="snapwidget-widget" allowtransparency="true" frameborder="0" scrolling="no" style="border:none; overflow:hidden; width:100%;" title="Posts from Instagram"></iframe>
+        <!-- Curator.io Widget -->
+        <div id="curator-feed-default-feed-layout"><a href="https://curator.io" target="_blank" class="crt-logo crt-tag">Powered by Curator.io</a></div>
       </div>
     </div>
   </section>
+
+  <!-- Curator.io Script -->
+  <script type="text/javascript">
+  /* curator-feed-default-feed-layout */
+  (function(){
+  var i,e,d=document,s="script";i=d.createElement("script");i.async=1;i.charset="UTF-8";
+  i.src="https://cdn.curator.io/published/ebb7e8fe-5d6e-4225-a7fc-0ea0e532421b.js";
+  e=d.getElementsByTagName(s)[0];e.parentNode.insertBefore(i, e);
+  })();
+  </script>
 
   <!-- About -->
   <section class="about" id="about">

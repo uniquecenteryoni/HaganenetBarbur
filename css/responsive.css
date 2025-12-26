@@ -58,8 +58,16 @@
     margin: 0 auto !important;
   }
   
-  .snapwidget-widget {
-    min-height: 400px !important;
+  /* Curator.io - 2 עמודות במובייל */
+  #curator-feed-default-feed-layout .crt-feed {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+  
+  #curator-feed-default-feed-layout .crt-post {
+    width: 100% !important;
+    margin: 0 !important;
   }
   
   /* פוטר אנכי במובייל */

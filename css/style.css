@@ -136,7 +136,8 @@ img { max-width:100%; display:block; }
   min-height: 500px;
   direction: ltr;
 }
-.snapwidget-widget {
+#curator-feed-default-feed-layout {
+  width: 100%;
   min-height: 500px;
 } 
   grid-gap: 1rem !important;
