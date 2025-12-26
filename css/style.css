@@ -130,19 +130,15 @@ img { max-width:100%; display:block; }
 .hero-inline-title { font-size:3rem; line-height:1.1; margin-bottom:1rem; text-shadow:0 4px 18px rgba(0,0,0,0.35); }
 .hero-inline-sub { font-size:1.25rem; margin:0 0 2rem; color:#f5f5f5; text-shadow:0 2px 10px rgba(0,0,0,0.4); }
 .hero-inline-btn { box-shadow:0 4px 18px rgba(0,0,0,0.35); }
-.instagram-feed-section { background:#fff; padding:0; }
+.instagram-feed-section { background:#fff; padding:2rem 0; margin-bottom: 0; }
 .instagram-feed-wrapper.standalone { 
-  margin:1rem auto 0; 
-  min-height: 500px; /* Reserve space to prevent layout shift */
+  margin:0 auto; 
+  min-height: 500px;
+  direction: ltr;
 }
-.instagram-feed-wrapper.standalone .elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87 { direction:ltr; }
-/* Instagram grid spacing */
-.elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87 .es-widget-item { 
-  padding: 0.5rem !important; 
-  margin: 0 !important;
-}
-.elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87 .es-widget-grid { 
-  gap: 1rem !important; 
+.snapwidget-widget {
+  min-height: 500px;
+} 
   grid-gap: 1rem !important;
 }
 .elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87 .es-widget-layout { 

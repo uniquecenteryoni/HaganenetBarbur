@@ -49,8 +49,17 @@
   .header-social img { width:22px; height:22px; }
   
   /* תיקון ריווח אינסטגרם */
-  .elfsight-app-a230e2ce-ccd9-4ccb-8baf-a0e73d0e0b87 {
-    padding: 0 1rem;
+  .instagram-feed-section {
+    padding: 1rem 0;
+    margin-bottom: 0;
+  }
+  
+  .instagram-feed-wrapper.standalone {
+    margin: 0 auto;
+  }
+  
+  .snapwidget-widget {
+    min-height: 400px !important;
   }
   
   /* פוטר אנכי במובייל */
