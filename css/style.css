@@ -130,14 +130,19 @@ img { max-width:100%; display:block; }
 .hero-inline-title { font-size:3rem; line-height:1.1; margin-bottom:1rem; text-shadow:0 4px 18px rgba(0,0,0,0.35); }
 .hero-inline-sub { font-size:1.25rem; margin:0 0 2rem; color:#f5f5f5; text-shadow:0 2px 10px rgba(0,0,0,0.4); }
 .hero-inline-btn { box-shadow:0 4px 18px rgba(0,0,0,0.35); }
-.instagram-feed-section { background:#fff; padding:2rem 0; margin-bottom: 0; }
+.instagram-feed-section { background:#fff; padding:1rem 0; margin-bottom: 2rem; }
 .instagram-feed-wrapper.standalone { 
   margin:0 auto; 
   min-height: 500px;
   direction: ltr;
 }
-#curator-feed-default-feed-layout {
+behold-widget {
   width: 100%;
+  display: block;
+  min-height: 500px;
+}
+  width: 100%;
+  display: block;
   min-height: 500px;
 } 
   grid-gap: 1rem !important;

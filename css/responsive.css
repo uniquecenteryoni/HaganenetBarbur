@@ -58,30 +58,10 @@
     margin: 0 auto !important;
   }
   
-  /* Curator.io - כפיית 2 עמודות במובייל */
-  #curator-feed-default-feed-layout,
-  #curator-feed-default-feed-layout .crt-feed-container,
-  #curator-feed-default-feed-layout .crt-widget,
-  #curator-feed-default-feed-layout .crt-feed {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+  /* Behold widget - רספונסיבי במובייל */
+  behold-widget {
     width: 100% !important;
-  }
-  
-  #curator-feed-default-feed-layout .crt-post,
-  #curator-feed-default-feed-layout .crt-grid-post {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    flex: none !important;
-  }
-  
-  /* הסתרת לוגו Curator במובייל */
-  #curator-feed-default-feed-layout .crt-logo {
-    font-size: 10px !important;
-    opacity: 0.5;
+    display: block !important;
   }
   
   /* פוטר אנכי במובייל */
