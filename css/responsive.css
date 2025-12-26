@@ -50,12 +50,12 @@
   
   /* תיקון ריווח אינסטגרם */
   .instagram-feed-section {
-    padding: 1rem 0;
-    margin-bottom: 0;
+    padding: 0 !important;
+    margin: 0 !important;
   }
   
   .instagram-feed-wrapper.standalone {
-    margin: 0 auto;
+    margin: 0 auto !important;
   }
   
   .snapwidget-widget {
