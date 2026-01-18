@@ -51,8 +51,286 @@
   <link rel="stylesheet" href="css/responsive.css?v=6">
   <link rel="stylesheet" href="css/animations.css?v=1">
   <link rel="stylesheet" href="css/toast.css?v=1">
+  <style>
+    /* February Popup Modal Styles */
+    .popup-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .popup-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .confetti-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .popup-content {
+      position: relative;
+      max-width: 600px;
+      margin: 50px auto;
+      background: linear-gradient(135deg, #fef9ff 0%, #fff 100%);
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: 0 20px 60px rgba(122, 31, 162, 0.3);
+      animation: popupSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      overflow: hidden;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: #7A1FA2;
+      font-size: 28px;
+      line-height: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .popup-close:hover {
+      background: #fff;
+      transform: rotate(90deg) scale(1.1);
+      box-shadow: 0 6px 16px rgba(122, 31, 162, 0.3);
+    }
+
+    .popup-header {
+      background: linear-gradient(135deg, #7A1FA2 0%, #9c4dbd 100%);
+      padding: 30px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .popup-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-30%, -30%); }
+    }
+
+    .popup-title {
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 10px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .popup-subtitle {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 1.1rem;
+      margin: 0;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .popup-body {
+      padding: 30px;
+    }
+
+    .popup-video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(122, 31, 162, 0.2);
+      border: 3px solid #f3e9fb;
+    }
+
+    .popup-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .popup-product-title {
+      color: #7A1FA2;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0 0 15px;
+      text-align: center;
+    }
+
+    .popup-description {
+      color: #555;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      text-align: right;
+    }
+
+    .popup-price {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .popup-price-old {
+      color: #999;
+      font-size: 1.2rem;
+      text-decoration: line-through;
+    }
+
+    .popup-price-free {
+      color: #28a745;
+      font-size: 2rem;
+      font-weight: 700;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .popup-btn {
+      display: block;
+      width: 100%;
+      padding: 18px 30px;
+      background: linear-gradient(135deg, #7A1FA2 0%, #9c4dbd 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(122, 31, 162, 0.4);
+      border: none;
+      cursor: pointer;
+    }
+
+    .popup-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(122, 31, 162, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes popupSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .popup-content {
+        margin: 20px;
+        max-height: 95vh;
+      }
+      
+      .popup-title {
+        font-size: 1.5rem;
+      }
+      
+      .popup-subtitle {
+        font-size: 0.95rem;
+      }
+      
+      .popup-body {
+        padding: 20px;
+      }
+      
+      .popup-product-title {
+        font-size: 1.3rem;
+      }
+      
+      .popup-description {
+        font-size: 0.9rem;
+      }
+      
+      .popup-btn {
+        font-size: 1.1rem;
+        padding: 15px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- February 2026 Popup Modal -->
+  <div id="februaryPopup" class="popup-modal" style="display: none;">
+    <div class="popup-overlay"></div>
+    <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+    <div class="popup-content">
+      <button class="popup-close" aria-label="סגור">×</button>
+      <div class="popup-header">
+        <h2 class="popup-title">🎉 תוכן חדש וחינמי! 🎉</h2>
+        <p class="popup-subtitle">הגיע משהו מיוחד במתנה בשבילכן</p>
+      </div>
+      <div class="popup-body">
+        <div class="popup-video-wrapper">
+          <video class="popup-video" autoplay loop muted playsinline>
+            <source src="images/Products/19.mp4" type="video/mp4">
+            הדפדפן שלך לא תומך בתגית וידאו.
+          </video>
+        </div>
+        <h3 class="popup-product-title">שולחנות תחושה לגן!</h3>
+        <p class="popup-description">
+          טבלאות מפורטות להכנת שולחנות תחושה מושלמים! 🌟<br><br>
+          <strong>הקובץ כולל:</strong><br>
+          • מילויים יבשים<br>
+          • מילויים רטובים<br>
+          • אביזרים מומלצים להוספה<br><br>
+          כלי מושלם לעידוד חקר, משחק ולמידה חווייתית! 💜
+        </p>
+        <div class="popup-price">
+          <span class="popup-price-free">🎁 מתנה!</span>
+        </div>
+        <a href="#shop" class="popup-btn" id="popupShopBtn">לחנות הקבצים 🎁</a>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast-notification" id="toastNotification">
     <span class="toast-icon">✓</span>
@@ -149,6 +427,41 @@
     })();
   </script>
 
+  <!-- February 2026 Popup Modal -->
+  <div id="februaryPopup" class="popup-modal" style="display: none;">
+    <div class="popup-overlay"></div>
+    <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+    <div class="popup-content">
+      <button class="popup-close" aria-label="סגור">×</button>
+      <div class="popup-header">
+        <h2 class="popup-title">🎉 תוכן חדש וחינמי! 🎉</h2>
+        <p class="popup-subtitle">הגיע משהו מיוחד במתנה בשבילכן</p>
+      </div>
+      <div class="popup-body">
+        <div class="popup-video-wrapper">
+          <video class="popup-video" autoplay loop muted playsinline>
+            <source src="images/Products/19.mp4" type="video/mp4">
+            התדפדפן שלך לא תומך בתגית וידאו.
+          </video>
+        </div>
+        <h3 class="popup-product-title">שולחנות תחושה לגן!</h3>
+        <p class="popup-description">
+          טבלאות מפורטות להכנת שולחנות תחושה מושלמים! 🌟<br><br>
+          <strong>הקובץ כולל:</strong><br>
+          • מילויים יבשים<br>
+          • מילויים רטובים<br>
+          • אביזרים מומלצים להוספה<br><br>
+          כלי מושלם לעידוד חקר, משחק ולמידה חווייתית! 💜
+        </p>
+        <div class="popup-price">
+          <span class="popup-price-old">₪5.00</span>
+          <span class="popup-price-free">חינם!</span>
+        </div>
+        <a href="#shop" class="popup-btn" id="popupShopBtn">לחנות הקבצים 🎁</a>
+      </div>
+    </div>
+  </div>
+
   <!-- About -->
   <section class="about" id="about">
     <div class="container about-layout">
@@ -209,6 +522,7 @@
             <div class="file-card"><a href="product-detail.html?cat=general&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/18.webp" alt="תרשים משפחות כלי נגינה"><p class="file-desc">תרשים חינוכי מעוצב של משפחות כלי הנגינה!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=1">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=general&file=2"><img src="images/Products/14.webp" alt="כרטיסיות מה עוזר לי להירגע"><p class="file-desc">ערכת כרטיסיות חינוכית לניהול רגשות ולימוד מיומנויות של ויסוט רגשי!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=2">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=general&file=3"><img src="images/Products/16.webp" alt="לוח הגעתי לגן"><p class="file-desc">אוסף מקיף של 9 לוחות "הגעתי לגן" מגוונים ומעוצבים!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=4"><div class="free-gift-badge">מתנה</div><img src="images/Products/19.webp" alt="שולחנות תחושה"><p class="file-desc">טבלאות להכנת שולחנות תחושה לגן ולבית!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=4">לפרטים</a></div>
             <!-- אני וגופי -->
             <div class="file-card"><a href="product-detail.html?cat=body&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/17.webp" alt="סרגל אותיות"><p class="file-desc">סרגל אותיות של שפת הסימנים בעברית!</p></a><a class="btn primary" href="product-detail.html?cat=body&file=1">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=body&file=2"><img src="images/Products/13.webp" alt="איברי גוף"><p class="file-desc">ערכת כרטיסיות חינוכית מקיפה על איברי הגוף!</p></a><a class="btn primary" href="product-detail.html?cat=body&file=2">לפרטים</a></div>
@@ -253,6 +567,7 @@
             <div class="file-card"><a href="product-detail.html?cat=general&file=1"><div class="free-gift-badge">מתנה</div><img src="images/Products/18.webp" alt="תרשים משפחות כלי נגינה"><p class="file-desc">תרשים חינוכי מעוצב של משפחות כלי הנגינה!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=1">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=general&file=2"><img src="images/Products/14.webp" alt="כרטיסיות מה עוזר לי להירגע"><p class="file-desc">ערכת כרטיסיות חינוכית לניהול רגשות ולימוד מיומנויות של ויסוט רגשי!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=2">לפרטים</a></div>
             <div class="file-card"><a href="product-detail.html?cat=general&file=3"><img src="images/Products/16.webp" alt="לוח הגעתי לגן"><p class="file-desc">אוסף מקיף של 9 לוחות "הגעתי לגן" מגוונים ומעוצבים!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=3">לפרטים</a></div>
+            <div class="file-card"><a href="product-detail.html?cat=general&file=4"><div class="free-gift-badge">מתנה</div><img src="images/Products/19.webp" alt="שולחנות תחושה"><p class="file-desc">טבלאות להכנת שולחנות תחושה לגן ולבית!</p></a><a class="btn primary" href="product-detail.html?cat=general&file=4">לפרטים</a></div>
           </div>
         </div>
         
@@ -729,6 +1044,140 @@
     } else {
       initScrollAnimations();
     }
+
+    // February 2026 Popup Logic
+    (function() {
+      function isFebruary2026() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth(); // 0 = January, 1 = February
+        
+        // *** לבדיקה בלבד - הסר את השורה הבאה אחרי הבדיקה! ***
+        return true; // זמני - להצגת המודאל עכשיו לבדיקה
+        // *** סוף קוד זמני ***
+        
+        return year === 2026 && month === 1;
+      }
+
+      function shouldShowPopup() {
+        // בדיקה אם זה פברואר 2026
+        if (!isFebruary2026()) return false;
+        
+        // בדיקה אם המשתמש כבר ראה את הפופאפ בסשן הנוכחי
+        const hasSeenPopup = sessionStorage.getItem('februaryPopupSeen2026');
+        return !hasSeenPopup;
+      }
+
+      function createConfetti() {
+        const canvas = document.getElementById('confettiCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const confettiColors = ['#7A1FA2', '#9c4dbd', '#f3e9fb', '#FFD700', '#FF69B4', '#00CED1'];
+        const confettiPieces = [];
+        const confettiCount = 100;
+
+        class ConfettiPiece {
+          constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = -20;
+            this.size = Math.random() * 8 + 4;
+            this.speedY = Math.random() * 3 + 2;
+            this.speedX = Math.random() * 2 - 1;
+            this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            this.rotation = Math.random() * 360;
+            this.rotationSpeed = Math.random() * 10 - 5;
+          }
+
+          update() {
+            this.y += this.speedY;
+            this.x += this.speedX;
+            this.rotation += this.rotationSpeed;
+            
+            if (this.y > canvas.height) {
+              this.y = -20;
+              this.x = Math.random() * canvas.width;
+            }
+          }
+
+          draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation * Math.PI / 180);
+            ctx.fillStyle = this.color;
+            ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+            ctx.restore();
+          }
+        }
+
+        for (let i = 0; i < confettiCount; i++) {
+          confettiPieces.push(new ConfettiPiece());
+        }
+
+        let animationId;
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          confettiPieces.forEach(piece => {
+            piece.update();
+            piece.draw();
+          });
+          animationId = requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        return () => {
+          if (animationId) cancelAnimationFrame(animationId);
+        };
+      }
+
+      function showPopup() {
+        const popup = document.getElementById('februaryPopup');
+        if (!popup) return;
+
+        popup.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        // התחלת אנימציית קונפטי
+        const stopConfetti = createConfetti();
+
+        // סגירה עם כפתור X
+        const closeBtn = popup.querySelector('.popup-close');
+        const overlay = popup.querySelector('.popup-overlay');
+        const shopBtn = document.getElementById('popupShopBtn');
+
+        function closePopup() {
+          popup.style.display = 'none';
+          document.body.style.overflow = '';
+          sessionStorage.setItem('februaryPopupSeen2026', 'true');
+          if (stopConfetti) stopConfetti();
+        }
+
+        closeBtn.addEventListener('click', closePopup);
+        overlay.addEventListener('click', closePopup);
+        
+        // סגירה ומעבר לחנות
+        shopBtn.addEventListener('click', function() {
+          closePopup();
+        });
+
+        // סגירה עם ESC
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closePopup();
+          }
+        });
+      }
+
+      // הצגת הפופאפ אם צריך
+      if (shouldShowPopup()) {
+        // המתנה קצרה לטעינת העמוד
+        setTimeout(showPopup, 800);
+      }
+    })();
   </script>
 </body>
 </html>

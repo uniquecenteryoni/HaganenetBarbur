@@ -11,5 +11,6 @@ Allow: /css/
 Allow: /js/
 Allow: /images/
 
-# Sitemap location
+# Sitemap location                                                                                                                      
 Sitemap: https://haganenet-barbur.com/sitemap.xml
+                                                                                                                                                                                    
