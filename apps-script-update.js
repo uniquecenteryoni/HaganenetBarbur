@@ -17,6 +17,8 @@ function doPost(e) {
       return sendManualEmailFromPanel(data.emails, data.files);
     } else if (action === 'processAndSendFiles') {
       return processAndSendFilesFromPanel(data.startDate, data.endDate, data.key);
+    } else if (action === 'updateLeadStatus') {
+      return updateLeadStatusFromPanel(data.email, data.status);
     }
     
     return ContentService.createTextOutput(JSON.stringify({
@@ -51,6 +53,10 @@ function doGet(e) {
     return getFilesListForPanel();
   } else if (action === 'getPreviewStats') {
     return getPreviewStatsForPanel(e.parameter.startDate, e.parameter.endDate);
+  } else if (action === 'extractLeads') {
+    return extractLeadsFromPanel();
+  } else if (action === 'getLeadsData') {
+    return getLeadsDataForPanel();
   }
   
   return ContentService.createTextOutput(JSON.stringify({error: 'Invalid action'}))
@@ -230,3 +236,104 @@ function getPreviewStatsForPanel(startDate, endDate) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+/**
+ * עדכון סטטוס ליד
+ */
+function updateLeadStatusFromPanel(email, status) {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets()[0];
+    const data = sheet.getDataRange().getValues();
+    
+    // מצא את השורה עם המייל הזה
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][1] === email) { // עמודה B = מייל
+        // עדכן עמודה F (6) = סטטוס
+        sheet.getRange(i + 1, 6).setValue(status);
+        break;
+      }
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * ייבוא לידים מהמייל (קורא לפונקציה הקיימת)
+ */
+function extractLeadsFromPanel() {
+  try {
+    const count = extractFormspreeLeads();
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      count: count
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * קבלת נתוני לידים כולל סטטוס
+ */
+function getLeadsDataForPanel() {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets()[0];
+    const data = sheet.getDataRange().getValues();
+    
+    const leads = [];
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      leads.push({
+        date: row[0],
+        email: row[1],
+        name: row[2],
+        phone: row[3],
+        type: row[4],
+        status: row[5] || 'לא טופל', // ברירת מחדל
+        message: row[6] || '',
+        products: row[7] || '',
+        price: row[8] || ''
+      });
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      leads: leads
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * הוראות התקנה:
+ * 1. פתחי את Google Apps Script: Extensions → Apps Script
+ * 2. העתיקי את כל התוכן של הקובץ הזה
+ * 3. הדביקי אותו בסוף הקוד הקיים בקובץ Code.gs
+ * 4. שמרי (Ctrl+S) ופרסי מחדש (Deploy → New deployment)
+ * 
+ * שינויים חדשים:
+ * - הוספת updateLeadStatus - עדכון סטטוס ליד אחרי שליחת קובץ
+ * - הוספת extractLeadsFromPanel - ייבוא לידים מהמייל דרך הפאנל
+ * - הוספת getLeadsData - טעינת לידים כולל שדה סטטוס
+ * 
+ * הערה: ודאי שהגדרת את SPREADSHEET_ID בקוד הראשי!
+ */

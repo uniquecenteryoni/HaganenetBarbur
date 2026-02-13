@@ -515,7 +515,7 @@
     <!-- Dashboard Tab -->
     <div class="tab-content active" id="dashboard">
       <h2 style="margin-bottom: 1.5rem; color: #667eea;">📈 סקירה כללית</h2>
-      <div class="stats-grid">
+      <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         <div class="stat-card">
           <h3>ביקורים באתר</h3>
           <div class="number" id="totalVisits">-</div>
@@ -536,6 +536,11 @@
           <div class="number" id="totalInterested">-</div>
           <div class="subtitle">טפסי צור קשר</div>
         </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+          <h3>💰 סה"כ מכירות</h3>
+          <div class="number" id="totalRevenue">-</div>
+          <div class="subtitle">סכום כולל</div>
+        </div>
       </div>
       
       <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
@@ -555,6 +560,7 @@
           <option value="PURCHASE">רכישה</option>
           <option value="INTERESTED">צור קשר</option>
         </select>
+        <button onclick="importLeadsFromEmail()" style="background: #ff9800;">📧 ייבא מהמייל</button>
         <button onclick="exportLeadsCSV()">📥 ייצא ל-CSV</button>
         <button onclick="refreshLeads()">🔄 רענן</button>
       </div>
@@ -568,6 +574,7 @@
               <th>מייל</th>
               <th>טלפון</th>
               <th>סוג</th>
+              <th>סטטוס</th>
               <th>מוצרים/הודעה</th>
               <th>מחיר</th>
               <th>פעולות</th>
@@ -786,6 +793,12 @@
       document.getElementById('totalPurchases').textContent = purchases;
       document.getElementById('totalInterested').textContent = interested;
       
+      // חישוב סה"כ מכירות
+      const totalRevenue = leads
+        .filter(l => l.price && !isNaN(parseFloat(l.price)))
+        .reduce((sum, l) => sum + parseFloat(l.price), 0);
+      document.getElementById('totalRevenue').textContent = '₪' + totalRevenue.toLocaleString('he-IL');
+      
       // Recent leads chart (simple text list)
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -811,7 +824,7 @@
       try {
         document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">טוען מ-Google Sheets...</td></tr>';
         
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeads`);
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeadsData`);
         const data = await response.json();
         
         if (data.success && data.leads) {
@@ -877,27 +890,88 @@
       const tbody = document.getElementById('leadsTableBody');
       
       if (leads.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">אין לידים להצגה</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">אין לידים להצגה</td></tr>';
         return;
       }
       
-      tbody.innerHTML = leads.map(lead => `
+      // מיין מהחדש לישן
+      const sortedLeads = [...leads].sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      tbody.innerHTML = sortedLeads.map(lead => {
+        const status = lead.status || 'לא טופל';
+        const statusColor = status === 'טופל' ? '#4caf50' : '#ff9800';
+        return `
         <tr>
           <td>${new Date(lead.date).toLocaleDateString('he-IL')}</td>
           <td>${lead.name || '-'}</td>
           <td>${lead.email || '-'}</td>
           <td>${lead.phone || '-'}</td>
           <td><span class="tag tag-${lead.type.toLowerCase()}">${lead.type === 'PURCHASE' ? 'רכישה' : 'צור קשר'}</span></td>
+          <td><span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8em;">${status}</span></td>
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td><button onclick="sendFileToLead('${lead.email}', '${(lead.name || '').replace(/'/g, "\\'")}')">📤 שלח קובץ</button></td>
         </tr>
-      `).join('');
+      `}).join('');
     }
     
     function refreshLeads() {
       loadLeadsFromGoogleSheets(); // רענון מ-Google Sheets
       alert('מרענן מ-Google Sheets...');
+    }
+    
+    async function importLeadsFromEmail() {
+      if (!confirm('האם לייבא לידים חדשים מהמייל? (זה עשוי לקחת מספר שניות)')) return;
+      
+      const btn = event.target;
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'מייבא...';
+      
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=extractLeads`);
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(`✅ יובאו ${result.count || 0} לידים חדשים מהמייל!`);
+          // רענן את הטבלה
+          loadLeadsFromGoogleSheets();
+        } else {
+          throw new Error(result.error || 'שגיאה בייבוא');
+        }
+      } catch (error) {
+        alert('❌ שגיאה בייבוא לידים: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }
+    
+    async function updateLeadStatus(email, status) {
+      try {
+        // עדכן ב-localStorage
+        const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+        const leadIndex = leads.findIndex(l => l.email === email);
+        if (leadIndex !== -1) {
+          leads[leadIndex].status = status;
+          localStorage.setItem('leads', JSON.stringify(leads));
+          allLeads = leads;
+          displayLeads(allLeads);
+        }
+        
+        // עדכן ב-Google Sheets
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'updateLeadStatus',
+            email: email,
+            status: status
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch (error) {
+        console.error('שגיאה בעדכון סטטוס:', error);
+      }
     }
     
     function sendFileToLead(email, name) {
@@ -908,6 +982,9 @@
       // בחר את המייל הזה
       selectedEmails.clear();
       selectedEmails.add(email);
+      
+      // שמור את המייל לעדכון סטטוס אחרי השליחה
+      window.pendingStatusUpdate = email;
       
       // עדכן תצוגה
       renderTags('email', 'selectedCustomers');
@@ -1035,7 +1112,7 @@
       
       if (!confirm(isTest ? 'לשלוח בדיקה למייל שלך?' : `האם לשלוח לכל המסוננים?`)) return;
       
-      const btn = event.target;
+      const btn = event ? event.target : document.querySelector('.btn-send');
       const originalText = btn.textContent;
       btn.disabled = true;
       btn.textContent = 'שולח...';
@@ -1049,20 +1126,7 @@
           linkUrl: linkUrl
         };
         
-        // אם יש תמונה, המר ל-base64
-        if (imageFile) {
-          const reader = new FileReader();
-          reader.onload = async function(e) {
-            payload.imageBlob = {
-              data: e.target.result.split(',')[1],
-              contentType: imageFile.type
-            };
-            await sendNewsletterToScript(payload);
-          };
-          reader.readAsDataURL(imageFile);
-        } else {
-          await sendNewsletterToScript(payload);
-        }
+        await sendNewsletterToScript(payload, btn, originalText);
       } catch (error) {
         alert('❌ שגיאה בשליחה: ' + error.message);
         btn.disabled = false;
@@ -1070,7 +1134,7 @@
       }
     }
     
-    async function sendNewsletterToScript(payload) {
+    async function sendNewsletterToScript(payload, btn, originalText) {
       try {
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
@@ -1107,33 +1171,38 @@
       // טען לקוחות מ-Google Sheets
       try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCustomersList`);
-        const customers = await response.json();
-        allCustomers = customers;
+        const data = await response.json();
+        allCustomers = Array.isArray(data) ? data : (data.customers || []);
         renderCustomerList(allCustomers);
+        console.log('✅ נטענו', allCustomers.length, 'לקוחות');
       } catch (error) {
         console.error('שגיאה בטעינת לקוחות:', error);
         // גיבוי מקומי
         const uniqueEmails = new Set();
+        allCustomers = [];
         allLeads.forEach(lead => {
           if (lead.email && lead.email.includes('@') && !uniqueEmails.has(lead.email)) {
             uniqueEmails.add(lead.email);
             allCustomers.push({ email: lead.email, name: lead.name || 'לקוח' });
           }
         });
-        allCustomers.sort((a, b) => a.name.localeCompare(b.name));
+        allCustomers.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
         renderCustomerList(allCustomers);
+        console.log('⚠️ טעינה מקומית:', allCustomers.length, 'לקוחות');
       }
       
       // טען קבצים מ-Google Drive
       try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getFilesList`);
-        const files = await response.json();
-        allFiles = files;
+        const data = await response.json();
+        allFiles = Array.isArray(data) ? data : (data.files || []);
         renderFileList(allFiles);
+        console.log('✅ נטענו', allFiles.length, 'קבצים');
       } catch (error) {
         console.error('שגיאה בטעינת קבצים:', error);
+        allFiles = [];
         document.getElementById('filesList').innerHTML = 
-          '<div class="list-item" style="text-align: center; color: #e74c3c;">שגיאה בטעינת קבצים מהדרייב</div>';
+          '<div class="list-item" style="text-align: center; color: #e74c3c;">שגיאה בטעינת קבצים מהדרייב. בדקי את החיבור ל-Apps Script.</div>';
       }
     }
     
@@ -1237,6 +1306,16 @@
         
         if (result.success) {
           alert(`✅ ${result.message || 'נשלח בהצלחה!'}`);
+          
+          // עדכן סטטוס לידים ל"טופל"
+          if (window.pendingStatusUpdate) {
+            updateLeadStatus(window.pendingStatusUpdate, 'טופל');
+            window.pendingStatusUpdate = null;
+          } else {
+            // עדכן את כל המיילים שנבחרו
+            emails.forEach(email => updateLeadStatus(email, 'טופל'));
+          }
+          
           selectedEmails.clear();
           selectedFileNames.clear();
           renderTags('email', 'selectedCustomers');
