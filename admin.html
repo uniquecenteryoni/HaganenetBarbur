@@ -1110,7 +1110,7 @@
               ${status}
             </button>
           </td>
-          <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
+          <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.products || lead.message || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td>
             <button class="action-btn action-send" onclick="event.stopPropagation(); sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
