@@ -997,8 +997,26 @@
       try {
         document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px;">טוען מ-Google Sheets...</td></tr>';
         
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeadsData`);
-        const data = await response.json();
+        console.log('🔄 מתחיל טעינה מ-Google Sheets...');
+        const url = `${GOOGLE_SCRIPT_URL}?action=getLeadsData`;
+        console.log('URL:', url);
+        
+        const response = await fetch(url, { redirect: 'follow' });
+        console.log('📡 Response status:', response.status, response.statusText);
+        console.log('📡 Response type:', response.type);
+        
+        const text = await response.text();
+        console.log('📡 Response length:', text.length, 'chars');
+        console.log('📡 Response preview:', text.substring(0, 200));
+        
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          console.error('❌ JSON parse error:', parseErr);
+          console.error('❌ Raw response:', text.substring(0, 500));
+          throw new Error('תשובת השרת לא תקינה: ' + text.substring(0, 100));
+        }
         
         if (data.success && data.leads) {
           allLeads = data.leads.map((lead, idx) => ({
@@ -1026,16 +1044,19 @@
         }
       } catch (error) {
         console.error('❌ שגיאה בטעינת לידים:', error);
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
         
         // נסיון לטעון מ-localStorage כגיבוי
         const localLeads = JSON.parse(localStorage.getItem('leads') || '[]');
         if (localLeads.length > 0) {
           allLeads = localLeads;
           displayLeads(allLeads);
-          alert('⚠️ לא ניתן להתחבר ל-Google Sheets. מציג נתונים מקומיים.');
+          computeDashboardFromLeads(allLeads);
+          console.log('⚠️ טוען מ-localStorage:', localLeads.length, 'לידים');
         } else {
           document.getElementById('leadsTableBody').innerHTML = 
-            '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #e74c3c;">שגיאה בטעינה מ-Google Sheets. בדקי את החיבור.</td></tr>';
+            '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #e74c3c;">שגיאה בטעינה: ' + error.message + '</td></tr>';
         }
       }
     }
