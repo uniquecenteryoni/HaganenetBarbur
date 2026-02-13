@@ -921,7 +921,7 @@
       
       // Load data
       loadDashboard();
-      loadLeads(); // טוען מקומית בלבד
+      loadLeadsFromGoogleSheets(); // טוען תמיד מ-Google Sheets - שיקוף לייב
       trackVisit();
 
       const visitsCard = document.getElementById('visitsCard');
@@ -1122,7 +1122,6 @@
     
     function refreshLeads() {
       loadLeadsFromGoogleSheets(); // רענון מ-Google Sheets
-      alert('מרענן מ-Google Sheets...');
     }
     
     async function importLeadsFromEmail() {
@@ -1135,20 +1134,25 @@
       
       try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=extractLeads`);
-        const result = await response.json();
+        const text = await response.text();
+        console.log('extractLeads raw response:', text);
+        
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch(parseErr) {
+          throw new Error('תשובה לא תקינה מהשרת: ' + text.substring(0, 200));
+        }
         
         if (result.success) {
           alert(`✅ יובאו ${result.count || 0} לידים חדשים מהמייל!`);
-          // סנכרון מהגיליון אל הרשימה המקומית
-          const synced = await syncLeadsFromGoogleSheets();
-          if (!synced) {
-            loadLeads();
-            alert('⚠️ הייבוא הצליח בגיליון, אבל הסנכרון לאתר נכשל. נסי לרענן את העמוד.');
-          }
+          // טוען מחדש מ-Google Sheets
+          await loadLeadsFromGoogleSheets();
         } else {
           throw new Error(result.error || 'שגיאה בייבוא');
         }
       } catch (error) {
+        console.error('importLeadsFromEmail error:', error);
         alert('❌ שגיאה בייבוא לידים: ' + error.message);
       } finally {
         btn.disabled = false;
