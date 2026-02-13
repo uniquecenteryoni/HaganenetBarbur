@@ -1329,7 +1329,15 @@
       const rows = parseCsvRows(cleaned, delimiter);
       if (rows.length === 0) return 0;
 
-      const rawHeaders = rows[0].map(h => (h || '').trim().toLowerCase());
+      const normalizeHeader = (value) => (value || '')
+        .toString()
+        .replace(/[\u200E\u200F\u202A-\u202E]/g, '')
+        .replace(/"/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+
+      const rawHeaders = rows[0].map(h => normalizeHeader(h));
 
       const headerMap = {
         'date': 'date',
@@ -1360,7 +1368,12 @@
       };
 
       const headers = rawHeaders.map(h => headerMap[h] || h);
-      const hasHeaders = headers.some(h => ['date', 'email', 'phone', 'name', 'type', 'message', 'products', 'price', 'status'].includes(h));
+      const knownFields = ['date', 'email', 'phone', 'name', 'type', 'message', 'products', 'price', 'status'];
+      const hasHeaders = headers.filter(h => knownFields.includes(h)).length >= 2
+        || rawHeaders.join(' ').includes('תאריך')
+        || rawHeaders.join(' ').includes('מייל')
+        || rawHeaders.join(' ').includes('סטטוס')
+        || rawHeaders.join(' ').includes('מה רכש');
 
       const leads = [];
       const startIndex = hasHeaders ? 1 : 0;
