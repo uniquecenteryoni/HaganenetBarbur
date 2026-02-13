@@ -673,6 +673,8 @@
           <option value="INTERESTED">צור קשר</option>
         </select>
         <button onclick="importLeadsFromEmail()" style="background: #ff9800;">📧 ייבא מהמייל</button>
+        <button onclick="triggerCsvImport()" style="background: #4caf50;">📥 ייבוא CSV</button>
+        <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="handleCsvFile(this.files[0])">
       </div>
 
       <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; color: #555; font-size: 0.9em;">
@@ -1131,6 +1133,86 @@
         btn.disabled = false;
         btn.textContent = originalText;
       }
+    }
+
+    function triggerCsvImport() {
+      const input = document.getElementById('csvFileInput');
+      if (input) input.click();
+    }
+
+    function handleCsvFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target.result || '';
+          const added = importLeadsFromCSV(text);
+          alert(`✅ יובאו ${added} לידים מהקובץ`);
+          loadLeads();
+        } catch (err) {
+          alert('❌ שגיאה בייבוא CSV: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCsvLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          result.push(current);
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function importLeadsFromCSV(csvText) {
+      const lines = csvText.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length === 0) return 0;
+      const headers = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase());
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      let count = 0;
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCsvLine(lines[i]);
+        const getVal = (name, fallbackIndex) => {
+          const idx = headers.indexOf(name);
+          return idx >= 0 ? values[idx] : (values[fallbackIndex] || '');
+        };
+
+        const lead = {
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+          date: getVal('date', 0) || new Date().toISOString(),
+          email: getVal('email', 1) || '',
+          phone: getVal('phone', 2) || '',
+          name: getVal('name', 3) || '',
+          type: getVal('type', 4) || 'INTERESTED',
+          message: getVal('message', 5) || getVal('products', 5) || '',
+          products: getVal('products', 5) || '',
+          price: getVal('price', 6) || '',
+          status: getVal('status', 7) || 'לא טופל'
+        };
+
+        leads.push(lead);
+        count++;
+      }
+
+      localStorage.setItem('leads', JSON.stringify(leads));
+      return count;
     }
     
     function updateLeadStatus(email, status) {
