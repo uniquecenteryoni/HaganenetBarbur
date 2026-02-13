@@ -286,6 +286,30 @@
       background: #d1ecf1;
       color: #0c5460;
     }
+
+    .col-status {
+      min-width: 140px;
+      white-space: nowrap;
+    }
+
+    .status-btn {
+      border: none;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85em;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .status-done {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .status-pending {
+      background: #fff3e0;
+      color: #ef6c00;
+    }
     
     /* Newsletter */
     .filter-box {
@@ -660,7 +684,7 @@
               <th>מייל</th>
               <th>טלפון</th>
               <th>סוג</th>
-              <th>סטטוס</th>
+              <th class="col-status">סטטוס</th>
               <th>מוצרים/הודעה</th>
               <th>מחיר</th>
               <th>פעולות</th>
@@ -738,11 +762,10 @@
           </div>
         </div>
         <label>סוג ליד:</label>
-        <select id="leadType" onchange="updateNewsletterCount()">
-          <option value="All">הכל</option>
-          <option value="PURCHASE">רכישה</option>
-          <option value="INTERESTED">צור קשר</option>
-        </select>
+        <div style="display:flex; gap:10px; align-items:center; margin-top:8px;">
+          <input type="checkbox" id="selectAllRecipients" onchange="updateNewsletterCount()">
+          <label for="selectAllRecipients" style="margin:0; font-weight:500;">בחרי את כולם (בלי סינון תאריך)</label>
+        </div>
         <div id="countInfo">בחרי תאריכים כדי לראות מספר נמענים</div>
       </div>
 
@@ -887,7 +910,7 @@
       
       // Load data
       loadDashboard();
-      loadLeadsFromGoogleSheets(); // טוען מ-Google Sheets
+      loadLeads(); // טוען מקומית בלבד
       trackVisit();
     }
     
@@ -1052,7 +1075,11 @@
           <td>${lead.email || '-'}</td>
           <td>${lead.phone || '-'}</td>
           <td><span class="tag tag-${tagClass}">${typeLabel}</span></td>
-          <td><span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8em;">${status}</span></td>
+          <td class="col-status">
+            <button class="status-btn ${status === 'טופל' ? 'status-done' : 'status-pending'}" onclick="event.stopPropagation(); toggleStatusLocal('${encodeAttr(lead.email)}')">
+              ${status}
+            </button>
+          </td>
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td>
@@ -1101,6 +1128,19 @@
       const leadIndex = leads.findIndex(l => (l.email || '').toString() === email);
       if (leadIndex !== -1) {
         leads[leadIndex].status = status;
+        localStorage.setItem('leads', JSON.stringify(leads));
+        allLeads = leads;
+        displayLeads(allLeads);
+      }
+    }
+
+    function toggleStatusLocal(email) {
+      email = safeDecode(email);
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      const leadIndex = leads.findIndex(l => (l.email || '').toString() === email);
+      if (leadIndex !== -1) {
+        const current = leads[leadIndex].status || 'לא טופל';
+        leads[leadIndex].status = current === 'טופל' ? 'לא טופל' : 'טופל';
         localStorage.setItem('leads', JSON.stringify(leads));
         allLeads = leads;
         displayLeads(allLeads);
@@ -1250,26 +1290,30 @@
     async function updateNewsletterCount() {
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
-      const type = document.getElementById('leadType').value;
+      const selectAll = document.getElementById('selectAllRecipients')?.checked;
       
-      if (!startDate || !endDate) {
-        document.getElementById('countInfo').textContent = 'בחרי תאריכים';
+      if (!selectAll && (!startDate || !endDate)) {
+        document.getElementById('countInfo').textContent = 'בחרי תאריכים או סמני "בחרי את כולם"';
         return;
       }
       
       document.getElementById('countInfo').textContent = 'מחשב...';
       
       try {
-        const filters = { startDate, endDate, type };
-        const url = `${GOOGLE_SCRIPT_URL}?action=getFilteredCount&filters=${encodeURIComponent(JSON.stringify(filters))}`;
-        const response = await fetch(url);
-        const count = await response.text();
-        
-        document.getElementById('countInfo').textContent = `נמענים תואמים: ${count}`;
+        if (selectAll) {
+          const uniqueEmails = new Set(allLeads.filter(l => l.email && l.email.includes('@')).map(l => l.email));
+          document.getElementById('countInfo').textContent = `נמענים תואמים: ${uniqueEmails.size} (כולם)`;
+        } else {
+          const filters = { startDate, endDate };
+          const url = `${GOOGLE_SCRIPT_URL}?action=getFilteredCount&filters=${encodeURIComponent(JSON.stringify(filters))}`;
+          const response = await fetch(url);
+          const count = await response.text();
+          document.getElementById('countInfo').textContent = `נמענים תואמים: ${count}`;
+        }
       } catch (error) {
         console.error('שגיאה בספירה:', error);
         // גיבוי מקומי
-        const filtered = getFilteredEmailsLocal({ startDate, endDate, type });
+        const filtered = getFilteredEmailsLocal({ startDate, endDate, selectAll });
         document.getElementById('countInfo').textContent = `נמענים תואמים: ${filtered.length} (מקומי)`;
       }
     }
@@ -1277,11 +1321,10 @@
     function getFilteredEmailsLocal(filters) {
       return allLeads.filter(lead => {
         if (!lead.email || !lead.email.includes('@')) return false;
-        
+        if (filters.selectAll) return true;
         const leadDate = new Date(lead.date);
         if (filters.startDate && leadDate < new Date(filters.startDate)) return false;
         if (filters.endDate && leadDate > new Date(filters.endDate)) return false;
-        if (filters.type && filters.type !== 'All' && lead.type !== filters.type) return false;
         
         return true;
       }).map(lead => lead.email);
@@ -1301,11 +1344,11 @@
       const filters = {
         startDate: document.getElementById('startDate').value,
         endDate: document.getElementById('endDate').value,
-        type: document.getElementById('leadType').value
+        selectAll: document.getElementById('selectAllRecipients')?.checked
       };
       
-      if (!isTest && (!filters.startDate || !filters.endDate)) {
-        alert('יש לבחור טווח תאריכים');
+      if (!isTest && !filters.selectAll && (!filters.startDate || !filters.endDate)) {
+        alert('יש לבחור טווח תאריכים או לסמן את כולם');
         return;
       }
       
@@ -1601,7 +1644,7 @@
           html += `
             <div class="card">
               <b>קבצים:</b> ${group.products.join(", ")}<br>
-              <div class="cust-list">${group.customers.join(" | ")}</div>
+              <div class="cust-list"><b>לקוחות שיקבלו:</b><br>${group.customers.join(" | ")}</div>
               <button onclick="sendGroup('${start}', '${end}', '${key}')" 
                       style="background:#2196F3; font-size:13px; padding:8px 16px; margin-top:10px; color:white; border:none; border-radius:5px; cursor:pointer;">
                 שלח לקבוצה זו (${group.customers.length} נמענים)
