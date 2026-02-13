@@ -1536,14 +1536,41 @@
       closeLeadModal();
     }
 
-    function deleteLeadLocal(leadId) {
+    async function deleteLeadLocal(leadId) {
       leadId = safeDecode(leadId);
-      if (!confirm('למחוק את הליד הזה? (מחיקה מקומית בלבד)')) return;
-      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
-      const filtered = leads.filter(l => (l.id || '').toString() !== leadId);
-      localStorage.setItem('leads', JSON.stringify(filtered));
+      if (!confirm('למחוק את הליד הזה? (ימחק גם מ-Google Sheets)')) return;
+      
+      // מצא את הליד לפי ID
+      const lead = allLeads.find(l => (l.id || '').toString() === leadId);
+      
+      // מחק מקומית מיד
+      const filtered = allLeads.filter(l => (l.id || '').toString() !== leadId);
       allLeads = filtered;
+      localStorage.setItem('leads', JSON.stringify(allLeads));
       displayLeads(allLeads);
+      
+      // מחק גם מ-Google Sheets
+      if (lead && lead.email) {
+        try {
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'deleteLead',
+              email: lead.email,
+              date: lead.date || ''
+            })
+          });
+          const result = await response.json();
+          if (result.success) {
+            console.log('✅ ליד נמחק גם מ-Google Sheets');
+          } else {
+            console.warn('⚠️ מחיקה מקומית הצליחה, מ-Sheets נכשלה:', result.error);
+          }
+        } catch (err) {
+          console.error('❌ שגיאה במחיקה מ-Google Sheets:', err);
+        }
+      }
     }
     
     // Search and Filter

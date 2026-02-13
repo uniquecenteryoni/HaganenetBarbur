@@ -67,6 +67,7 @@ function doPost(e) {
     if (action === 'processAndSendFiles') return processAndSendFilesFromPanel(data.startDate, data.endDate, data.key);
     if (action === 'updateLeadStatus') return updateLeadStatusFromPanel(data.email, data.status);
     if (action === 'updateLead') return updateLeadFromPanel(data.email, data.updates);
+    if (action === 'deleteLead') return deleteLeadFromPanel(data.email, data.date);
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Invalid action' }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
@@ -616,6 +617,27 @@ function updateLeadFromPanel(email, updates) {
       }
     }
     return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function deleteLeadFromPanel(email, date) {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets()[0];
+    const data = sheet.getDataRange().getValues();
+    for (let i = data.length - 1; i >= 1; i--) {
+      const rowEmail = (data[i][1] || '').toString().trim();
+      const rowDate = data[i][0] ? new Date(data[i][0]).toISOString() : '';
+      if (rowEmail === email && (!date || rowDate === date)) {
+        sheet.deleteRow(i + 1);
+        return ContentService.createTextOutput(JSON.stringify({ success: true }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'lead not found' }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
