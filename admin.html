@@ -570,10 +570,11 @@
               <th>סוג</th>
               <th>מוצרים/הודעה</th>
               <th>מחיר</th>
+              <th>פעולות</th>
             </tr>
           </thead>
           <tbody id="leadsTableBody">
-            <tr><td colspan="7" style="text-align: center; padding: 40px;">טוען נתונים...</td></tr>
+            <tr><td colspan="8" style="text-align: center; padding: 40px;">טוען נתונים...</td></tr>
           </tbody>
         </table>
       </div>
@@ -837,7 +838,7 @@
           alert('⚠️ לא ניתן להתחבר ל-Google Sheets. מציג נתונים מקומיים.');
         } else {
           document.getElementById('leadsTableBody').innerHTML = 
-            '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #e74c3c;">שגיאה בטעינה מ-Google Sheets. בדקי את החיבור.</td></tr>';
+            '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #e74c3c;">שגיאה בטעינה מ-Google Sheets. בדקי את החיבור.</td></tr>';
         }
       }
     }
@@ -876,7 +877,7 @@
       const tbody = document.getElementById('leadsTableBody');
       
       if (leads.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #999;">אין לידים להצגה</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">אין לידים להצגה</td></tr>';
         return;
       }
       
@@ -889,6 +890,7 @@
           <td><span class="tag tag-${lead.type.toLowerCase()}">${lead.type === 'PURCHASE' ? 'רכישה' : 'צור קשר'}</span></td>
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
+          <td><button onclick="sendFileToLead('${lead.email}', '${(lead.name || '').replace(/'/g, "\\'")}')">📤 שלח קובץ</button></td>
         </tr>
       `).join('');
     }
@@ -896,6 +898,24 @@
     function refreshLeads() {
       loadLeadsFromGoogleSheets(); // רענון מ-Google Sheets
       alert('מרענן מ-Google Sheets...');
+    }
+    
+    function sendFileToLead(email, name) {
+      // עבור לטאב שליחת קבצים
+      switchTab('filesender');
+      switchFileTab('manual');
+      
+      // בחר את המייל הזה
+      selectedEmails.clear();
+      selectedEmails.add(email);
+      
+      // עדכן תצוגה
+      renderTags('email', 'selectedCustomers');
+      
+      // גלול למטה
+      setTimeout(() => {
+        document.getElementById('manualTab').scrollIntoView({ behavior: 'smooth' });
+      }, 300);
     }
     
     // Search and Filter
@@ -967,7 +987,7 @@
         const filters = { startDate, endDate, type };
         const url = `${GOOGLE_SCRIPT_URL}?action=getFilteredCount&filters=${encodeURIComponent(JSON.stringify(filters))}`;
         const response = await fetch(url);
-        const count = await response.json();
+        const count = await response.text();
         
         document.getElementById('countInfo').textContent = `נמענים תואמים: ${count}`;
       } catch (error) {
