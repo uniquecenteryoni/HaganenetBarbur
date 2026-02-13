@@ -822,7 +822,7 @@
     // טעינת לידים מ-Google Sheets
     async function loadLeadsFromGoogleSheets() {
       try {
-        document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">טוען מ-Google Sheets...</td></tr>';
+        document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px;">טוען מ-Google Sheets...</td></tr>';
         
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeadsData`);
         const data = await response.json();
@@ -885,6 +885,10 @@
       allLeads = JSON.parse(localStorage.getItem('leads') || '[]');
       displayLeads(allLeads);
     }
+
+    function encodeAttr(value) {
+      return encodeURIComponent((value ?? '').toString());
+    }
     
     function displayLeads(leads) {
       const tbody = document.getElementById('leadsTableBody');
@@ -900,19 +904,21 @@
       tbody.innerHTML = sortedLeads.map(lead => {
         const status = lead.status || 'לא טופל';
         const statusColor = status === 'טופל' ? '#4caf50' : '#ff9800';
+        const leadType = (lead.type || 'UNKNOWN').toString();
+        const tagClass = leadType.toLowerCase();
         return `
         <tr>
           <td>${new Date(lead.date).toLocaleDateString('he-IL')}</td>
           <td>${lead.name || '-'}</td>
           <td>${lead.email || '-'}</td>
           <td>${lead.phone || '-'}</td>
-          <td><span class="tag tag-${lead.type.toLowerCase()}">${lead.type === 'PURCHASE' ? 'רכישה' : 'צור קשר'}</span></td>
+          <td><span class="tag tag-${tagClass}">${leadType === 'PURCHASE' ? 'רכישה' : (leadType === 'INTERESTED' ? 'צור קשר' : leadType)}</span></td>
           <td><span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8em;">${status}</span></td>
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td>
-            <button onclick="sendFileToLead('${lead.email}', '${(lead.name || '').replace(/'/g, "\\'")}')">📤 שלח קובץ</button>
-            <button onclick="editLead('${lead.email}', '${(lead.name || '').replace(/'/g, "\\'")}', '${(lead.phone || '').replace(/'/g, "\\'")}', '${(lead.type || '').replace(/'/g, "\\'")}', '${(lead.status || '').replace(/'/g, "\\'")}', '${(lead.products || lead.message || '').replace(/'/g, "\\'")}', '${(lead.price || '').toString().replace(/'/g, "\\'")}')">✏️ עריכה</button>
+            <button onclick="sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
+            <button onclick="editLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.phone)}', '${encodeAttr(leadType)}', '${encodeAttr(status)}', '${encodeAttr(lead.products || lead.message || '')}', '${encodeAttr(lead.price || '')}')">✏️ עריכה</button>
           </td>
         </tr>
       `}).join('');
@@ -977,7 +983,17 @@
       }
     }
     
+    function safeDecode(value) {
+      try {
+        return decodeURIComponent(value);
+      } catch (e) {
+        return value;
+      }
+    }
+
     function sendFileToLead(email, name) {
+      email = safeDecode(email);
+      name = safeDecode(name);
       // עבור לטאב שליחת קבצים
       switchTab('filesender');
       switchFileTab('manual');
@@ -999,6 +1015,14 @@
     }
 
     async function editLead(email, name, phone, type, status, products, price) {
+      email = safeDecode(email);
+      name = safeDecode(name);
+      phone = safeDecode(phone);
+      type = safeDecode(type);
+      status = safeDecode(status);
+      products = safeDecode(products);
+      price = safeDecode(price);
+
       const newName = prompt('שם מלא:', name || '');
       if (newName === null) return;
       const newPhone = prompt('טלפון:', phone || '');
@@ -1274,7 +1298,7 @@
       }
       
       list.innerHTML = customers.map(c => `
-        <div class="list-item" onclick="toggleSelection('email', '${c.email}', '${c.name}')">
+        <div class="list-item" onclick="toggleSelection('email', '${encodeAttr(c.email)}', '${encodeAttr(c.name)}')">
           ${c.name}<br><small style="color: #999;">${c.email}</small>
         </div>
       `).join('');
@@ -1283,7 +1307,7 @@
     function renderFileList(files) {
       const list = document.getElementById('filesList');
       list.innerHTML = files.map(f => `
-        <div class="list-item" onclick="toggleSelection('file', '${f}', '${f}')">
+        <div class="list-item" onclick="toggleSelection('file', '${encodeAttr(f)}', '${encodeAttr(f)}')">
           ${f}
         </div>
       `).join('');
@@ -1304,6 +1328,8 @@
     }
     
     function toggleSelection(type, id, displayName) {
+      id = safeDecode(id);
+      displayName = safeDecode(displayName);
       const set = type === 'email' ? selectedEmails : selectedFileNames;
       const boxId = type === 'email' ? 'selectedCustomers' : 'selectedFiles';
       
