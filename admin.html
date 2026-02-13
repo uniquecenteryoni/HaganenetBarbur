@@ -853,7 +853,7 @@
     const ADMIN_PASSWORD = 'barbur2026'; // שני את הסיסמה לפי רצונך!
     
     // Google Apps Script URL
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwX1SeLvByB3ROdeSRzGcueRj2JFJog2CPORk8hP89rMbzHP-gkBqgPX1pZInhg47iq3A/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwERXb0r6d2qb16fo8sOrnOp3QvIrfAaw3ThHUDkTBr6RYVEiISKZv_gq6kiSHxT4io4w/exec';
     
     // Initialize Quill Editor (for newsletter)
     let quill;
@@ -1111,27 +1111,37 @@
     async function importLeadsFromEmail() {
       if (!confirm('האם לייבא לידים חדשים מהמייל? (זה עשוי לקחת מספר שניות)')) return;
       
-      const btn = event.target;
-      const originalText = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'מייבא...';
+      const btn = (typeof event !== 'undefined' && event && event.target) ? event.target : document.activeElement;
+      const originalText = btn && btn.textContent ? btn.textContent : '📧 ייבא מהמייל';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'מייבא...';
+      }
       
       try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=extractLeads`);
-        const result = await response.json();
+        const rawText = await response.text();
+        let result;
+        try {
+          result = JSON.parse(rawText);
+        } catch (parseError) {
+          throw new Error(rawText || 'תגובה לא תקינה מהשרת');
+        }
         
         if (result.success) {
           alert(`✅ יובאו ${result.count || 0} לידים חדשים מהמייל!`);
-          // רענן את הטבלה
-          loadLeadsFromGoogleSheets();
+          await loadLeadsFromGoogleSheets();
+          await loadCustomersAndFiles();
         } else {
           throw new Error(result.error || 'שגיאה בייבוא');
         }
       } catch (error) {
-        alert('❌ שגיאה בייבוא לידים: ' + error.message);
+        alert('❌ שגיאה בייבוא לידים: ' + (error && error.message ? error.message : 'שגיאה לא ידועה'));
       } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
       }
     }
 
