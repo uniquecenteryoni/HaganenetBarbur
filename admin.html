@@ -1402,6 +1402,38 @@
         : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
       document.getElementById('recentLeadsChart').innerHTML = chartHtml;
     }
+
+    // ===== FILE SENDER =====
+    async function loadCustomersAndFiles() {
+      // טען לקוחות מ-Google Sheets
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCustomersList`);
+        const data = await response.json();
+        allCustomers = Array.isArray(data) ? data : (data.customers || []);
+        renderCustomerList(allCustomers);
+        console.log('✅ נטענו', allCustomers.length, 'לקוחות');
+      } catch (error) {
+        console.error('שגיאה בטעינת לקוחות:', error);
+        // גיבוי מקומי
+        const uniqueEmails = new Set();
+        allCustomers = [];
+        allLeads.forEach(lead => {
+          if (lead.email && lead.email.includes('@') && !uniqueEmails.has(lead.email)) {
+            uniqueEmails.add(lead.email);
+            allCustomers.push({ email: lead.email, name: lead.name || 'לקוח' });
+          }
+        });
+        allCustomers.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        renderCustomerList(allCustomers);
+        console.log('⚠️ טעינה מקומית:', allCustomers.length, 'לקוחות');
+      }
+      
+      // טען קבצים מ-Google Drive
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getFilesList`);
+        const data = await response.json();
+        allFiles = Array.isArray(data) ? data : (data.files || []);
+        renderFileList(allFiles);
         console.log('✅ נטענו', allFiles.length, 'קבצים');
       } catch (error) {
         console.error('שגיאה בטעינת קבצים:', error);
