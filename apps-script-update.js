@@ -192,7 +192,7 @@ function extractFormspreeLeadsSilent() {
       lastLeadDate: lastLeadDate ? lastLeadDate.toISOString() : null,
       afterQuery: afterQuery,
       existingKeysCount: existingKeys.size,
-      scriptUser: Session.getEffectiveUser().getEmail()
+      scriptUser: (function(){ try { return Session.getEffectiveUser().getEmail(); } catch(e) { return 'no-permission'; } })()
     }
   };
 }
