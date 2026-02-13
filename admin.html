@@ -564,6 +564,11 @@
         <button onclick="exportLeadsCSV()">📥 ייצא ל-CSV</button>
         <button onclick="refreshLeads()">🔄 רענן</button>
       </div>
+
+      <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; color: #555; font-size: 0.9em;">
+        ✳️ עריכות/מחיקות כאן הן מקומיות בלבד (באתר) ואינן משנות את Google Sheets.
+        הסקריפט בגוגל מיועד רק למשיכת לידים חדשים והוספה שלהם.
+      </div>
       
       <div class="leads-table">
         <table>
@@ -928,7 +933,7 @@
         const leadType = (lead.type || 'UNKNOWN').toString();
         const tagClass = leadType.toLowerCase();
         return `
-        <tr>
+        <tr onclick="editLeadLocal('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.phone)}', '${encodeAttr(leadType)}', '${encodeAttr(status)}', '${encodeAttr(lead.products || lead.message || '')}', '${encodeAttr(lead.price || '')}')">
           <td>${lead.date ? new Date(lead.date).toLocaleDateString('he-IL') : '-'}</td>
           <td>${lead.name || '-'}</td>
           <td>${lead.email || '-'}</td>
@@ -938,8 +943,8 @@
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td>
-            <button onclick="sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
-            <button onclick="editLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.phone)}', '${encodeAttr(leadType)}', '${encodeAttr(status)}', '${encodeAttr(lead.products || lead.message || '')}', '${encodeAttr(lead.price || '')}')">✏️ עריכה</button>
+            <button onclick="event.stopPropagation(); sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
+            <button onclick="event.stopPropagation(); deleteLeadLocal('${encodeAttr(lead.email)}')">🗑️ מחיקה</button>
           </td>
         </tr>
       `}).join('');
@@ -977,30 +982,15 @@
       }
     }
     
-    async function updateLeadStatus(email, status) {
-      try {
-        // עדכן ב-localStorage
-        const leads = JSON.parse(localStorage.getItem('leads') || '[]');
-        const leadIndex = leads.findIndex(l => l.email === email);
-        if (leadIndex !== -1) {
-          leads[leadIndex].status = status;
-          localStorage.setItem('leads', JSON.stringify(leads));
-          allLeads = leads;
-          displayLeads(allLeads);
-        }
-        
-        // עדכן ב-Google Sheets
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: 'updateLeadStatus',
-            email: email,
-            status: status
-          }),
-          headers: { 'Content-Type': 'application/json' }
-        });
-      } catch (error) {
-        console.error('שגיאה בעדכון סטטוס:', error);
+    function updateLeadStatus(email, status) {
+      // עדכון מקומי בלבד (לא נוגע ב-Google Sheets)
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      const leadIndex = leads.findIndex(l => (l.email || '').toString() === email);
+      if (leadIndex !== -1) {
+        leads[leadIndex].status = status;
+        localStorage.setItem('leads', JSON.stringify(leads));
+        allLeads = leads;
+        displayLeads(allLeads);
       }
     }
     
@@ -1035,7 +1025,7 @@
       }, 300);
     }
 
-    async function editLead(email, name, phone, type, status, products, price) {
+    function editLeadLocal(email, name, phone, type, status, products, price) {
       email = safeDecode(email);
       name = safeDecode(name);
       phone = safeDecode(phone);
@@ -1056,48 +1046,33 @@
       if (newProducts === null) return;
       const newPrice = prompt('מחיר (מספר):', price || '0');
       if (newPrice === null) return;
-
-      try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'updateLead',
-            email: email,
-            updates: {
-              name: newName,
-              phone: newPhone,
-              type: newType,
-              status: newStatus,
-              products: newProducts,
-              price: newPrice
-            }
-          })
-        });
-
-        const result = await response.json();
-        if (!result.success) throw new Error(result.error || 'שגיאה בעדכון ליד');
-
-        // עדכן מקומית
-        const leads = JSON.parse(localStorage.getItem('leads') || '[]');
-        const idx = leads.findIndex(l => l.email === email);
-        if (idx !== -1) {
-          leads[idx].name = newName;
-          leads[idx].phone = newPhone;
-          leads[idx].type = newType;
-          leads[idx].status = newStatus;
-          leads[idx].products = newProducts;
-          leads[idx].message = newProducts;
-          leads[idx].price = newPrice;
-          localStorage.setItem('leads', JSON.stringify(leads));
-          allLeads = leads;
-          displayLeads(allLeads);
-        }
-
-        alert('✅ הליד עודכן בהצלחה');
-      } catch (error) {
-        alert('❌ שגיאה בעדכון הליד: ' + error.message);
+      // עדכון מקומי בלבד
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      const idx = leads.findIndex(l => (l.email || '').toString() === email);
+      if (idx !== -1) {
+        leads[idx].name = newName;
+        leads[idx].phone = newPhone;
+        leads[idx].type = newType;
+        leads[idx].status = newStatus;
+        leads[idx].products = newProducts;
+        leads[idx].message = newProducts;
+        leads[idx].price = newPrice;
+        localStorage.setItem('leads', JSON.stringify(leads));
+        allLeads = leads;
+        displayLeads(allLeads);
       }
+
+      alert('✅ הליד עודכן מקומית');
+    }
+
+    function deleteLeadLocal(email) {
+      email = safeDecode(email);
+      if (!confirm('למחוק את הליד הזה? (מחיקה מקומית בלבד)')) return;
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      const filtered = leads.filter(l => (l.email || '').toString() !== email);
+      localStorage.setItem('leads', JSON.stringify(filtered));
+      allLeads = filtered;
+      displayLeads(allLeads);
     }
     
     // Search and Filter
@@ -1419,7 +1394,7 @@
             updateLeadStatus(window.pendingStatusUpdate, 'טופל');
             window.pendingStatusUpdate = null;
           } else {
-            // עדכן את כל המיילים שנבחרו
+            // עדכן את כל המיילים שנבחרו (מקומי בלבד)
             emails.forEach(email => updateLeadStatus(email, 'טופל'));
           }
           
