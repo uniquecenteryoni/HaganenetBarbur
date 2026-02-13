@@ -951,7 +951,7 @@
     }
     
     // ===== NEWSLETTER =====
-    function updateNewsletterCount() {
+    async function updateNewsletterCount() {
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
       const type = document.getElementById('leadType').value;
@@ -961,14 +961,25 @@
         return;
       }
       
-      const filtered = getFilteredEmails({ startDate, endDate, type });
-      document.getElementById('countInfo').textContent = `נמענים תואמים: ${filtered.length}`;
+      document.getElementById('countInfo').textContent = 'מחשב...';
+      
+      try {
+        const filters = { startDate, endDate, type };
+        const url = `${GOOGLE_SCRIPT_URL}?action=getFilteredCount&filters=${encodeURIComponent(JSON.stringify(filters))}`;
+        const response = await fetch(url);
+        const count = await response.json();
+        
+        document.getElementById('countInfo').textContent = `נמענים תואמים: ${count}`;
+      } catch (error) {
+        console.error('שגיאה בספירה:', error);
+        // גיבוי מקומי
+        const filtered = getFilteredEmailsLocal({ startDate, endDate, type });
+        document.getElementById('countInfo').textContent = `נמענים תואמים: ${filtered.length} (מקומי)`;
+      }
     }
     
-    function getFilteredEmails(filters) {
-      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
-      
-      return leads.filter(lead => {
+    function getFilteredEmailsLocal(filters) {
+      return allLeads.filter(lead => {
         if (!lead.email || !lead.email.includes('@')) return false;
         
         const leadDate = new Date(lead.date);
@@ -980,17 +991,14 @@
       }).map(lead => lead.email);
     }
     
-    function sendNewsletter(isTest) {
+    async function sendNewsletter(isTest) {
       const subject = document.getElementById('subject').value;
       const bodyHtml = quill.root.innerHTML;
+      const linkUrl = document.getElementById('linkUrl').value;
+      const imageFile = document.getElementById('imageFile').files[0];
       
       if (!subject || !bodyHtml.trim()) {
         alert('יש למלא כותרת ותוכן');
-        return;
-      }
-      
-      if (isTest) {
-        alert('🧪 במצב רגיל, כאן תישלח הודעת בדיקה למייל שלך.\n\nכדי שזה יעבוד, צריך לשלב עם Google Apps Script או שירות דיוור חיצוני.');
         return;
       }
       
@@ -1000,41 +1008,113 @@
         type: document.getElementById('leadType').value
       };
       
-      const recipients = getFilteredEmails(filters);
-      
-      if (recipients.length === 0) {
-        alert('אין נמענים מתאימים');
+      if (!isTest && (!filters.startDate || !filters.endDate)) {
+        alert('יש לבחור טווח תאריכים');
         return;
       }
       
-      if (!confirm(`האם לשלוח ל-${recipients.length} נמענים?`)) return;
+      if (!confirm(isTest ? 'לשלוח בדיקה למייל שלך?' : `האם לשלוח לכל המסוננים?`)) return;
       
-      alert(`✅ במצב רגיל, הניוזלטר היה נשלח ל-${recipients.length} נמענים.\n\nלהטמעה מלאה יש לשלב עם Google Apps Script (הקוד שסיפקת).`);
+      const btn = event.target;
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'שולח...';
+      
+      try {
+        const payload = {
+          isTest: isTest,
+          filters: filters,
+          subject: subject,
+          bodyHtml: bodyHtml,
+          linkUrl: linkUrl
+        };
+        
+        // אם יש תמונה, המר ל-base64
+        if (imageFile) {
+          const reader = new FileReader();
+          reader.onload = async function(e) {
+            payload.imageBlob = {
+              data: e.target.result.split(',')[1],
+              contentType: imageFile.type
+            };
+            await sendNewsletterToScript(payload);
+          };
+          reader.readAsDataURL(imageFile);
+        } else {
+          await sendNewsletterToScript(payload);
+        }
+      } catch (error) {
+        alert('❌ שגיאה בשליחה: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }
+    
+    async function sendNewsletterToScript(payload) {
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'sendNewsletter', data: payload }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(`✅ ניוזלטר נשלח בהצלחה ל-${result.count} נמענים!`);
+          // נקה טופס
+          document.getElementById('subject').value = '';
+          quill.root.innerHTML = '';
+          document.getElementById('imageFile').value = '';
+          document.getElementById('linkUrl').value = '';
+        } else {
+          throw new Error(result.error || 'שגיאה לא ידועה');
+        }
+      } catch (error) {
+        throw error;
+      } finally {
+        const btns = document.querySelectorAll('.btn-test, .btn-send');
+        btns.forEach(b => {
+          b.disabled = false;
+          if (b.classList.contains('btn-test')) b.textContent = '🧪 שלח בדיקה למייל שלי';
+          if (b.classList.contains('btn-send')) b.textContent = '🚀 שלח לכל המסוננים';
+        });
+      }
     }
     
     // ===== FILE SENDER =====
-    function loadCustomersAndFiles() {
-      // Load from leads
-      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
-      allCustomers = [];
+    async function loadCustomersAndFiles() {
+      // טען לקוחות מ-Google Sheets
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCustomersList`);
+        const customers = await response.json();
+        allCustomers = customers;
+        renderCustomerList(allCustomers);
+      } catch (error) {
+        console.error('שגיאה בטעינת לקוחות:', error);
+        // גיבוי מקומי
+        const uniqueEmails = new Set();
+        allLeads.forEach(lead => {
+          if (lead.email && lead.email.includes('@') && !uniqueEmails.has(lead.email)) {
+            uniqueEmails.add(lead.email);
+            allCustomers.push({ email: lead.email, name: lead.name || 'לקוח' });
+          }
+        });
+        allCustomers.sort((a, b) => a.name.localeCompare(b.name));
+        renderCustomerList(allCustomers);
+      }
       
-      const uniqueEmails = new Set();
-      leads.forEach(lead => {
-        if (lead.email && lead.email.includes('@') && !uniqueEmails.has(lead.email)) {
-          uniqueEmails.add(lead.email);
-          allCustomers.push({
-            email: lead.email,
-            name: lead.name || 'לקוח'
-          });
-        }
-      });
-      
-      allCustomers.sort((a, b) => a.name.localeCompare(b.name));
-      renderCustomerList(allCustomers);
-      
-      // Files - placeholder
-      allFiles = ['קובץ1.pdf', 'קובץ2.pdf', 'קובץ3.pdf']; // זה צריך להתחבר לדרייב
-      renderFileList(allFiles);
+      // טען קבצים מ-Google Drive
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getFilesList`);
+        const files = await response.json();
+        allFiles = files;
+        renderFileList(allFiles);
+      } catch (error) {
+        console.error('שגיאה בטעינת קבצים:', error);
+        document.getElementById('filesList').innerHTML = 
+          '<div class="list-item" style="text-align: center; color: #e74c3c;">שגיאה בטעינת קבצים מהדרייב</div>';
+      }
     }
     
     function renderCustomerList(customers) {
@@ -1106,21 +1186,54 @@
       });
     }
     
-    function sendManualFiles() {
+    async function sendManualFiles() {
       if (selectedEmails.size === 0 || selectedFileNames.size === 0) {
         alert('יש לבחור לקוח וקובץ');
         return;
       }
       
-      alert(`✅ במצב רגיל, הקבצים היו נשלחים ל-${selectedEmails.size} נמענים.\n\nלהטמעה מלאה יש לשלב עם Google Apps Script.`);
+      const emails = Array.from(selectedEmails);
+      const files = Array.from(selectedFileNames);
       
-      selectedEmails.clear();
-      selectedFileNames.clear();
-      renderTags('email', 'selectedCustomers');
-      renderTags('file', 'selectedFiles');
+      if (!confirm(`לשלוח ${files.length} קבצים ל-${emails.length} נמענים?`)) return;
+      
+      const btn = event.target;
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'שולח...';
+      
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'sendManualEmail',
+            emails: emails,
+            files: files
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(`✅ ${result.message || 'נשלח בהצלחה!'}`);
+          selectedEmails.clear();
+          selectedFileNames.clear();
+          renderTags('email', 'selectedCustomers');
+          renderTags('file', 'selectedFiles');
+        } else {
+          throw new Error(result.error || 'שגיאה בשליחה');
+        }
+      } catch (error) {
+        alert('❌ שגיאה: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }
     }
     
-    function loadGroups() {
+    async function loadGroups() {
       const start = document.getElementById('groupStart').value;
       const end = document.getElementById('groupEnd').value;
       
@@ -1129,17 +1242,81 @@
         return;
       }
       
-      document.getElementById('groupResult').innerHTML = '<p style="text-align: center; color: #999;">טוען...</p>';
+      document.getElementById('groupResult').innerHTML = '<p style="text-align: center; color: #999;">סורק טווח תאריכים...</p>';
       
-      // Simulate grouping
-      setTimeout(() => {
-        document.getElementById('groupResult').innerHTML = `
-          <div class="card">
-            <b>דוגמה:</b> במצב רגיל כאן תופיע קבוצת לקוחות לפי מוצרים משותפים<br>
-            <small style="color: #999;">יש לשלב עם Google Apps Script למימוש מלא</small>
-          </div>
-        `;
-      }, 500);
+      try {
+        const url = `${GOOGLE_SCRIPT_URL}?action=getPreviewStats&startDate=${start}&endDate=${end}`;
+        const response = await fetch(url);
+        const groups = await response.json();
+        
+        if (!groups || Object.keys(groups).length === 0) {
+          document.getElementById('groupResult').innerHTML = 
+            '<p style="text-align: center; color: #999;">אין נתונים בטווח תאריכים זה</p>';
+          return;
+        }
+        
+        let html = '';
+        for (let key in groups) {
+          const group = groups[key];
+          html += `
+            <div class="card">
+              <b>קבצים:</b> ${group.products.join(", ")}<br>
+              <div class="cust-list">${group.customers.join(" | ")}</div>
+              <button onclick="sendGroup('${start}', '${end}', '${key}')" 
+                      style="background:#2196F3; font-size:13px; padding:8px 16px; margin-top:10px; color:white; border:none; border-radius:5px; cursor:pointer;">
+                שלח לקבוצה זו (${group.customers.length} נמענים)
+              </button>
+            </div>
+          `;
+        }
+        
+        document.getElementById('groupResult').innerHTML = html;
+        
+      } catch (error) {
+        console.error('שגיאה:', error);
+        document.getElementById('groupResult').innerHTML = 
+          '<p style="text-align: center; color: #e74c3c;">שגיאה בטעינת נתונים</p>';
+      }
+    }
+    
+    async function sendGroup(startDate, endDate, key) {
+      if (!confirm('לשלוח קבצים לקבוצה זו?')) return;
+      
+      const btn = event.target;
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'שולח...';
+      
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'processAndSendFiles',
+            startDate: startDate,
+            endDate: endDate,
+            key: key
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          btn.textContent = `✅ נשלח ל-${result.count} נמענים`;
+          btn.style.background = '#4CAF50';
+          setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = originalText;
+            btn.style.background = '#2196F3';
+          }, 3000);
+        } else {
+          throw new Error(result.error || 'שגיאה בשליחה');
+        }
+      } catch (error) {
+        alert('❌ שגיאה: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
     }
   </script>
 </body>
