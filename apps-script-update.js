@@ -54,6 +54,7 @@ function doGet(e) {
   if (action === 'getPreviewStats') return getPreviewStatsForPanel(e.parameter.startDate, e.parameter.endDate);
   if (action === 'extractLeads') return extractLeadsFromPanel();
   if (action === 'getLeadsData') return getLeadsDataForPanel();
+  if (action === 'deleteLead') return deleteLeadFromPanel(e.parameter.email, e.parameter.date);
   return ContentService.createTextOutput(JSON.stringify({ error: 'Invalid action' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
