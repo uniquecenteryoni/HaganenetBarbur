@@ -196,11 +196,25 @@ function getFilteredEmailsList(filters) {
  */
 function getCustomersListForPanel() {
   try {
-    const customers = getCustomersList();
-    
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets()[0];
+    const data = sheet.getDataRange().getValues();
+
+    const customersMap = {};
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const emailCell = row.find(v => typeof v === 'string' && v.includes('@')) || row[1];
+      const email = (emailCell || '').toString().trim().toLowerCase();
+      if (!email || !email.includes('@')) continue;
+
+      const name = (row[3] || row[2] || row[1] || email.split('@')[0] || 'ללא שם').toString().trim();
+      if (!customersMap[email]) {
+        customersMap[email] = { email: email, name: name };
+      }
+    }
+
+    const customers = Object.values(customersMap).sort((a, b) => a.name.localeCompare(b.name));
     return ContentService.createTextOutput(JSON.stringify(customers))
       .setMimeType(ContentService.MimeType.JSON);
-    
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify([]))
       .setMimeType(ContentService.MimeType.JSON);
