@@ -674,7 +674,10 @@
         </select>
         <button onclick="importLeadsFromEmail()" style="background: #ff9800;">📧 ייבא מהמייל</button>
         <button onclick="triggerCsvImport()" style="background: #4caf50;">📥 ייבוא CSV</button>
+        <button onclick="exportLeadsBackup()" style="background: #3f51b5;">💾 שמירת גיבוי</button>
+        <button onclick="triggerBackupImport()" style="background: #607d8b;">♻️ שחזור גיבוי</button>
         <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="handleCsvFile(this.files[0])">
+        <input type="file" id="leadsBackupInput" accept=".json" style="display:none;" onchange="handleBackupFile(this.files[0])">
       </div>
 
       <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; color: #555; font-size: 0.9em;">
@@ -1122,8 +1125,12 @@
         
         if (result.success) {
           alert(`✅ יובאו ${result.count || 0} לידים חדשים מהמייל!`);
-          // רענן את הטבלה
-          loadLeadsFromGoogleSheets();
+          // סנכרון מהגיליון אל הרשימה המקומית
+          const synced = await syncLeadsFromGoogleSheets();
+          if (!synced) {
+            loadLeads();
+            alert('⚠️ הייבוא הצליח בגיליון, אבל הסנכרון לאתר נכשל. נסי לרענן את העמוד.');
+          }
         } else {
           throw new Error(result.error || 'שגיאה בייבוא');
         }
@@ -1132,6 +1139,34 @@
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
+      }
+    }
+
+    async function syncLeadsFromGoogleSheets() {
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeadsData`);
+        const data = await response.json();
+        if (!data.success || !data.leads) {
+          throw new Error(data.error || 'שגיאה בסנכרון');
+        }
+        allLeads = data.leads.map(lead => ({
+          ...lead,
+          email: lead.email != null ? lead.email.toString() : '',
+          name: lead.name != null ? lead.name.toString() : '',
+          phone: lead.phone != null ? lead.phone.toString() : '',
+          type: lead.type != null ? lead.type.toString() : 'UNKNOWN',
+          status: lead.status != null ? lead.status.toString() : 'לא טופל',
+          products: lead.products != null ? lead.products.toString() : '',
+          message: lead.message != null ? lead.message.toString() : '',
+          price: lead.price != null ? lead.price.toString() : ''
+        }));
+        localStorage.setItem('leads', JSON.stringify(allLeads));
+        displayLeads(allLeads);
+        computeDashboardFromLeads(allLeads);
+        return true;
+      } catch (err) {
+        console.error('❌ שגיאה בסנכרון לידים:', err);
+        return false;
       }
     }
 
@@ -1151,6 +1186,49 @@
           loadLeads();
         } catch (err) {
           alert('❌ שגיאה בייבוא CSV: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function exportLeadsBackup() {
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        count: leads.length,
+        leads: leads
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `leads-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function triggerBackupImport() {
+      const input = document.getElementById('leadsBackupInput');
+      if (input) input.click();
+    }
+
+    function handleBackupFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target.result || '';
+          const data = JSON.parse(text);
+          const leads = Array.isArray(data) ? data : (data.leads || []);
+          if (!Array.isArray(leads)) throw new Error('קובץ גיבוי לא תקין');
+          if (!confirm(`האם לשחזר ${leads.length} לידים מהגיבוי? פעולה זו תחליף את הרשימה המקומית.`)) return;
+          localStorage.setItem('leads', JSON.stringify(leads));
+          loadLeads();
+          alert('✅ השחזור הושלם בהצלחה');
+        } catch (err) {
+          alert('❌ שגיאה בשחזור גיבוי: ' + err.message);
         }
       };
       reader.readAsText(file);
