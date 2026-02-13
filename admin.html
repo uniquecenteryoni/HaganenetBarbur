@@ -590,6 +590,31 @@
         min-width: 100%;
       }
     }
+
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      padding: 14px 28px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.95rem;
+      z-index: 99999;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      text-align: center;
+      max-width: 90vw;
+    }
+    .toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast-notification.success { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+    .toast-notification.error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .toast-notification.info { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .toast-notification.warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
   </style>
 </head>
 <body>
@@ -857,6 +882,28 @@
     
     // Google Apps Script URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwX1SeLvByB3ROdeSRzGcueRj2JFJog2CPORk8hP89rMbzHP-gkBqgPX1pZInhg47iq3A/exec';
+    
+    // Toast notification system
+    function showToast(message, type = 'info', duration = 3000) {
+      // Remove existing toast
+      const existing = document.querySelector('.toast-notification');
+      if (existing) existing.remove();
+      
+      const toast = document.createElement('div');
+      toast.className = `toast-notification ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      // Trigger animation
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => toast.classList.add('show'));
+      });
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, duration);
+    }
     
     // Initialize Quill Editor (for newsletter)
     let quill;
@@ -1151,9 +1198,11 @@
       const btn = event.target;
       const originalText = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'מייבא...';
+      btn.textContent = '⏳ מייבא לידים...';
       
       try {
+        // שלב 1: הרץ את הסקריפט לייבוא לידים
+        showToast('🔄 מריץ סקריפט ייבוא לידים מהמייל...', 'info', 10000);
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=extractLeads`);
         const text = await response.text();
         console.log('extractLeads raw response:', text);
@@ -1166,15 +1215,22 @@
         }
         
         if (result.success) {
-          alert(`✅ יובאו ${result.count || 0} לידים חדשים מהמייל!`);
-          // טוען מחדש מ-Google Sheets
+          const count = result.count || 0;
+          if (count > 0) {
+            showToast(`✅ יובאו ${count} לידים חדשים! מרענן רשימה...`, 'success', 4000);
+          } else {
+            showToast('ℹ️ לא נמצאו לידים חדשים. מרענן רשימה...', 'info', 3000);
+          }
+          
+          // שלב 2: רענון אוטומטי - בדיוק כמו כניסה לטאב
+          btn.textContent = '🔄 מרענן...';
           await loadLeadsFromGoogleSheets();
         } else {
           throw new Error(result.error || 'שגיאה בייבוא');
         }
       } catch (error) {
         console.error('importLeadsFromEmail error:', error);
-        alert('❌ שגיאה בייבוא לידים: ' + error.message);
+        showToast('❌ שגיאה בייבוא לידים: ' + error.message, 'error', 5000);
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -1542,29 +1598,47 @@
       
       // מצא את הליד לפי ID
       const lead = allLeads.find(l => (l.id || '').toString() === leadId);
+      console.log('🗑️ מוחק ליד:', leadId, lead ? lead.email : 'NOT FOUND');
       
       // מחק מקומית מיד
       const filtered = allLeads.filter(l => (l.id || '').toString() !== leadId);
       allLeads = filtered;
       localStorage.setItem('leads', JSON.stringify(allLeads));
       displayLeads(allLeads);
+      showToast('🗑️ נמחק מקומית, מוחק מ-Google Sheets...', 'info', 3000);
       
       // מחק גם מ-Google Sheets
       if (lead && lead.email) {
         try {
-          const delUrl = `${GOOGLE_SCRIPT_URL}?action=deleteLead&email=${encodeURIComponent(lead.email)}&date=${encodeURIComponent(lead.date || '')}`;
+          const emailParam = encodeURIComponent(lead.email.trim());
+          const dateParam = encodeURIComponent(lead.date || '');
+          const delUrl = `${GOOGLE_SCRIPT_URL}?action=deleteLead&email=${emailParam}&date=${dateParam}`;
+          console.log('🗑️ Delete URL:', delUrl);
+          
           const response = await fetch(delUrl);
+          console.log('🗑️ Response status:', response.status, response.type);
           const text = await response.text();
+          console.log('🗑️ Response body:', text.substring(0, 300));
+          
           let result;
-          try { result = JSON.parse(text); } catch(e) { result = {}; }
+          try { result = JSON.parse(text); } catch(e) { 
+            console.error('🗑️ JSON parse error, raw:', text.substring(0, 200));
+            result = { success: false, error: 'Response is not JSON' }; 
+          }
           if (result.success) {
             console.log('✅ ליד נמחק גם מ-Google Sheets');
+            showToast('✅ הליד נמחק בהצלחה מ-Google Sheets!', 'success', 3000);
           } else {
-            console.warn('⚠️ מחיקה מקומית הצליחה, מ-Sheets נכשלה:', result.error || text.substring(0, 100));
+            console.warn('⚠️ מחיקה מ-Sheets נכשלה:', result.error || text.substring(0, 100));
+            showToast('⚠️ נמחק מקומית, אבל לא מ-Google Sheets: ' + (result.error || ''), 'warning', 5000);
           }
         } catch (err) {
           console.error('❌ שגיאה במחיקה מ-Google Sheets:', err);
+          showToast('❌ שגיאה במחיקה מ-Sheets: ' + err.message, 'error', 5000);
         }
+      } else {
+        console.warn('⚠️ ליד לא נמצא או אין מייל, נמחק מקומית בלבד');
+        showToast('⚠️ ליד נמחק מקומית בלבד (אין מייל)', 'warning', 3000);
       }
     }
     
