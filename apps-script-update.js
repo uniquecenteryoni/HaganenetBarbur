@@ -365,9 +365,9 @@ function extractFormspreeLeadsSilent() {
       if (msg.isInTrash()) return;
       let body = msg.getPlainBody().replace(/&amp;#34;/g, '"').replace(/&#34;/g, '"').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
       
-      const name = extractValue(body, /name[:]?\s*\n*(.*)/i);
-      const phone = extractValue(body, /phone[:]?\s*\n*(.*)/i);
-      const email = extractValue(body, /email[:]?\s*\n*(.*)/i);
+      const name = (extractValue(body, /name[:]?\s*\n*(.*)/i) || '').toString().trim();
+      const phone = (extractValue(body, /phone[:]?\s*\n*(.*)/i) || '').toString().trim();
+      const email = (extractValue(body, /email[:]?\s*\n*(.*)/i) || '').toString().trim();
       
       const messageMatch = body.match(/message[:]?(\s)*\n*([\s\S]*?)(?=סה"כ|₪|tag|$)/i);
       let cleanProducts = "";
@@ -378,7 +378,8 @@ function extractFormspreeLeadsSilent() {
       }
       
       const price = (body.match(/(?:סה"כ|₪)\s*[:]*\s*([\d.]+)/i) || ["", "0.00"])[1];
-      const tag = (body.match(/tag[:]?(\s)*\n*(.*)/i) || ["", "Formspree"])[2].trim();
+      const tagMatch = body.match(/tag[:]?(\s)*\n*(.*)/i);
+      const tag = (tagMatch && tagMatch[2] ? tagMatch[2] : 'Formspree').toString().trim();
 
       if (email || name) {
         sheet.appendRow([msg.getDate(), email, phone, name, tag, 'לא טופל', cleanProducts, price]);
