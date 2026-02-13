@@ -28,6 +28,9 @@
   <link rel="stylesheet" href="css/responsive.css?v=6">
   <link rel="stylesheet" href="css/animations.css?v=1">
   <link rel="stylesheet" href="css/toast.css?v=1">
+  
+  <!-- Leads Manager -->
+  <script src="js/leads-manager.js"></script>
   <style>
     .cart-page {
       min-height: 100vh;
@@ -706,6 +709,23 @@
         return;
       }
       
+      // Save lead locally
+      if (typeof LeadsManager !== 'undefined') {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const productsText = cart.map(item => `${item.title} - ₪${item.price}`).join('\n');
+        const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        
+        LeadsManager.saveLead({
+          name: name,
+          email: email,
+          phone: phone,
+          message: message,
+          products: productsText,
+          type: 'PURCHASE',
+          price: total.toFixed(2)
+        });
+      }
+      
       // Send to Formspree
       const formData = new FormData();
       formData.append('name', name);
@@ -755,6 +775,23 @@
       // Disable button and show loading
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span style="display:inline-block; vertical-align:middle;">⏳ שולח...</span>';
+      
+      // Save lead locally
+      if (typeof LeadsManager !== 'undefined') {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const productsText = cart.map(item => `${item.title} - ₪${item.price}`).join('\n');
+        const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        
+        LeadsManager.saveLead({
+          name: document.getElementById('customerName').value,
+          email: document.getElementById('customerEmail').value,
+          phone: document.getElementById('customerPhone').value,
+          message: document.getElementById('customerMessage').value,
+          products: productsText,
+          type: 'PURCHASE',
+          price: total.toFixed(2)
+        });
+      }
       
       try {
         const formData = new FormData(form);

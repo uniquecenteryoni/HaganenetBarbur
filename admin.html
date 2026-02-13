@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>פאנל ניהול - הגננת ברבור</title>
+  
+  <!-- Quill Editor for Newsletter -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Heebo', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      text-align: right;
+      padding: 20px;
+    }
+    
+    /* Login Screen */
+    .login-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .login-box {
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .login-box h1 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+    }
+    
+    .login-box p {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    
+    .login-box input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 1rem;
+      transition: border 0.3s;
+    }
+    
+    .login-box input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .login-box button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .login-box button:hover {
+      transform: translateY(-2px);
+    }
+    
+    .error-message {
+      color: #e74c3c;
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    /* Admin Panel */
+    .admin-panel {
+      display: none;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .admin-header {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-radius: 15px;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .admin-header h1 {
+      color: #667eea;
+      font-size: 1.8rem;
+    }
+    
+    .logout-btn {
+      padding: 10px 25px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 2rem;
+      background: rgba(255,255,255,0.2);
+      padding: 10px;
+      border-radius: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .tab {
+      padding: 15px 25px;
+      background: rgba(255,255,255,0.5);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      transition: all 0.3s;
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .tab:hover {
+      background: rgba(255,255,255,0.7);
+    }
+    
+    .tab.active {
+      background: white;
+      color: #667eea;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card h3 {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .number {
+      font-size: 3rem;
+      font-weight: 700;
+    }
+    
+    .stat-card .subtitle {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+    
+    /* Leads Table */
+    .leads-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .leads-controls input,
+    .leads-controls select {
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .leads-controls button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .leads-table {
+      width: 100%;
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    
+    thead {
+      background: #f8f9fa;
+    }
+    
+    th, td {
+      padding: 12px;
+      text-align: right;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    th {
+      font-weight: 600;
+      color: #667eea;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .tag-purchase {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .tag-interested {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    /* Newsletter */
+    .filter-box {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border-right: 5px solid #667eea;
+    }
+    
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    #editor-container {
+      height: 250px;
+      margin-bottom: 15px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+    }
+    
+    .btn-test {
+      background: #2196F3;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .btn-send {
+      background: #4CAF50;
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .btn-test:hover {
+      background: #1976D2;
+    }
+    
+    .btn-send:hover {
+      background: #45a049;
+    }
+    
+    #countInfo {
+      font-weight: 700;
+      color: #1565c0;
+      text-align: center;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    
+    /* File Sender Styles */
+    .selection-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .list-box {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .scroll-list {
+      border: 2px solid #e0e0e0;
+      height: 250px;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    
+    .list-item {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    
+    .list-item:hover {
+      background: #f0f7ff;
+    }
+    
+    .selected-box {
+      border: 2px solid #4CAF50;
+      background: #f9fff9;
+      min-height: 60px;
+      padding: 10px;
+      border-radius: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .chip {
+      background: #4CAF50;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    
+    .chip:hover {
+      background: #45a049;
+    }
+    
+    .chip::after {
+      content: '×';
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    .card {
+      border: 2px solid #e0e0e0;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #fff;
+      border-radius: 12px;
+      border-right: 5px solid #2196F3;
+    }
+    
+    .cust-list {
+      font-size: 0.85em;
+      color: #555;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      max-height: 80px;
+      overflow-y: auto;
+      margin: 10px 0;
+    }
+    
+    .search-input {
+      background-color: #fffde7 !important;
+    }
+    
+    @media (max-width: 768px) {
+      .filter-grid,
+      .selection-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .tabs {
+        flex-direction: column;
+      }
+      
+      .tab {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h1>🔐 פאנל ניהול</h1>
+      <p>הגננת ברבור</p>
+      <input type="password" id="passwordInput" placeholder="הזיני סיסמה" autocomplete="current-password">
+      <button onclick="login()">כניסה</button>
+      <p class="error-message" id="errorMessage">סיסמה שגויה, נסי שוב</p>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-header">
+      <h1>📊 פאנל ניהול - הגננת ברבור</h1>
+      <button class="logout-btn" onclick="logout()">יציאה</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('dashboard')">📊 סטטיסטיקות</button>
+      <button class="tab" onclick="switchTab('leads')">👥 ניהול לידים</button>
+      <button class="tab" onclick="switchTab('newsletter')">📧 שליחת ניוזלטר</button>
+      <button class="tab" onclick="switchTab('filesender')">📤 שליחת קבצים</button>
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div class="tab-content active" id="dashboard">
+      <h2 style="margin-bottom: 1.5rem; color: #667eea;">📈 סקירה כללית</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>ביקורים באתר</h3>
+          <div class="number" id="totalVisits">-</div>
+          <div class="subtitle">סך הכל ביקורים</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <h3>סה"כ לידים</h3>
+          <div class="number" id="totalLeads">-</div>
+          <div class="subtitle">לקוחות פוטנציאליים</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <h3>רכישות</h3>
+          <div class="number" id="totalPurchases">-</div>
+          <div class="subtitle">הזמנות דרך הסל</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+          <h3>פניות ייעוץ</h3>
+          <div class="number" id="totalInterested">-</div>
+          <div class="subtitle">טפסי צור קשר</div>
+        </div>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
+        <h3 style="margin-bottom: 15px; color: #667eea;">📅 לידים אחרונים (7 ימים)</h3>
+        <div id="recentLeadsChart"></div>
+      </div>
+    </div>
+
+    <!-- Leads Management Tab -->
+    <div class="tab-content" id="leads">
+      <h2 style="margin-bottom: 1.5rem; color: #667eea;">👥 ניהול לידים</h2>
+      
+      <div class="leads-controls">
+        <input type="text" id="searchLeads" placeholder="🔍 חיפוש לפי שם, מייל או טלפון..." style="flex: 2;">
+        <select id="filterType">
+          <option value="all">כל הסוגים</option>
+          <option value="PURCHASE">רכישה</option>
+          <option value="INTERESTED">צור קשר</option>
+        </select>
+        <button onclick="exportLeadsCSV()">📥 ייצא ל-CSV</button>
+        <button onclick="refreshLeads()">🔄 רענן</button>
+      </div>
+      
+      <div class="leads-table">
+        <table>
+          <thead>
+            <tr>
+              <th>תאריך</th>
+              <th>שם</th>
+              <th>מייל</th>
+              <th>טלפון</th>
+              <th>סוג</th>
+              <th>מוצרים/הודעה</th>
+              <th>מחיר</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTableBody">
+            <tr><td colspan="7" style="text-align: center; padding: 40px;">טוען נתונים...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Newsletter Tab -->
+    <div class="tab-content" id="newsletter">
+      <h2 style="margin-bottom: 1.5rem; color: #667eea;">📧 שליחת ניוזלטר</h2>
+      
+      <div class="filter-box">
+        <h4 style="margin-top:0; margin-bottom: 15px;">🔍 סינון נמענים חכם</h4>
+        <div class="filter-grid">
+          <div>
+            <label>מתאריך:</label>
+            <input type="date" id="startDate" onchange="updateNewsletterCount()">
+          </div>
+          <div>
+            <label>עד תאריך:</label>
+            <input type="date" id="endDate" onchange="updateNewsletterCount()">
+          </div>
+        </div>
+        <label>סוג ליד:</label>
+        <select id="leadType" onchange="updateNewsletterCount()">
+          <option value="All">הכל</option>
+          <option value="PURCHASE">רכישה</option>
+          <option value="INTERESTED">צור קשר</option>
+        </select>
+        <div id="countInfo">בחרי תאריכים כדי לראות מספר נמענים</div>
+      </div>
+
+      <label>כותרת המייל:</label>
+      <input type="text" id="subject" placeholder="מה כותרת המייל?">
+      
+      <label style="margin-top: 15px;">תוכן המייל:</label>
+      <div id="editor-container"></div>
+      
+      <label>תמונה וקישור (אופציונלי):</label>
+      <input type="file" id="imageFile" accept="image/*">
+      <input type="text" id="linkUrl" placeholder="קישור מהתמונה (לא חובה)" style="margin-top: 10px;">
+
+      <button class="btn-test" onclick="sendNewsletter(true)">🧪 שלח בדיקה למייל שלי</button>
+      <button class="btn-send" onclick="sendNewsletter(false)">🚀 שלח לכל המסוננים</button>
+    </div>
+
+    <!-- File Sender Tab -->
+    <div class="tab-content" id="filesender">
+      <h2 style="margin-bottom: 1.5rem; color: #667eea;">📤 שליחת קבצים</h2>
+      
+      <div class="tabs" style="margin-bottom: 20px; background: #f8f9fa;">
+        <button class="tab active" onclick="switchFileTab('group')" style="background: white;">📦 קבוצתית</button>
+        <button class="tab" onclick="switchFileTab('manual')">👤 אישית מרובה</button>
+      </div>
+
+      <!-- Group Tab -->
+      <div id="groupTab" class="file-tab-content" style="display: block;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+          <div>
+            <label>מתאריך:</label>
+            <input type="date" id="groupStart">
+          </div>
+          <div>
+            <label>עד תאריך:</label>
+            <input type="date" id="groupEnd">
+          </div>
+        </div>
+        <button class="btn-send" onclick="loadGroups()" style="margin-bottom: 20px;">סרוק טווח תאריכים</button>
+        <div id="groupResult"></div>
+      </div>
+
+      <!-- Manual Tab -->
+      <div id="manualTab" class="file-tab-content" style="display: none;">
+        <div class="selection-container">
+          <div class="list-box">
+            <label>1. חפשי לקוחות:</label>
+            <input type="text" id="searchCust" class="search-input" placeholder="שם או מייל..." onkeyup="filterCustomers()">
+            <div id="customerList" class="scroll-list">
+              <div class="list-item" style="text-align: center; color: #999;">טוען...</div>
+            </div>
+          </div>
+          <div class="list-box">
+            <label>2. חפשי קבצים:</label>
+            <input type="text" id="searchFile" class="search-input" placeholder="שם קובץ..." onkeyup="filterFiles()">
+            <div id="filesList" class="scroll-list">
+              <div class="list-item" style="text-align: center; color: #999;">יש להגדיר בהגדרות</div>
+            </div>
+          </div>
+        </div>
+
+        <label>לקוחות נבחרים:</label>
+        <div id="selectedCustomers" class="selected-box"></div>
+        
+        <label>קבצים נבחרים:</label>
+        <div id="selectedFiles" class="selected-box"></div>
+        
+        <button class="btn-send" onclick="sendManualFiles()">שלח קבצים לנבחרים</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quill Editor Script -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  
+  <script>
+    // Password Configuration
+    const ADMIN_PASSWORD = 'barbur2026'; // שני את הסיסמה לפי רצונך!
+    
+    // Google Apps Script URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9zkL3bAyu5RB2ZEUFC-BEaw5MngNPE4eUj3RBth-pbwuRQ2Cka757RF19rcPKKgR-vA/exec';
+    
+    // Initialize Quill Editor (for newsletter)
+    let quill;
+    
+    // Data Storage
+    let allLeads = [];
+    let selectedEmails = new Set();
+    let selectedFileNames = new Set();
+    let allCustomers = [];
+    let allFiles = [];
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if already logged in
+      if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+        showAdminPanel();
+      }
+      
+      // Enter key to login
+      document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+      });
+    });
+    
+    // Login Function
+    function login() {
+      const password = document.getElementById('passwordInput').value;
+      if (password === ADMIN_PASSWORD) {
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        showAdminPanel();
+      } else {
+        document.getElementById('errorMessage').style.display = 'block';
+        document.getElementById('passwordInput').value = '';
+      }
+    }
+    
+    // Logout Function
+    function logout() {
+      sessionStorage.removeItem('adminLoggedIn');
+      location.reload();
+    }
+    
+    // Show Admin Panel
+    function showAdminPanel() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      
+      // Initialize Quill Editor
+      quill = new Quill('#editor-container', {
+        modules: {
+          toolbar: [
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            ['bold', 'italic', 'underline'],
+            [{ 'color': [] }],
+            [{ 'align': [] }],
+            ['link']
+          ]
+        },
+        theme: 'snow'
+      });
+      
+      // Load data
+      loadDashboard();
+      loadLeadsFromGoogleSheets(); // טוען מ-Google Sheets
+      trackVisit();
+    }
+    
+    // Tab Switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabName).classList.add('active');
+      
+      if (tabName === 'filesender') {
+        loadCustomersAndFiles();
+      }
+    }
+    
+    function switchFileTab(tabName) {
+      const tabs = document.querySelectorAll('#filesender .tab');
+      tabs.forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('groupTab').style.display = tabName === 'group' ? 'block' : 'none';
+      document.getElementById('manualTab').style.display = tabName === 'manual' ? 'block' : 'none';
+    }
+    
+    // ===== DASHBOARD =====
+    function loadDashboard() {
+      const visits = localStorage.getItem('siteVisits') || 0;
+      document.getElementById('totalVisits').textContent = visits;
+      
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      document.getElementById('totalLeads').textContent = leads.length;
+      
+      const purchases = leads.filter(l => l.type === 'PURCHASE').length;
+      const interested = leads.filter(l => l.type === 'INTERESTED').length;
+      
+      document.getElementById('totalPurchases').textContent = purchases;
+      document.getElementById('totalInterested').textContent = interested;
+      
+      // Recent leads chart (simple text list)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const recentLeads = leads.filter(l => new Date(l.date) >= sevenDaysAgo);
+      const chartHtml = recentLeads.length > 0 
+        ? `<p style="color: #666;">לידים חדשים: <strong>${recentLeads.length}</strong></p>`
+        : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
+      
+      document.getElementById('recentLeadsChart').innerHTML = chartHtml;
+    }
+    
+    function trackVisit() {
+      const visits = parseInt(localStorage.getItem('siteVisits') || '0');
+      // We don't increment here because this is admin panel
+      // The main site will increment
+    }
+    
+    // ===== LEADS MANAGEMENT =====
+    
+    // טעינת לידים מ-Google Sheets
+    async function loadLeadsFromGoogleSheets() {
+      try {
+        document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">טוען מ-Google Sheets...</td></tr>';
+        
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeads`);
+        const data = await response.json();
+        
+        if (data.success && data.leads) {
+          allLeads = data.leads;
+          
+          // שמור גם ב-localStorage לגיבוי
+          localStorage.setItem('leads', JSON.stringify(allLeads));
+          
+          displayLeads(allLeads);
+          updateDashboardFromGoogleSheets();
+          
+          console.log('✅ נטענו', allLeads.length, 'לידים מ-Google Sheets');
+        } else {
+          throw new Error(data.error || 'שגיאה בטעינת נתונים');
+        }
+      } catch (error) {
+        console.error('❌ שגיאה בטעינת לידים:', error);
+        
+        // נסיון לטעון מ-localStorage כגיבוי
+        const localLeads = JSON.parse(localStorage.getItem('leads') || '[]');
+        if (localLeads.length > 0) {
+          allLeads = localLeads;
+          displayLeads(allLeads);
+          alert('⚠️ לא ניתן להתחבר ל-Google Sheets. מציג נתונים מקומיים.');
+        } else {
+          document.getElementById('leadsTableBody').innerHTML = 
+            '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #e74c3c;">שגיאה בטעינה מ-Google Sheets. בדקי את החיבור.</td></tr>';
+        }
+      }
+    }
+    
+    // עדכון דאשבורד מ-Google Sheets
+    async function updateDashboardFromGoogleSheets() {
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getStats`);
+        const data = await response.json();
+        
+        if (data.success && data.stats) {
+          const stats = data.stats;
+          document.getElementById('totalLeads').textContent = stats.totalLeads;
+          document.getElementById('totalPurchases').textContent = stats.purchases;
+          document.getElementById('totalInterested').textContent = stats.interested;
+          
+          const chartHtml = stats.last7Days > 0 
+            ? `<p style="color: #666;">לידים חדשים: <strong>${stats.last7Days}</strong></p>`
+            : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
+          
+          document.getElementById('recentLeadsChart').innerHTML = chartHtml;
+        }
+      } catch (error) {
+        console.error('שגיאה בטעינת סטטיסטיקות:', error);
+        // השתמש בפונקציה הקיימת כגיבוי
+        loadDashboard();
+      }
+    }
+    
+    function loadLeads() {
+      allLeads = JSON.parse(localStorage.getItem('leads') || '[]');
+      displayLeads(allLeads);
+    }
+    
+    function displayLeads(leads) {
+      const tbody = document.getElementById('leadsTableBody');
+      
+      if (leads.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #999;">אין לידים להצגה</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = leads.map(lead => `
+        <tr>
+          <td>${new Date(lead.date).toLocaleDateString('he-IL')}</td>
+          <td>${lead.name || '-'}</td>
+          <td>${lead.email || '-'}</td>
+          <td>${lead.phone || '-'}</td>
+          <td><span class="tag tag-${lead.type.toLowerCase()}">${lead.type === 'PURCHASE' ? 'רכישה' : 'צור קשר'}</span></td>
+          <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
+          <td>${lead.price ? '₪' + lead.price : '-'}</td>
+        </tr>
+      `).join('');
+    }
+    
+    function refreshLeads() {
+      loadLeadsFromGoogleSheets(); // רענון מ-Google Sheets
+      alert('מרענן מ-Google Sheets...');
+    }
+    
+    // Search and Filter
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const searchInput = document.getElementById('searchLeads');
+        const filterType = document.getElementById('filterType');
+        
+        if (searchInput) {
+          searchInput.addEventListener('input', filterLeads);
+          filterType.addEventListener('change', filterLeads);
+        }
+      }, 1000);
+    });
+    
+    function filterLeads() {
+      const searchTerm = document.getElementById('searchLeads').value.toLowerCase();
+      const type = document.getElementById('filterType').value;
+      
+      let filtered = allLeads;
+      
+      if (type !== 'all') {
+        filtered = filtered.filter(l => l.type === type);
+      }
+      
+      if (searchTerm) {
+        filtered = filtered.filter(l => 
+          (l.name && l.name.toLowerCase().includes(searchTerm)) ||
+          (l.email && l.email.toLowerCase().includes(searchTerm)) ||
+          (l.phone && l.phone.includes(searchTerm))
+        );
+      }
+      
+      displayLeads(filtered);
+    }
+    
+    function exportLeadsCSV() {
+      if (allLeads.length === 0) {
+        alert('אין לידים לייצוא');
+        return;
+      }
+      
+      let csv = 'תאריך,מייל,טלפון,שם,סוג,מוצרים/הודעה,מחיר\n';
+      allLeads.forEach(lead => {
+        csv += `${lead.date},"${lead.email || ''}","${lead.phone || ''}","${lead.name || ''}","${lead.type}","${(lead.message || lead.products || '').replace(/"/g, '""')}","${lead.price || ''}"\n`;
+      });
+      
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `leads_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+    
+    // ===== NEWSLETTER =====
+    function updateNewsletterCount() {
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const type = document.getElementById('leadType').value;
+      
+      if (!startDate || !endDate) {
+        document.getElementById('countInfo').textContent = 'בחרי תאריכים';
+        return;
+      }
+      
+      const filtered = getFilteredEmails({ startDate, endDate, type });
+      document.getElementById('countInfo').textContent = `נמענים תואמים: ${filtered.length}`;
+    }
+    
+    function getFilteredEmails(filters) {
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      
+      return leads.filter(lead => {
+        if (!lead.email || !lead.email.includes('@')) return false;
+        
+        const leadDate = new Date(lead.date);
+        if (filters.startDate && leadDate < new Date(filters.startDate)) return false;
+        if (filters.endDate && leadDate > new Date(filters.endDate)) return false;
+        if (filters.type && filters.type !== 'All' && lead.type !== filters.type) return false;
+        
+        return true;
+      }).map(lead => lead.email);
+    }
+    
+    function sendNewsletter(isTest) {
+      const subject = document.getElementById('subject').value;
+      const bodyHtml = quill.root.innerHTML;
+      
+      if (!subject || !bodyHtml.trim()) {
+        alert('יש למלא כותרת ותוכן');
+        return;
+      }
+      
+      if (isTest) {
+        alert('🧪 במצב רגיל, כאן תישלח הודעת בדיקה למייל שלך.\n\nכדי שזה יעבוד, צריך לשלב עם Google Apps Script או שירות דיוור חיצוני.');
+        return;
+      }
+      
+      const filters = {
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        type: document.getElementById('leadType').value
+      };
+      
+      const recipients = getFilteredEmails(filters);
+      
+      if (recipients.length === 0) {
+        alert('אין נמענים מתאימים');
+        return;
+      }
+      
+      if (!confirm(`האם לשלוח ל-${recipients.length} נמענים?`)) return;
+      
+      alert(`✅ במצב רגיל, הניוזלטר היה נשלח ל-${recipients.length} נמענים.\n\nלהטמעה מלאה יש לשלב עם Google Apps Script (הקוד שסיפקת).`);
+    }
+    
+    // ===== FILE SENDER =====
+    function loadCustomersAndFiles() {
+      // Load from leads
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      allCustomers = [];
+      
+      const uniqueEmails = new Set();
+      leads.forEach(lead => {
+        if (lead.email && lead.email.includes('@') && !uniqueEmails.has(lead.email)) {
+          uniqueEmails.add(lead.email);
+          allCustomers.push({
+            email: lead.email,
+            name: lead.name || 'לקוח'
+          });
+        }
+      });
+      
+      allCustomers.sort((a, b) => a.name.localeCompare(b.name));
+      renderCustomerList(allCustomers);
+      
+      // Files - placeholder
+      allFiles = ['קובץ1.pdf', 'קובץ2.pdf', 'קובץ3.pdf']; // זה צריך להתחבר לדרייב
+      renderFileList(allFiles);
+    }
+    
+    function renderCustomerList(customers) {
+      const list = document.getElementById('customerList');
+      if (customers.length === 0) {
+        list.innerHTML = '<div class="list-item" style="text-align: center; color: #999;">אין לקוחות</div>';
+        return;
+      }
+      
+      list.innerHTML = customers.map(c => `
+        <div class="list-item" onclick="toggleSelection('email', '${c.email}', '${c.name}')">
+          ${c.name}<br><small style="color: #999;">${c.email}</small>
+        </div>
+      `).join('');
+    }
+    
+    function renderFileList(files) {
+      const list = document.getElementById('filesList');
+      list.innerHTML = files.map(f => `
+        <div class="list-item" onclick="toggleSelection('file', '${f}', '${f}')">
+          ${f}
+        </div>
+      `).join('');
+    }
+    
+    function filterCustomers() {
+      const term = document.getElementById('searchCust').value.toLowerCase();
+      const filtered = allCustomers.filter(c => 
+        c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term)
+      );
+      renderCustomerList(filtered);
+    }
+    
+    function filterFiles() {
+      const term = document.getElementById('searchFile').value.toLowerCase();
+      const filtered = allFiles.filter(f => f.toLowerCase().includes(term));
+      renderFileList(filtered);
+    }
+    
+    function toggleSelection(type, id, displayName) {
+      const set = type === 'email' ? selectedEmails : selectedFileNames;
+      const boxId = type === 'email' ? 'selectedCustomers' : 'selectedFiles';
+      
+      if (set.has(id)) {
+        set.delete(id);
+      } else {
+        set.add(id);
+      }
+      
+      renderTags(type, boxId);
+    }
+    
+    function renderTags(type, boxId) {
+      const set = type === 'email' ? selectedEmails : selectedFileNames;
+      const container = document.getElementById(boxId);
+      
+      if (set.size === 0) {
+        container.innerHTML = '<div style="color: #999; padding: 5px;">לא נבחרו פריטים</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      set.forEach(val => {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.textContent = type === 'email' ? val.split('@')[0] : val.replace('.pdf', '');
+        chip.onclick = () => toggleSelection(type, val, val);
+        container.appendChild(chip);
+      });
+    }
+    
+    function sendManualFiles() {
+      if (selectedEmails.size === 0 || selectedFileNames.size === 0) {
+        alert('יש לבחור לקוח וקובץ');
+        return;
+      }
+      
+      alert(`✅ במצב רגיל, הקבצים היו נשלחים ל-${selectedEmails.size} נמענים.\n\nלהטמעה מלאה יש לשלב עם Google Apps Script.`);
+      
+      selectedEmails.clear();
+      selectedFileNames.clear();
+      renderTags('email', 'selectedCustomers');
+      renderTags('file', 'selectedFiles');
+    }
+    
+    function loadGroups() {
+      const start = document.getElementById('groupStart').value;
+      const end = document.getElementById('groupEnd').value;
+      
+      if (!start || !end) {
+        alert('בחרי תאריכים');
+        return;
+      }
+      
+      document.getElementById('groupResult').innerHTML = '<p style="text-align: center; color: #999;">טוען...</p>';
+      
+      // Simulate grouping
+      setTimeout(() => {
+        document.getElementById('groupResult').innerHTML = `
+          <div class="card">
+            <b>דוגמה:</b> במצב רגיל כאן תופיע קבוצת לקוחות לפי מוצרים משותפים<br>
+            <small style="color: #999;">יש לשלב עם Google Apps Script למימוש מלא</small>
+          </div>
+        `;
+      }, 500);
+    }
+  </script>
+</body>
+</html>

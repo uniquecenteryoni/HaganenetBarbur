@@ -6,6 +6,15 @@ Allow: /
 # Prevent indexing of cart page (not useful for search)
 Disallow: /cart.html
 
+# Prevent indexing of admin panel and related files
+Disallow: /admin.html
+Disallow: /import-leads.html
+Disallow: /help.html
+Disallow: /ADMIN-GUIDE.md
+Disallow: /README-ADMIN.md
+Disallow: /TODO-CHECKLIST.md
+Disallow: /leads-example.csv
+
 # Allow all CSS, JS and images
 Allow: /css/
 Allow: /js/

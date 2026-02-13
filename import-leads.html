@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ייבוא לידים - הגננת ברבור</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Heebo', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-right: 4px solid #667eea;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      display: none;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .preview {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 10px;
+      background: #f8f9fa;
+    }
+    .lead-preview {
+      padding: 8px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📥 ייבוא לידים קיימים</h1>
+    
+    <div class="info">
+      <strong>📌 הוראות:</strong>
+      <ol style="margin-top: 10px; margin-right: 20px; line-height: 1.6;">
+        <li>בחרי את קובץ ה-CSV שלך (lead.csv)</li>
+        <li>הקובץ צריך להיות בפורמט: תאריך,מייל,טלפון,שם,סוג,מוצרים,מחיר</li>
+        <li>לחצי על "ייבא לידים"</li>
+        <li>הלידים יתווספו למערכת הקיימת (לא ימחקו נתונים)</li>
+      </ol>
+    </div>
+
+    <label for="csvFile">בחרי קובץ CSV:</label>
+    <input type="file" id="csvFile" accept=".csv,text/csv">
+    
+    <div id="preview" class="preview" style="display: none;">
+      <strong>תצוגה מקדימה (5 ראשונים):</strong>
+      <div id="previewContent"></div>
+    </div>
+
+    <button id="importBtn" onclick="importLeads()" disabled>ייבא לידים</button>
+    
+    <div id="result"></div>
+  </div>
+
+  <script src="js/leads-manager.js"></script>
+  <script>
+    let csvData = null;
+
+    // Enable import button when file is selected
+    document.getElementById('csvFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) {
+        document.getElementById('importBtn').disabled = true;
+        document.getElementById('preview').style.display = 'none';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        csvData = event.target.result;
+        previewCSV(csvData);
+        document.getElementById('importBtn').disabled = false;
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+
+    function previewCSV(csvText) {
+      const lines = csvText.split('\n').filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        showResult('הקובץ ריק או לא תקין', 'error');
+        return;
+      }
+
+      const previewDiv = document.getElementById('previewContent');
+      previewDiv.innerHTML = '';
+
+      // Show first 5 data rows (skip header)
+      const previewLines = lines.slice(1, 6);
+      
+      previewLines.forEach((line, index) => {
+        const values = parseCSVLine(line);
+        if (values.length >= 4) {
+          const div = document.createElement('div');
+          div.className = 'lead-preview';
+          div.innerHTML = `
+            <strong>${index + 1}.</strong> ${values[3] || 'ללא שם'} - 
+            ${values[1] || 'ללא מייל'} - 
+            ${values[4] || 'INTERESTED'}
+          `;
+          previewDiv.appendChild(div);
+        }
+      });
+
+      document.getElementById('preview').style.display = 'block';
+    }
+
+    function parseCSVLine(line) {
+      // Simple CSV parser that handles quotes
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      result.push(current.trim());
+      return result;
+    }
+
+    function importLeads() {
+      if (!csvData) {
+        showResult('לא נבחר קובץ', 'error');
+        return;
+      }
+
+      document.getElementById('importBtn').disabled = true;
+      document.getElementById('importBtn').textContent = 'מייבא...';
+
+      try {
+        const lines = csvData.split('\n').filter(line => line.trim());
+        
+        if (lines.length < 2) {
+          throw new Error('הקובץ ריק או לא תקין');
+        }
+
+        let importedCount = 0;
+        let errorCount = 0;
+
+        // Skip header (first line) and process data
+        for (let i = 1; i < lines.length; i++) {
+          try {
+            const values = parseCSVLine(lines[i]);
+            
+            if (values.length < 2) continue; // Skip invalid lines
+
+            // Create lead object
+            const lead = {
+              date: values[0] || new Date().toISOString(),
+              email: values[1] || '',
+              phone: values[2] || '',
+              name: values[3] || '',
+              type: values[4] || 'INTERESTED',
+              message: values[5] || '',
+              products: values[5] || '',
+              price: values[6] || ''
+            };
+
+            // Only import if we have at least email or name
+            if (lead.email || lead.name) {
+              LeadsManager.saveLead(lead);
+              importedCount++;
+            }
+          } catch (err) {
+            console.error('Error importing line:', i, err);
+            errorCount++;
+          }
+        }
+
+        showResult(
+          `✅ הייבוא הושלם בהצלחה!<br>
+          <strong>יובאו: ${importedCount} לידים</strong><br>
+          ${errorCount > 0 ? `שגיאות: ${errorCount}` : ''}
+          <br><br>
+          <a href="admin.html" style="color: #667eea; font-weight: bold;">👉 לחצי כאן למעבר לפאנל הניהול</a>`,
+          'success'
+        );
+
+      } catch (error) {
+        showResult('❌ שגיאה בייבוא: ' + error.message, 'error');
+      } finally {
+        document.getElementById('importBtn').disabled = false;
+        document.getElementById('importBtn').textContent = 'ייבא לידים';
+      }
+    }
+
+    function showResult(message, type) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = message;
+      resultDiv.className = type;
+      resultDiv.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

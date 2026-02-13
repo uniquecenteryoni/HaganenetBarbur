@@ -61,6 +61,9 @@
   <link rel="stylesheet" href="css/responsive.css?v=6">
   <link rel="stylesheet" href="css/animations.css?v=1">
   <link rel="stylesheet" href="css/toast.css?v=1">
+  
+  <!-- Leads Manager -->
+  <script src="js/leads-manager.js"></script>
   <style>
     /* February Popup Modal Styles */
     .popup-modal {
@@ -769,6 +772,16 @@
           try {
             const formData = new FormData(this);
             
+            // Save lead locally before sending to Formspree
+            const leadData = {
+              name: formData.get('name'),
+              email: formData.get('email'),
+              phone: formData.get('phone'),
+              message: formData.get('message'),
+              type: 'INTERESTED'
+            };
+            LeadsManager.saveLead(leadData);
+            
             const response = await fetch(this.action, {
               method: 'POST',
               body: formData,
@@ -798,6 +811,11 @@
           }
         });
       }
+    }
+    
+    // Track site visit on page load
+    if (typeof VisitsTracker !== 'undefined') {
+      VisitsTracker.trackVisit();
     }
 
     // Preview System

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>עזרה מהירה - פאנל ניהול</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Heebo', Arial, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    h2 {
+      color: #667eea;
+      margin: 2rem 0 1rem;
+      border-right: 4px solid #667eea;
+      padding-right: 15px;
+    }
+    .card {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      border: 2px solid #e0e0e0;
+    }
+    .card h3 {
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    code {
+      background: #e3f2fd;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #1565c0;
+    }
+    .important {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    .success {
+      background: #d4edda;
+      border: 2px solid #28a745;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    ul {
+      margin-right: 20px;
+      margin-top: 10px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      margin: 10px 10px 10px 0;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #5568d3;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🆘 עזרה מהירה - פאנל ניהול</h1>
+
+    <div class="success">
+      <strong>🎉 פאנל הניהול שלך מוכן לשימוש!</strong><br>
+      כאן תמצאי תשובות לשאלות נפוצות ופתרונות לבעיות נפוצות.
+    </div>
+
+    <h2>🔐 כניסה לפאנל</h2>
+    <div class="card">
+      <h3>איך נכנסים?</h3>
+      <p>
+        1. גשי ל-<a href="admin.html" target="_blank">admin.html</a><br>
+        2. הסיסמה ברירת המחדל: <code>barbur2026</code><br>
+        3. <strong>חשוב:</strong> שני את הסיסמה מיד!
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>שכחתי את הסיסמה!</h3>
+      <p>
+        פתחי את הקובץ <code>admin.html</code> בעורך טקסט וחפשי בשורה 624:<br>
+        <code>const ADMIN_PASSWORD = 'barbur2026';</code><br>
+        שני את הסיסמה בין המרכאות.
+      </p>
+    </div>
+
+    <h2>📊 סטטיסטיקות</h2>
+    <div class="card">
+      <h3>הסטטיסטיקות לא מתעדכנות</h3>
+      <ul>
+        <li>לחצי F5 לרענון הדף</li>
+        <li>לחצי "רענן" בלשונית "ניהול לידים"</li>
+        <li>וודאי שיש לך לידים במערכת</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>מספר הביקורים לא משתנה</h3>
+      <p>
+        מספר הביקורים עולה רק כשמבקרים חדשים נכנסים לאתר.<br>
+        כל מבקר נספר פעם אחת לסשן (עד שהוא סגר את הדפדפן).
+      </p>
+    </div>
+
+    <h2>👥 ניהול לידים</h2>
+    <div class="card">
+      <h3>איך מייבאים לידים מ-CSV?</h3>
+      <ol>
+        <li>גשי ל-<a href="import-leads.html">import-leads.html</a></li>
+        <li>בחרי את קובץ ה-CSV</li>
+        <li>בדקי את התצוגה המקדימה</li>
+        <li>לחצי "ייבא לידים"</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>איך מייצאים לידים ל-CSV?</h3>
+      <p>
+        בלשונית "ניהול לידים", לחצי על הכפתור <strong>"ייצא ל-CSV"</strong>.<br>
+        הקובץ יורד אוטומטית למחשב.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>איך מוחקים ליד?</h3>
+      <p>
+        כרגע אין אפשרות מחיקה בממשק.<br>
+        לחצי F12 → Console → הקלידי:<br>
+        <code>LeadsManager.deleteLead('LEAD_ID_HERE')</code>
+      </p>
+    </div>
+
+    <h2>📧 שליחת ניוזלטר</h2>
+    <div class="card">
+      <h3>הניוזלטר לא נשלח</h3>
+      <div class="important">
+        <strong>⚠️ חשוב:</strong><br>
+        שליחת ניוזלטר דורשת שילוב עם Google Apps Script.<br>
+        כרגע הממשק עובד בסימולציה בלבד.
+      </div>
+      <p>
+        כדי להפעיל שליחה אמיתית:<br>
+        1. עקבי אחר ההוראות ב-<a href="ADMIN-GUIDE.md">ADMIN-GUIDE.md</a><br>
+        2. שלבי עם Google Sheets + Apps Script
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>איך בודקים לפני שליחה?</h3>
+      <p>
+        לחצי על <strong>"שלח בדיקה למייל שלי"</strong> לפני שליחה לכולם.<br>
+        זה ישלח רק אליך כדי שתראי איך המייל נראה.
+      </p>
+    </div>
+
+    <h2>📤 שליחת קבצים</h2>
+    <div class="card">
+      <h3>אין לי קבצים ברשימה</h3>
+      <div class="important">
+        <strong>⚠️ חשוב:</strong><br>
+        שליחת קבצים דורשת שילוב עם Google Drive + Apps Script.<br>
+        כרגע הממשק מראה קבצים לדוגמה בלבד.
+      </div>
+    </div>
+
+    <h2>🔧 בעיות טכניות</h2>
+    <div class="card">
+      <h3>הדף לא נטען</h3>
+      <ul>
+        <li>רענני מטמון: Ctrl+Shift+R (Windows) או Cmd+Shift+R (Mac)</li>
+        <li>נסי בדפדפן אחר (Chrome מומלץ)</li>
+        <li>וודאי שכל הקבצים הועלו לשרת</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>שגיאה בקונסול</h3>
+      <p>
+        לחצי F12 בדפדפן ובדקי את הקונסול.<br>
+        אם יש שגיאות אדומות:<br>
+        1. תעתיקי את השגיאה<br>
+        2. בדקי שכל הקבצים קיימים<br>
+        3. וודאי ש-JavaScript מאופשר
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>הנתונים נמחקו!</h3>
+      <p>
+        הנתונים נשמרים ב-localStorage של הדפדפן.<br>
+        אם ניקית מטמון/עוגיות, הנתונים נמחקים.<br>
+        <strong>פתרון:</strong> ייצאי גיבוי CSV פעם בשבוע!
+      </p>
+    </div>
+
+    <h2>🔒 אבטחה</h2>
+    <div class="card">
+      <h3>האם הפאנל מאובטח?</h3>
+      <p>
+        הפאנל מוגן בסיסמה ולא מופיע בחיפוש Google.<br>
+        <strong>מומלץ:</strong><br>
+        1. שני את הסיסמה מיד<br>
+        2. שני את שם הקובץ (מ-admin.html למשהו אחר)<br>
+        3. הוסיפי Basic Auth ב-Cloudflare
+      </p>
+    </div>
+
+    <h2>📱 קישורים מהירים</h2>
+    <div style="margin-top: 2rem; text-align: center;">
+      <a href="admin.html" class="btn">🔐 פאנל ניהול</a>
+      <a href="import-leads.html" class="btn">📥 ייבוא לידים</a>
+      <a href="ADMIN-GUIDE.md" class="btn" target="_blank">📖 מדריך מלא</a>
+    </div>
+
+    <div class="success" style="margin-top: 2rem;">
+      <strong>💡 עוד שאלות?</strong><br>
+      קראי את המדריך המלא ב-<a href="ADMIN-GUIDE.md">ADMIN-GUIDE.md</a> או את ה-<a href="README-ADMIN.md">README-ADMIN.md</a>
+    </div>
+  </div>
+</body>
+</html>
