@@ -337,13 +337,7 @@ function extractLeadsFromPanel() {
  * ייבוא לידים מהאימייל עם UI (לשימוש ידני מהגיליון)
  */
 function extractFormspreeLeads() {
-  const count = extractFormspreeLeadsSilent();
-  try {
-    SpreadsheetApp.getUi().alert('הסתיים! נוספו ' + count + ' לידים חדשים.');
-  } catch (e) {
-    // Web app context – no UI
-  }
-  return count;
+  return extractFormspreeLeadsSilent();
 }
 
 /**

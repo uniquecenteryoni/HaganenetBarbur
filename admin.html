@@ -1001,8 +1001,9 @@
         const data = await response.json();
         
         if (data.success && data.leads) {
-          allLeads = data.leads.map(lead => ({
+          allLeads = data.leads.map((lead, idx) => ({
             ...lead,
+            id: lead.id || `${(lead.email || '').toString()}|${(lead.date || '').toString()}|${idx}`,
             email: lead.email != null ? lead.email.toString() : '',
             name: lead.name != null ? lead.name.toString() : '',
             phone: lead.phone != null ? lead.phone.toString() : '',
@@ -1046,8 +1047,9 @@
     
     function loadLeads() {
       const localLeads = JSON.parse(localStorage.getItem('leads') || '[]');
-      allLeads = localLeads.map(lead => ({
+      allLeads = localLeads.map((lead, idx) => ({
         ...lead,
+        id: lead.id || `${(lead.email || '').toString()}|${(lead.date || '').toString()}|${idx}`,
         email: lead.email != null ? lead.email.toString() : '',
         name: lead.name != null ? lead.name.toString() : '',
         phone: lead.phone != null ? lead.phone.toString() : '',
@@ -1062,6 +1064,14 @@
 
     function encodeAttr(value) {
       return encodeURIComponent((value ?? '').toString());
+    }
+
+    function normalizePhoneForWhatsapp(phone) {
+      const digits = (phone || '').toString().replace(/\D/g, '');
+      if (!digits) return '';
+      if (digits.startsWith('0')) return '972' + digits.slice(1);
+      if (digits.startsWith('9720')) return '972' + digits.slice(3);
+      return digits;
     }
     
     function displayLeads(leads) {
@@ -1084,12 +1094,16 @@
         const isInterested = typeLower.includes('interested') || typeLower.includes('intrested') || typeLower.includes('ייעוץ');
         const tagClass = isPurchase ? 'purchase' : (isInterested ? 'interested' : typeLower);
         const typeLabel = isPurchase ? 'רכש' : (isInterested ? 'יצרה קשר' : leadType);
+        const waNumber = normalizePhoneForWhatsapp(lead.phone || '');
+        const phoneCell = waNumber
+          ? `<a href="https://wa.me/${waNumber}" target="_blank" rel="noopener">${lead.phone || '-'}</a>`
+          : (lead.phone || '-');
         return `
         <tr onclick="openLeadModal('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.phone)}', '${encodeAttr(leadType)}', '${encodeAttr(status)}', '${encodeAttr(lead.products || lead.message || '')}', '${encodeAttr(lead.price || '')}')">
           <td>${lead.date ? new Date(lead.date).toLocaleDateString('he-IL') : '-'}</td>
           <td>${lead.name || '-'}</td>
           <td>${lead.email || '-'}</td>
-          <td>${lead.phone || '-'}</td>
+          <td>${phoneCell}</td>
           <td><span class="tag tag-${tagClass}">${typeLabel}</span></td>
           <td class="col-status">
             <button class="status-btn ${status === 'טופל' ? 'status-done' : 'status-pending'}" onclick="event.stopPropagation(); toggleStatusLocal('${encodeAttr(lead.email)}')">
@@ -1100,7 +1114,7 @@
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td>
             <button class="action-btn action-send" onclick="event.stopPropagation(); sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
-            <button class="action-btn action-delete" onclick="event.stopPropagation(); deleteLeadLocal('${encodeAttr(lead.email)}')">🗑️ מחיקה</button>
+            <button class="action-btn action-delete" onclick="event.stopPropagation(); deleteLeadLocal('${encodeAttr(lead.id)}')">🗑️ מחיקה</button>
           </td>
         </tr>
       `}).join('');
@@ -1484,11 +1498,11 @@
       closeLeadModal();
     }
 
-    function deleteLeadLocal(email) {
-      email = safeDecode(email);
+    function deleteLeadLocal(leadId) {
+      leadId = safeDecode(leadId);
       if (!confirm('למחוק את הליד הזה? (מחיקה מקומית בלבד)')) return;
       const leads = JSON.parse(localStorage.getItem('leads') || '[]');
-      const filtered = leads.filter(l => (l.email || '').toString() !== email);
+      const filtered = leads.filter(l => (l.id || '').toString() !== leadId);
       localStorage.setItem('leads', JSON.stringify(filtered));
       allLeads = filtered;
       displayLeads(allLeads);
