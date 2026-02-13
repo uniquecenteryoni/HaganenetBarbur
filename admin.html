@@ -468,6 +468,86 @@
     .search-input {
       background-color: #fffde7 !important;
     }
+
+    .action-btn {
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.85em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 2px 4px;
+    }
+
+    .action-send {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .action-send:hover {
+      background: #bbdefb;
+    }
+
+    .action-delete {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+
+    .action-delete:hover {
+      background: #ffcdd2;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal h3 {
+      margin-top: 0;
+      color: #667eea;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .modal-grid label {
+      font-size: 0.85em;
+      color: #555;
+    }
+
+    .modal-grid input,
+    .modal-grid select,
+    .modal-grid textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95em;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
     
     @media (max-width: 768px) {
       .filter-grid,
@@ -561,12 +641,10 @@
           <option value="INTERESTED">צור קשר</option>
         </select>
         <button onclick="importLeadsFromEmail()" style="background: #ff9800;">📧 ייבא מהמייל</button>
-        <button onclick="exportLeadsCSV()">📥 ייצא ל-CSV</button>
-        <button onclick="refreshLeads()">🔄 רענן</button>
       </div>
 
       <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; color: #555; font-size: 0.9em;">
-        ✳️ עריכות/מחיקות כאן הן מקומיות בלבד (באתר) ואינן משנות את Google Sheets.
+        ✳️ עריכות/מחיקות/סטטוס כאן הן מקומיות בלבד (באתר) ואינן משנות את Google Sheets.
         הסקריפט בגוגל מיועד רק למשיכת לידים חדשים והוספה שלהם.
       </div>
       
@@ -586,9 +664,57 @@
             </tr>
           </thead>
           <tbody id="leadsTableBody">
-            <tr><td colspan="8" style="text-align: center; padding: 40px;">טוען נתונים...</td></tr>
+            <tr><td colspan="9" style="text-align: center; padding: 40px;">טוען נתונים...</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Lead Edit Modal -->
+      <div class="modal-overlay" id="leadEditModal">
+        <div class="modal">
+          <h3>✏️ עריכת ליד (מקומי)</h3>
+          <div class="modal-grid">
+            <div>
+              <label>שם מלא</label>
+              <input type="text" id="editName">
+            </div>
+            <div>
+              <label>מייל (לא ניתן לשינוי)</label>
+              <input type="text" id="editEmail" readonly>
+            </div>
+            <div>
+              <label>טלפון</label>
+              <input type="text" id="editPhone">
+            </div>
+            <div>
+              <label>סוג</label>
+              <select id="editType">
+                <option value="PURCHASE">רכישה</option>
+                <option value="INTERESTED">צור קשר</option>
+                <option value="UNKNOWN">לא ידוע</option>
+              </select>
+            </div>
+            <div>
+              <label>סטטוס</label>
+              <select id="editStatus">
+                <option value="לא טופל">לא טופל</option>
+                <option value="טופל">טופל</option>
+              </select>
+            </div>
+            <div>
+              <label>מחיר</label>
+              <input type="text" id="editPrice">
+            </div>
+            <div style="grid-column: 1 / -1;">
+              <label>מוצרים / הודעה</label>
+              <textarea id="editProducts" rows="4"></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="action-btn action-delete" onclick="closeLeadModal()">ביטול</button>
+            <button class="action-btn action-send" onclick="saveLeadModal()">שמור</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -871,29 +997,9 @@
       }
     }
     
-    // עדכון דאשבורד מ-Google Sheets
-    async function updateDashboardFromGoogleSheets() {
-      try {
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getStats`);
-        const data = await response.json();
-        
-        if (data.success && data.stats) {
-          const stats = data.stats;
-          document.getElementById('totalLeads').textContent = stats.totalLeads;
-          document.getElementById('totalPurchases').textContent = stats.purchases;
-          document.getElementById('totalInterested').textContent = stats.interested;
-          
-          const chartHtml = stats.last7Days > 0 
-            ? `<p style="color: #666;">לידים חדשים: <strong>${stats.last7Days}</strong></p>`
-            : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
-          
-          document.getElementById('recentLeadsChart').innerHTML = chartHtml;
-        }
-      } catch (error) {
-        console.error('שגיאה בטעינת סטטיסטיקות:', error);
-        // השתמש בפונקציה הקיימת כגיבוי
-        loadDashboard();
-      }
+    // עדכון דאשבורד לפי הנתונים המקומיים
+    function updateDashboardFromGoogleSheets() {
+      computeDashboardFromLeads(allLeads);
     }
     
     function loadLeads() {
@@ -933,7 +1039,7 @@
         const leadType = (lead.type || 'UNKNOWN').toString();
         const tagClass = leadType.toLowerCase();
         return `
-        <tr onclick="editLeadLocal('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.phone)}', '${encodeAttr(leadType)}', '${encodeAttr(status)}', '${encodeAttr(lead.products || lead.message || '')}', '${encodeAttr(lead.price || '')}')">
+        <tr onclick="openLeadModal('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.phone)}', '${encodeAttr(leadType)}', '${encodeAttr(status)}', '${encodeAttr(lead.products || lead.message || '')}', '${encodeAttr(lead.price || '')}')">
           <td>${lead.date ? new Date(lead.date).toLocaleDateString('he-IL') : '-'}</td>
           <td>${lead.name || '-'}</td>
           <td>${lead.email || '-'}</td>
@@ -943,8 +1049,8 @@
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td>
-            <button onclick="event.stopPropagation(); sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
-            <button onclick="event.stopPropagation(); deleteLeadLocal('${encodeAttr(lead.email)}')">🗑️ מחיקה</button>
+            <button class="action-btn action-send" onclick="event.stopPropagation(); sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
+            <button class="action-btn action-delete" onclick="event.stopPropagation(); deleteLeadLocal('${encodeAttr(lead.email)}')">🗑️ מחיקה</button>
           </td>
         </tr>
       `}).join('');
@@ -1025,30 +1131,36 @@
       }, 300);
     }
 
-    function editLeadLocal(email, name, phone, type, status, products, price) {
-      email = safeDecode(email);
-      name = safeDecode(name);
-      phone = safeDecode(phone);
-      type = safeDecode(type);
-      status = safeDecode(status);
-      products = safeDecode(products);
-      price = safeDecode(price);
+    let currentEditEmail = '';
 
-      const newName = prompt('שם מלא:', name || '');
-      if (newName === null) return;
-      const newPhone = prompt('טלפון:', phone || '');
-      if (newPhone === null) return;
-      const newType = prompt('סוג (PURCHASE / INTERESTED):', type || 'INTERESTED');
-      if (newType === null) return;
-      const newStatus = prompt('סטטוס (טופל / לא טופל):', status || 'לא טופל');
-      if (newStatus === null) return;
-      const newProducts = prompt('מוצרים / הודעה:', products || '');
-      if (newProducts === null) return;
-      const newPrice = prompt('מחיר (מספר):', price || '0');
-      if (newPrice === null) return;
-      // עדכון מקומי בלבד
+    function openLeadModal(email, name, phone, type, status, products, price) {
+      currentEditEmail = safeDecode(email);
+      document.getElementById('editName').value = safeDecode(name) || '';
+      document.getElementById('editEmail').value = currentEditEmail;
+      document.getElementById('editPhone').value = safeDecode(phone) || '';
+      document.getElementById('editType').value = safeDecode(type) || 'INTERESTED';
+      document.getElementById('editStatus').value = safeDecode(status) || 'לא טופל';
+      document.getElementById('editProducts').value = safeDecode(products) || '';
+      document.getElementById('editPrice').value = safeDecode(price) || '';
+      document.getElementById('leadEditModal').style.display = 'flex';
+    }
+
+    function closeLeadModal() {
+      document.getElementById('leadEditModal').style.display = 'none';
+      currentEditEmail = '';
+    }
+
+    function saveLeadModal() {
+      if (!currentEditEmail) return;
+      const newName = document.getElementById('editName').value || '';
+      const newPhone = document.getElementById('editPhone').value || '';
+      const newType = document.getElementById('editType').value || 'INTERESTED';
+      const newStatus = document.getElementById('editStatus').value || 'לא טופל';
+      const newProducts = document.getElementById('editProducts').value || '';
+      const newPrice = document.getElementById('editPrice').value || '';
+
       const leads = JSON.parse(localStorage.getItem('leads') || '[]');
-      const idx = leads.findIndex(l => (l.email || '').toString() === email);
+      const idx = leads.findIndex(l => (l.email || '').toString() === currentEditEmail);
       if (idx !== -1) {
         leads[idx].name = newName;
         leads[idx].phone = newPhone;
@@ -1062,7 +1174,7 @@
         displayLeads(allLeads);
       }
 
-      alert('✅ הליד עודכן מקומית');
+      closeLeadModal();
     }
 
     function deleteLeadLocal(email) {
@@ -1219,7 +1331,7 @@
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify({ action: 'sendNewsletter', data: payload }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
         
         const result = await response.json();
@@ -1246,37 +1358,46 @@
       }
     }
     
-    // ===== FILE SENDER =====
-    async function loadCustomersAndFiles() {
-      // טען לקוחות מ-Google Sheets
-      try {
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getCustomersList`);
-        const data = await response.json();
-        allCustomers = Array.isArray(data) ? data : (data.customers || []);
-        renderCustomerList(allCustomers);
-        console.log('✅ נטענו', allCustomers.length, 'לקוחות');
-      } catch (error) {
-        console.error('שגיאה בטעינת לקוחות:', error);
-        // גיבוי מקומי
-        const uniqueEmails = new Set();
-        allCustomers = [];
-        allLeads.forEach(lead => {
-          if (lead.email && lead.email.includes('@') && !uniqueEmails.has(lead.email)) {
-            uniqueEmails.add(lead.email);
-            allCustomers.push({ email: lead.email, name: lead.name || 'לקוח' });
-          }
-        });
-        allCustomers.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-        renderCustomerList(allCustomers);
-        console.log('⚠️ טעינה מקומית:', allCustomers.length, 'לקוחות');
-      }
+    // ===== DASHBOARD =====
+    function loadDashboard() {
+      const visits = localStorage.getItem('siteVisits') || 0;
+      document.getElementById('totalVisits').textContent = visits;
       
-      // טען קבצים מ-Google Drive
-      try {
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getFilesList`);
-        const data = await response.json();
-        allFiles = Array.isArray(data) ? data : (data.files || []);
-        renderFileList(allFiles);
+      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      computeDashboardFromLeads(leads);
+    }
+
+    function computeDashboardFromLeads(leads) {
+      const safeLeads = Array.isArray(leads) ? leads : [];
+      document.getElementById('totalLeads').textContent = safeLeads.length;
+
+      const purchaseCount = safeLeads.filter(l => {
+        const price = parseFloat((l.price || '').toString().replace(/[^\d.]/g, '')) || 0;
+        return price > 0;
+      }).length;
+
+      const interestedCount = safeLeads.filter(l => {
+        const text = `${l.message || ''} ${l.products || ''}`;
+        return text.includes('ייעוץ');
+      }).length;
+
+      const totalRevenue = safeLeads.reduce((sum, l) => {
+        const price = parseFloat((l.price || '').toString().replace(/[^\d.]/g, '')) || 0;
+        return sum + price;
+      }, 0);
+
+      document.getElementById('totalPurchases').textContent = purchaseCount;
+      document.getElementById('totalInterested').textContent = interestedCount;
+      document.getElementById('totalRevenue').textContent = '₪' + totalRevenue.toLocaleString('he-IL');
+
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const recentLeads = safeLeads.filter(l => l.date && new Date(l.date) >= sevenDaysAgo);
+      const chartHtml = recentLeads.length > 0 
+        ? `<p style="color: #666;">לידים חדשים: <strong>${recentLeads.length}</strong></p>`
+        : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
+      document.getElementById('recentLeadsChart').innerHTML = chartHtml;
+    }
         console.log('✅ נטענו', allFiles.length, 'קבצים');
       } catch (error) {
         console.error('שגיאה בטעינת קבצים:', error);
@@ -1381,7 +1502,7 @@
             emails: emails,
             files: files
           }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
         
         const result = await response.json();
@@ -1476,7 +1597,7 @@
             endDate: endDate,
             key: key
           }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
         
         const result = await response.json();
