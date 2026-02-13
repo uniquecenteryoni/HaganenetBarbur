@@ -288,6 +288,7 @@ function extractLeadsFromPanel() {
 
 /**
  * קבלת נתוני לידים כולל סטטוס
+ * מבנה העמודות: A=תאריך, B=מייל, C=טלפון, D=שם, E=מקור, F=סטטוס, G=מוצרים, H=מחיר
  */
 function getLeadsDataForPanel() {
   try {
@@ -298,15 +299,15 @@ function getLeadsDataForPanel() {
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       leads.push({
-        date: row[0],
-        email: row[1],
-        name: row[2],
-        phone: row[3],
-        type: row[4],
-        status: row[5] || 'לא טופל', // ברירת מחדל
-        message: row[6] || '',
-        products: row[7] || '',
-        price: row[8] || ''
+        date: row[0],                    // A - תאריך
+        email: row[1],                   // B - מייל
+        phone: row[2],                   // C - טלפון
+        name: row[3],                    // D - שם מלא
+        type: row[4],                    // E - מקור הליד
+        status: row[5] || 'לא טופל',    // F - סטטוס (ברירת מחדל)
+        products: row[6] || '',          // G - מה רכש
+        price: row[7] || '0',            // H - עלות מוצר
+        message: row[6] || ''            // G - גם בשדה message לתאימות
       });
     }
     
