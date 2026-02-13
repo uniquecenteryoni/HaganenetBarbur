@@ -623,10 +623,10 @@
     <div class="tab-content active" id="dashboard">
       <h2 style="margin-bottom: 1.5rem; color: #667eea;">📈 סקירה כללית</h2>
       <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-        <div class="stat-card">
+        <div class="stat-card" id="visitsCard" style="cursor: pointer;">
           <h3>ביקורים באתר</h3>
           <div class="number" id="totalVisits">-</div>
-          <div class="subtitle">סך הכל ביקורים</div>
+          <div class="subtitle" id="visitsSubtitle">יומי</div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
           <h3>סה"כ לידים</h3>
@@ -642,6 +642,11 @@
           <h3>פניות ייעוץ</h3>
           <div class="number" id="totalInterested">-</div>
           <div class="subtitle">טפסי צור קשר</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);">
+          <h3>לידים חדשים</h3>
+          <div class="number" id="totalNewLeads">-</div>
+          <div class="subtitle">סטטוס: לא טופל</div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
           <h3>💰 סה"כ מכירות</h3>
@@ -850,6 +855,7 @@
     
     // Initialize Quill Editor (for newsletter)
     let quill;
+    let visitsMode = 'daily';
     
     // Data Storage
     let allLeads = [];
@@ -912,6 +918,11 @@
       loadDashboard();
       loadLeads(); // טוען מקומית בלבד
       trackVisit();
+
+      const visitsCard = document.getElementById('visitsCard');
+      if (visitsCard) {
+        visitsCard.addEventListener('click', cycleVisitsMode);
+      }
     }
     
     // Tab Switching
@@ -1410,11 +1421,9 @@
     
     // ===== DASHBOARD =====
     function loadDashboard() {
-      const visits = localStorage.getItem('siteVisits') || 0;
-      document.getElementById('totalVisits').textContent = visits;
-      
       const leads = JSON.parse(localStorage.getItem('leads') || '[]');
       computeDashboardFromLeads(leads);
+      updateVisitsDisplay();
     }
 
     function computeDashboardFromLeads(leads) {
@@ -1431,6 +1440,8 @@
         return text.includes('ייעוץ');
       }).length;
 
+      const newLeadsCount = safeLeads.filter(l => (l.status || 'לא טופל') === 'לא טופל').length;
+
       const totalRevenue = safeLeads.reduce((sum, l) => {
         const price = parseFloat((l.price || '').toString().replace(/[^\d.]/g, '')) || 0;
         return sum + price;
@@ -1438,6 +1449,7 @@
 
       document.getElementById('totalPurchases').textContent = purchaseCount;
       document.getElementById('totalInterested').textContent = interestedCount;
+      document.getElementById('totalNewLeads').textContent = newLeadsCount;
       document.getElementById('totalRevenue').textContent = '₪' + totalRevenue.toLocaleString('he-IL');
 
       const sevenDaysAgo = new Date();
@@ -1447,6 +1459,30 @@
         ? `<p style="color: #666;">לידים חדשים: <strong>${recentLeads.length}</strong></p>`
         : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
       document.getElementById('recentLeadsChart').innerHTML = chartHtml;
+    }
+
+    function getVisitsCounts() {
+      const daily = parseInt(localStorage.getItem('siteVisitsDailyCount') || '0');
+      const weekly = parseInt(localStorage.getItem('siteVisitsWeeklyCount') || '0');
+      const monthly = parseInt(localStorage.getItem('siteVisitsMonthlyCount') || '0');
+      return { daily, weekly, monthly };
+    }
+
+    function updateVisitsDisplay() {
+      const counts = getVisitsCounts();
+      const modeLabels = {
+        daily: 'יומי',
+        weekly: 'שבועי',
+        monthly: 'חודשי'
+      };
+      const value = visitsMode === 'daily' ? counts.daily : (visitsMode === 'weekly' ? counts.weekly : counts.monthly);
+      document.getElementById('totalVisits').textContent = value;
+      document.getElementById('visitsSubtitle').textContent = modeLabels[visitsMode];
+    }
+
+    function cycleVisitsMode() {
+      visitsMode = visitsMode === 'daily' ? 'weekly' : (visitsMode === 'weekly' ? 'monthly' : 'daily');
+      updateVisitsDisplay();
     }
 
     // ===== FILE SENDER =====

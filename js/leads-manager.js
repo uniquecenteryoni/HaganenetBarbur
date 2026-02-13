@@ -207,6 +207,9 @@ const VisitsTracker = {
         const visits = parseInt(localStorage.getItem('siteVisits') || '0');
         localStorage.setItem('siteVisits', visits + 1);
         sessionStorage.setItem('visitCounted', 'true');
+
+        // עדכון ספירות יומי/שבועי/חודשי
+        this.updatePeriodCounts();
         
         // שמירת מידע נוסף על הביקור
         this.saveVisitInfo();
@@ -214,6 +217,47 @@ const VisitsTracker = {
     } catch (error) {
       console.error('שגיאה במעקב ביקורים:', error);
     }
+  },
+
+  updatePeriodCounts() {
+    const now = new Date();
+    const dayKey = now.toISOString().split('T')[0];
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const weekKey = this.getWeekKey(now);
+
+    const storedDayKey = localStorage.getItem('siteVisitsDailyKey');
+    const storedWeekKey = localStorage.getItem('siteVisitsWeeklyKey');
+    const storedMonthKey = localStorage.getItem('siteVisitsMonthlyKey');
+
+    let dailyCount = parseInt(localStorage.getItem('siteVisitsDailyCount') || '0');
+    let weeklyCount = parseInt(localStorage.getItem('siteVisitsWeeklyCount') || '0');
+    let monthlyCount = parseInt(localStorage.getItem('siteVisitsMonthlyCount') || '0');
+
+    if (storedDayKey !== dayKey) {
+      dailyCount = 0;
+      localStorage.setItem('siteVisitsDailyKey', dayKey);
+    }
+    if (storedWeekKey !== weekKey) {
+      weeklyCount = 0;
+      localStorage.setItem('siteVisitsWeeklyKey', weekKey);
+    }
+    if (storedMonthKey !== monthKey) {
+      monthlyCount = 0;
+      localStorage.setItem('siteVisitsMonthlyKey', monthKey);
+    }
+
+    localStorage.setItem('siteVisitsDailyCount', dailyCount + 1);
+    localStorage.setItem('siteVisitsWeeklyCount', weeklyCount + 1);
+    localStorage.setItem('siteVisitsMonthlyCount', monthlyCount + 1);
+  },
+
+  getWeekKey(date) {
+    const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = tmp.getUTCDay() || 7;
+    tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+    return `${tmp.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
   },
   
   /**
