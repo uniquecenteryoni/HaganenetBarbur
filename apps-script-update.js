@@ -5,14 +5,16 @@
 
 // --- תפריט ראשי (פועל רק בתוך גיליון) ---
 function onOpen() {
+  try {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('📧 מערכת דיוור')
-    .addItem('🔄 עדכן לידים מ-Inbox', 'extractFormspreeLeads')
+    .addItem('🔄 עדכן לידים מ-Inbox', 'extractFormspreeLeadsMenu')
     .addSeparator()
     .addItem('📤 ממשק שליחת קבצים', 'showFileSenderDialog')
     .addSeparator()
     .addItem('פתח ממשק שליחת ניוזלטר', 'showDialog')
     .addToUi();
+  } catch(e) { Logger.log('onOpen: ' + e); }
 }
 
 // --- הגדרות ---
@@ -76,10 +78,17 @@ function doPost(e) {
 // --- ייבוא לידים ---
 function extractFormspreeLeads() {
   const count = extractFormspreeLeadsSilent();
+  Logger.log('הסתיים! נוספו ' + count + ' לידים חדשים.');
+  return count;
+}
+
+// גרסת תפריט בלבד (לא נקראת מהוובאפ)
+function extractFormspreeLeadsMenu() {
+  const count = extractFormspreeLeadsSilent();
   try {
     SpreadsheetApp.getUi().alert('הסתיים! נוספו ' + count + ' לידים חדשים.');
   } catch (e) {
-    // Web app context – no UI
+    Logger.log('הסתיים! נוספו ' + count + ' לידים חדשים.');
   }
   return count;
 }
@@ -323,13 +332,17 @@ function extractValue(body, regex) {
 }
 
 function showFileSenderDialog() {
-  const html = HtmlService.createHtmlOutputFromFile('FileSender').setWidth(600).setHeight(700);
-  SpreadsheetApp.getUi().showModalDialog(html, 'מערכת שליחת קבצים');
+  try {
+    const html = HtmlService.createHtmlOutputFromFile('FileSender').setWidth(600).setHeight(700);
+    SpreadsheetApp.getUi().showModalDialog(html, 'מערכת שליחת קבצים');
+  } catch(e) { Logger.log('showFileSenderDialog: ' + e); }
 }
 
 function showDialog() {
-  const html = HtmlService.createHtmlOutputFromFile('Index').setWidth(600).setHeight(850);
-  SpreadsheetApp.getUi().showModalDialog(html, 'מערכת דיוור - הגננת ברבור');
+  try {
+    const html = HtmlService.createHtmlOutputFromFile('Index').setWidth(600).setHeight(850);
+    SpreadsheetApp.getUi().showModalDialog(html, 'מערכת דיוור - הגננת ברבור');
+  } catch(e) { Logger.log('showDialog: ' + e); }
 }
 
 // --- ניוזלטר ---
