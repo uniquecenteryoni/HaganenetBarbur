@@ -689,7 +689,7 @@
     const ADMIN_PASSWORD = 'barbur2026'; // שני את הסיסמה לפי רצונך!
     
     // Google Apps Script URL
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9zkL3bAyu5RB2ZEUFC-BEaw5MngNPE4eUj3RBth-pbwuRQ2Cka757RF19rcPKKgR-vA/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwX1SeLvByB3ROdeSRzGcueRj2JFJog2CPORk8hP89rMbzHP-gkBqgPX1pZInhg47iq3A/exec';
     
     // Initialize Quill Editor (for newsletter)
     let quill;
@@ -910,7 +910,10 @@
           <td><span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8em;">${status}</span></td>
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
-          <td><button onclick="sendFileToLead('${lead.email}', '${(lead.name || '').replace(/'/g, "\\'")}')">📤 שלח קובץ</button></td>
+          <td>
+            <button onclick="sendFileToLead('${lead.email}', '${(lead.name || '').replace(/'/g, "\\'")}')">📤 שלח קובץ</button>
+            <button onclick="editLead('${lead.email}', '${(lead.name || '').replace(/'/g, "\\'")}', '${(lead.phone || '').replace(/'/g, "\\'")}', '${(lead.type || '').replace(/'/g, "\\'")}', '${(lead.status || '').replace(/'/g, "\\'")}', '${(lead.products || lead.message || '').replace(/'/g, "\\'")}', '${(lead.price || '').toString().replace(/'/g, "\\'")}')">✏️ עריכה</button>
+          </td>
         </tr>
       `}).join('');
     }
@@ -993,6 +996,63 @@
       setTimeout(() => {
         document.getElementById('manualTab').scrollIntoView({ behavior: 'smooth' });
       }, 300);
+    }
+
+    async function editLead(email, name, phone, type, status, products, price) {
+      const newName = prompt('שם מלא:', name || '');
+      if (newName === null) return;
+      const newPhone = prompt('טלפון:', phone || '');
+      if (newPhone === null) return;
+      const newType = prompt('סוג (PURCHASE / INTERESTED):', type || 'INTERESTED');
+      if (newType === null) return;
+      const newStatus = prompt('סטטוס (טופל / לא טופל):', status || 'לא טופל');
+      if (newStatus === null) return;
+      const newProducts = prompt('מוצרים / הודעה:', products || '');
+      if (newProducts === null) return;
+      const newPrice = prompt('מחיר (מספר):', price || '0');
+      if (newPrice === null) return;
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'updateLead',
+            email: email,
+            updates: {
+              name: newName,
+              phone: newPhone,
+              type: newType,
+              status: newStatus,
+              products: newProducts,
+              price: newPrice
+            }
+          })
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error || 'שגיאה בעדכון ליד');
+
+        // עדכן מקומית
+        const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+        const idx = leads.findIndex(l => l.email === email);
+        if (idx !== -1) {
+          leads[idx].name = newName;
+          leads[idx].phone = newPhone;
+          leads[idx].type = newType;
+          leads[idx].status = newStatus;
+          leads[idx].products = newProducts;
+          leads[idx].message = newProducts;
+          leads[idx].price = newPrice;
+          localStorage.setItem('leads', JSON.stringify(leads));
+          allLeads = leads;
+          displayLeads(allLeads);
+        }
+
+        alert('✅ הליד עודכן בהצלחה');
+      } catch (error) {
+        alert('❌ שגיאה בעדכון הליד: ' + error.message);
+      }
     }
     
     // Search and Filter

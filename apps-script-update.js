@@ -19,6 +19,8 @@ function doPost(e) {
       return processAndSendFilesFromPanel(data.startDate, data.endDate, data.key);
     } else if (action === 'updateLeadStatus') {
       return updateLeadStatusFromPanel(data.email, data.status);
+    } else if (action === 'updateLead') {
+      return updateLeadFromPanel(data.email, data.updates);
     }
     
     return ContentService.createTextOutput(JSON.stringify({
@@ -258,6 +260,37 @@ function updateLeadStatusFromPanel(email, status) {
       success: true
     })).setMimeType(ContentService.MimeType.JSON);
     
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * עדכון ליד (שם/טלפון/סוג/סטטוס/מוצרים/מחיר)
+ */
+function updateLeadFromPanel(email, updates) {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets()[0];
+    const data = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][1] === email) { // עמודה B = מייל
+        if (updates.name !== undefined) sheet.getRange(i + 1, 4).setValue(updates.name);   // D
+        if (updates.phone !== undefined) sheet.getRange(i + 1, 3).setValue(updates.phone); // C
+        if (updates.type !== undefined) sheet.getRange(i + 1, 5).setValue(updates.type);   // E
+        if (updates.status !== undefined) sheet.getRange(i + 1, 6).setValue(updates.status); // F
+        if (updates.products !== undefined) sheet.getRange(i + 1, 7).setValue(updates.products); // G
+        if (updates.price !== undefined) sheet.getRange(i + 1, 8).setValue(updates.price); // H
+        break;
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true
+    })).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
