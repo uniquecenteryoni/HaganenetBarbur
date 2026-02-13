@@ -119,17 +119,14 @@ function extractFormspreeLeadsSilent() {
         .replace(/&quot;/g, '"')
         .replace(/&amp;/g, '&');
 
-      const name = extractValue(body, /name[:]?
-\s*\n*(.*)/i);
-      const phone = extractValue(body, /phone[:]?
-\s*\n*(.*)/i);
-      const email = extractValue(body, /email[:]?
-\s*\n*(.*)/i);
+      const name = extractValue(body, /name[:]?\s*\n*(.*)/i);
+      const phone = extractValue(body, /phone[:]?\s*\n*(.*)/i);
+      const email = extractValue(body, /email[:]?\s*\n*(.*)/i);
 
       const messageMatch = body.match(/message[:]?\s*\n*([\s\S]*?)(?=סה"כ|₪|tag|$)/i);
       let cleanProducts = "";
       if (messageMatch) {
-        const rawText = messageMatch[2] || messageMatch[1] || '';
+        const rawText = messageMatch[1] || '';
         const items = rawText.match(/\d+\.\s*([^\n\r]+)/g);
         cleanProducts = items
           ? items.map(item => item.replace(/^\d+\.\s*/, '').replace(/🎁/g, '').trim()).join("\n")
@@ -137,7 +134,7 @@ function extractFormspreeLeadsSilent() {
       }
 
       const price = (body.match(/(?:סה"כ|₪)\s*[:]*\s*([\d.]+)/i) || ["", "0.00"])[1];
-      const tag = (body.match(/tag[:]?\s*\n*(.*)/i) || ["", "Formspree"])[2].trim();
+      const tag = (body.match(/tag[:]?\s*\n*(.*)/i) || ["", "Formspree"])[1].trim();
 
       if (email || name) {
         sheet.appendRow([msg.getDate(), email, phone, name, tag, 'לא טופל', cleanProducts, price]);
