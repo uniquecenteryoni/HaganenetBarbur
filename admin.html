@@ -1213,10 +1213,17 @@
         
         if (result.success) {
           const count = result.count || 0;
+          const threads = result.threadsFound || 0;
+          const scanned = result.messagesScanned || 0;
+          const dupes = result.duplicatesSkipped || 0;
+          console.log(`📊 Import results: ${count} new, ${threads} threads, ${scanned} messages, ${dupes} duplicates`);
+          
           if (count > 0) {
-            showToast(`✅ יובאו ${count} לידים חדשים! מרענן רשימה...`, 'success', 4000);
+            showToast(`✅ יובאו ${count} לידים חדשים! (נסרקו ${scanned} מיילים) מרענן רשימה...`, 'success', 4000);
+          } else if (threads === 0) {
+            showToast('ℹ️ לא נמצאו מיילים מ-Formspree אחרי הליד האחרון.', 'info', 4000);
           } else {
-            showToast('ℹ️ לא נמצאו לידים חדשים. מרענן רשימה...', 'info', 3000);
+            showToast(`ℹ️ נסרקו ${scanned} מיילים, ${dupes} כפילויות. אין לידים חדשים.`, 'info', 4000);
           }
           
           // שלב 2: רענון אוטומטי - בדיוק כמו כניסה לטאב

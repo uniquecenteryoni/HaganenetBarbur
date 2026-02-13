@@ -79,27 +79,32 @@ function doPost(e) {
 
 // --- ייבוא לידים ---
 function extractFormspreeLeads() {
-  const count = extractFormspreeLeadsSilent();
-  Logger.log('הסתיים! נוספו ' + count + ' לידים חדשים.');
-  return count;
+  const result = extractFormspreeLeadsSilent();
+  Logger.log('הסתיים! נוספו ' + result.count + ' לידים חדשים. (threads: ' + result.threadsFound + ', scanned: ' + result.messagesScanned + ', duplicates: ' + result.duplicatesSkipped + ')');
+  return result.count;
 }
 
 // גרסת תפריט בלבד (לא נקראת מהוובאפ)
 function extractFormspreeLeadsMenu() {
-  const count = extractFormspreeLeadsSilent();
+  const result = extractFormspreeLeadsSilent();
   try {
-    SpreadsheetApp.getUi().alert('הסתיים! נוספו ' + count + ' לידים חדשים.');
+    SpreadsheetApp.getUi().alert('הסתיים! נוספו ' + result.count + ' לידים חדשים.');
   } catch (e) {
-    Logger.log('הסתיים! נוספו ' + count + ' לידים חדשים.');
+    Logger.log('הסתיים! נוספו ' + result.count + ' לידים חדשים.');
   }
-  return count;
+  return result.count;
 }
 
 function extractLeadsFromPanel() {
   try {
-    const count = extractFormspreeLeadsSilent();
-    return ContentService.createTextOutput(JSON.stringify({ success: true, count: count }))
-      .setMimeType(ContentService.MimeType.JSON);
+    const result = extractFormspreeLeadsSilent();
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: true, 
+      count: result.count,
+      threadsFound: result.threadsFound,
+      messagesScanned: result.messagesScanned,
+      duplicatesSkipped: result.duplicatesSkipped
+    })).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -114,14 +119,30 @@ function extractFormspreeLeadsSilent() {
 
   const lastLeadDate = getLastLeadDate(sheet);
   const afterQuery = lastLeadDate ? (' after:' + formatDateForGmail(lastLeadDate)) : '';
-  const query = 'from:noreply@formspree.io label:inbox -in:trash -in:spam -label:' + labelName + afterQuery;
+  
+  // חיפוש בלי סינון לפי תגית - בודקים מול הגיליון במקום
+  const query = 'from:noreply@formspree.io -in:trash -in:spam' + afterQuery;
   const threads = GmailApp.search(query);
+  
+  // בניית סט של לידים קיימים בגיליון (לפי מייל+תאריך)
+  const existingData = sheet.getDataRange().getValues();
+  const existingKeys = new Set();
+  for (let i = 1; i < existingData.length; i++) {
+    const email = (existingData[i][1] || '').toString().trim().toLowerCase();
+    const date = existingData[i][0] ? new Date(existingData[i][0]).getTime() : 0;
+    if (email) existingKeys.add(email + '|' + date);
+  }
+  
   let count = 0;
+  let threadsFound = threads.length;
+  let messagesScanned = 0;
+  let duplicatesSkipped = 0;
 
   threads.forEach(thread => {
     const messages = thread.getMessages();
     messages.forEach(msg => {
       if (msg.isInTrash()) return;
+      messagesScanned++;
       const msgDate = msg.getDate();
       if (lastLeadDate && msgDate <= lastLeadDate) return;
       const body = msg.getPlainBody()
@@ -133,6 +154,10 @@ function extractFormspreeLeadsSilent() {
       const name = extractValue(body, /name[:]?\s*\n*(.*)/i);
       const phone = extractValue(body, /phone[:]?\s*\n*(.*)/i);
       const email = extractValue(body, /email[:]?\s*\n*(.*)/i);
+      
+      // בדיקת כפילות מול הגיליון
+      const key = email.toLowerCase().trim() + '|' + msgDate.getTime();
+      if (existingKeys.has(key)) { duplicatesSkipped++; return; }
 
       const messageMatch = body.match(/message[:]?\s*\n*([\s\S]*?)(?=סה"כ|₪|tag|$)/i);
       let cleanProducts = "";
@@ -149,13 +174,14 @@ function extractFormspreeLeadsSilent() {
 
       if (email || name) {
         sheet.appendRow([msg.getDate(), email, phone, name, tag, 'לא טופל', cleanProducts, price]);
+        existingKeys.add(key); // לזכור שנוסף
         count++;
       }
     });
     thread.addLabel(label);
   });
 
-  return count;
+  return { count: count, threadsFound: threadsFound, messagesScanned: messagesScanned, duplicatesSkipped: duplicatesSkipped };
 }
 
 function getLastLeadDate(sheet) {
