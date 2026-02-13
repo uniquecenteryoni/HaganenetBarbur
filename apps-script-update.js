@@ -103,7 +103,8 @@ function extractLeadsFromPanel() {
       count: result.count,
       threadsFound: result.threadsFound,
       messagesScanned: result.messagesScanned,
-      duplicatesSkipped: result.duplicatesSkipped
+      duplicatesSkipped: result.duplicatesSkipped,
+      debug: result.debug
     })).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
@@ -181,7 +182,19 @@ function extractFormspreeLeadsSilent() {
     thread.addLabel(label);
   });
 
-  return { count: count, threadsFound: threadsFound, messagesScanned: messagesScanned, duplicatesSkipped: duplicatesSkipped };
+  return { 
+    count: count, 
+    threadsFound: threadsFound, 
+    messagesScanned: messagesScanned, 
+    duplicatesSkipped: duplicatesSkipped,
+    debug: {
+      query: query,
+      lastLeadDate: lastLeadDate ? lastLeadDate.toISOString() : null,
+      afterQuery: afterQuery,
+      existingKeysCount: existingKeys.size,
+      scriptUser: Session.getEffectiveUser().getEmail()
+    }
+  };
 }
 
 function getLastLeadDate(sheet) {
