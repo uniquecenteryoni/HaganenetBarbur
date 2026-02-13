@@ -1166,7 +1166,7 @@
       reader.readAsText(file);
     }
 
-    function parseCsvLine(line) {
+    function parseCsvLine(line, delimiter = ',') {
       const result = [];
       let current = '';
       let inQuotes = false;
@@ -1179,7 +1179,7 @@
           } else {
             inQuotes = !inQuotes;
           }
-        } else if (char === ',' && !inQuotes) {
+        } else if (char === delimiter && !inQuotes) {
           result.push(current);
           current = '';
         } else {
@@ -1190,32 +1190,80 @@
       return result;
     }
 
+    function detectCsvDelimiter(line) {
+      const counts = {
+        ',': (line.match(/,/g) || []).length,
+        ';': (line.match(/;/g) || []).length,
+        '\t': (line.match(/\t/g) || []).length
+      };
+      let best = ',';
+      let max = counts[','];
+      if (counts[';'] > max) { best = ';'; max = counts[';']; }
+      if (counts['\t'] > max) { best = '\t'; max = counts['\t']; }
+      return best;
+    }
+
+    function normalizeHeaderName(name) {
+      return (name || '').toString().trim().toLowerCase();
+    }
+
+    function getHeaderIndex(headers, aliases) {
+      for (const alias of aliases) {
+        const idx = headers.indexOf(alias);
+        if (idx >= 0) return idx;
+      }
+      return -1;
+    }
+
     function importLeadsFromCSV(csvText) {
       const lines = csvText.split(/\r?\n/).filter(l => l.trim());
       if (lines.length === 0) return 0;
-      const headers = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase());
+      const firstLine = lines[0].replace(/^\uFEFF/, '');
+      const delimiter = detectCsvDelimiter(firstLine);
+      const rawHeaders = parseCsvLine(firstLine, delimiter).map(h => normalizeHeaderName(h));
+      const hasHeader = rawHeaders.some(h => ['email', 'e-mail', 'mail', 'מייל', 'דוא"ל', 'אימייל'].includes(h));
+      const headers = hasHeader ? rawHeaders : [];
       const leads = JSON.parse(localStorage.getItem('leads') || '[]');
       let count = 0;
 
-      for (let i = 1; i < lines.length; i++) {
-        const values = parseCsvLine(lines[i]);
-        const getVal = (name, fallbackIndex) => {
-          const idx = headers.indexOf(name);
-          return idx >= 0 ? values[idx] : (values[fallbackIndex] || '');
-        };
+      const headerAliases = {
+        date: ['date', 'תאריך'],
+        email: ['email', 'e-mail', 'mail', 'מייל', 'דוא"ל', 'אימייל'],
+        phone: ['phone', 'טלפון', 'נייד', 'mobile'],
+        name: ['name', 'שם', 'שם מלא', 'fullname', 'full name'],
+        type: ['type', 'מקור', 'source'],
+        message: ['message', 'הודעה', 'פרטים', 'notes', 'note'],
+        products: ['products', 'מוצרים', 'מוצר', 'תוכן'],
+        price: ['price', 'סכום', 'מחיר', 'סה"כ', 'סה׳׳כ', 'סהכ'],
+        status: ['status', 'סטטוס']
+      };
+
+      const getValFromHeaders = (values, aliases, fallbackIndex) => {
+        if (headers.length > 0) {
+          const idx = getHeaderIndex(headers, aliases.map(normalizeHeaderName));
+          if (idx >= 0) return values[idx] || '';
+        }
+        return values[fallbackIndex] || '';
+      };
+
+      const startIndex = hasHeader ? 1 : 0;
+      for (let i = startIndex; i < lines.length; i++) {
+        const values = parseCsvLine(lines[i], delimiter);
 
         const lead = {
           id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-          date: getVal('date', 0) || new Date().toISOString(),
-          email: getVal('email', 1) || '',
-          phone: getVal('phone', 2) || '',
-          name: getVal('name', 3) || '',
-          type: getVal('type', 4) || 'INTERESTED',
-          message: getVal('message', 5) || getVal('products', 5) || '',
-          products: getVal('products', 5) || '',
-          price: getVal('price', 6) || '',
-          status: getVal('status', 7) || 'לא טופל'
+          date: getValFromHeaders(values, headerAliases.date, 0) || new Date().toISOString(),
+          email: getValFromHeaders(values, headerAliases.email, 1) || '',
+          phone: getValFromHeaders(values, headerAliases.phone, 2) || '',
+          name: getValFromHeaders(values, headerAliases.name, 3) || '',
+          type: getValFromHeaders(values, headerAliases.type, 4) || 'INTERESTED',
+          message: getValFromHeaders(values, headerAliases.message, 5) || getValFromHeaders(values, headerAliases.products, 5) || '',
+          products: getValFromHeaders(values, headerAliases.products, 5) || '',
+          price: getValFromHeaders(values, headerAliases.price, 6) || '',
+          status: getValFromHeaders(values, headerAliases.status, 7) || 'לא טופל'
         };
+
+        if (!lead.email && !lead.name) continue;
 
         leads.push(lead);
         count++;
