@@ -355,7 +355,9 @@ function extractFormspreeLeadsSilent() {
   const labelName = "Processed_Formspree";
   let label = GmailApp.getUserLabelByName(labelName) || GmailApp.createLabel(labelName);
 
-  const query = 'from:noreply@formspree.io label:inbox -in:trash -in:spam -label:' + labelName;
+  const lastLeadDate = getLastLeadDate(sheet);
+  const afterQuery = lastLeadDate ? (' after:' + formatDateForGmail(lastLeadDate)) : '';
+  const query = 'from:noreply@formspree.io label:inbox -in:trash -in:spam -label:' + labelName + afterQuery;
   const threads = GmailApp.search(query);
   let count = 0;
 
@@ -363,6 +365,8 @@ function extractFormspreeLeadsSilent() {
     const messages = thread.getMessages();
     messages.forEach(msg => {
       if (msg.isInTrash()) return;
+      const msgDate = msg.getDate();
+      if (lastLeadDate && msgDate <= lastLeadDate) return;
       let body = msg.getPlainBody().replace(/&amp;#34;/g, '"').replace(/&#34;/g, '"').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
       
       const name = (extractValue(body, /name[:]?\s*\n*(.*)/i) || '').toString().trim();
@@ -390,6 +394,33 @@ function extractFormspreeLeadsSilent() {
   });
 
   return count;
+}
+
+function getLastLeadDate(sheet) {
+  try {
+    const lastRow = sheet.getLastRow();
+    if (lastRow < 2) return null;
+    const values = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    let maxDate = null;
+    values.forEach(row => {
+      const val = row[0];
+      if (!val) return;
+      const d = val instanceof Date ? val : new Date(val);
+      if (!isNaN(d.getTime()) && (!maxDate || d > maxDate)) {
+        maxDate = d;
+      }
+    });
+    return maxDate;
+  } catch (e) {
+    return null;
+  }
+}
+
+function formatDateForGmail(dateObj) {
+  const y = dateObj.getFullYear();
+  const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const d = String(dateObj.getDate()).padStart(2, '0');
+  return `${y}/${m}/${d}`;
 }
 
 /**
