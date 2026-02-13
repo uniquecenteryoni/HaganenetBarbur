@@ -828,7 +828,17 @@
         const data = await response.json();
         
         if (data.success && data.leads) {
-          allLeads = data.leads;
+          allLeads = data.leads.map(lead => ({
+            ...lead,
+            email: lead.email != null ? lead.email.toString() : '',
+            name: lead.name != null ? lead.name.toString() : '',
+            phone: lead.phone != null ? lead.phone.toString() : '',
+            type: lead.type != null ? lead.type.toString() : 'UNKNOWN',
+            status: lead.status != null ? lead.status.toString() : 'לא טופל',
+            products: lead.products != null ? lead.products.toString() : '',
+            message: lead.message != null ? lead.message.toString() : '',
+            price: lead.price != null ? lead.price.toString() : ''
+          }));
           
           // שמור גם ב-localStorage לגיבוי
           localStorage.setItem('leads', JSON.stringify(allLeads));
@@ -882,7 +892,18 @@
     }
     
     function loadLeads() {
-      allLeads = JSON.parse(localStorage.getItem('leads') || '[]');
+      const localLeads = JSON.parse(localStorage.getItem('leads') || '[]');
+      allLeads = localLeads.map(lead => ({
+        ...lead,
+        email: lead.email != null ? lead.email.toString() : '',
+        name: lead.name != null ? lead.name.toString() : '',
+        phone: lead.phone != null ? lead.phone.toString() : '',
+        type: lead.type != null ? lead.type.toString() : 'UNKNOWN',
+        status: lead.status != null ? lead.status.toString() : 'לא טופל',
+        products: lead.products != null ? lead.products.toString() : '',
+        message: lead.message != null ? lead.message.toString() : '',
+        price: lead.price != null ? lead.price.toString() : ''
+      }));
       displayLeads(allLeads);
     }
 
@@ -908,7 +929,7 @@
         const tagClass = leadType.toLowerCase();
         return `
         <tr>
-          <td>${new Date(lead.date).toLocaleDateString('he-IL')}</td>
+          <td>${lead.date ? new Date(lead.date).toLocaleDateString('he-IL') : '-'}</td>
           <td>${lead.name || '-'}</td>
           <td>${lead.email || '-'}</td>
           <td>${lead.phone || '-'}</td>
@@ -1121,7 +1142,7 @@
       
       let csv = 'תאריך,מייל,טלפון,שם,סוג,מוצרים/הודעה,מחיר\n';
       allLeads.forEach(lead => {
-        csv += `${lead.date},"${lead.email || ''}","${lead.phone || ''}","${lead.name || ''}","${lead.type}","${(lead.message || lead.products || '').replace(/"/g, '""')}","${lead.price || ''}"\n`;
+        csv += `${lead.date},"${lead.email || ''}","${lead.phone || ''}","${lead.name || ''}","${lead.type}","${(lead.message || lead.products || '').toString().replace(/"/g, '""')}","${lead.price || ''}"\n`;
       });
       
       const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
