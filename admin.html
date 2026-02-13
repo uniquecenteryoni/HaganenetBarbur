@@ -954,7 +954,7 @@
       const visits = localStorage.getItem('siteVisits') || 0;
       document.getElementById('totalVisits').textContent = visits;
       
-      const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+      const leads = [];
       document.getElementById('totalLeads').textContent = leads.length;
       
       const purchases = leads.filter(l => l.type === 'PURCHASE').length;
@@ -1268,6 +1268,12 @@
         leads.push(lead);
         count++;
       }
+
+      leads.sort((a, b) => {
+        const da = a.date ? new Date(a.date) : new Date(0);
+        const db = b.date ? new Date(b.date) : new Date(0);
+        return db - da;
+      });
 
       localStorage.setItem('leads', JSON.stringify(leads));
       return count;
