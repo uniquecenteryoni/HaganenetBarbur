@@ -847,7 +847,7 @@
     
     // Login Function
     function login() {
-      const password = document.getElementById('passwordInput').value;
+      const password = document.getElementById('passwordInput').value.trim();
       if (password === ADMIN_PASSWORD) {
         sessionStorage.setItem('adminLoggedIn', 'true');
         showAdminPanel();
@@ -1037,14 +1037,18 @@
         const status = lead.status || 'לא טופל';
         const statusColor = status === 'טופל' ? '#4caf50' : '#ff9800';
         const leadType = (lead.type || 'UNKNOWN').toString();
-        const tagClass = leadType.toLowerCase();
+        const typeLower = leadType.toLowerCase();
+        const isPurchase = typeLower.includes('purchase');
+        const isInterested = typeLower.includes('interested') || typeLower.includes('intrested') || typeLower.includes('ייעוץ');
+        const tagClass = isPurchase ? 'purchase' : (isInterested ? 'interested' : typeLower);
+        const typeLabel = isPurchase ? 'רכש' : (isInterested ? 'יצרה קשר' : leadType);
         return `
         <tr onclick="openLeadModal('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.phone)}', '${encodeAttr(leadType)}', '${encodeAttr(status)}', '${encodeAttr(lead.products || lead.message || '')}', '${encodeAttr(lead.price || '')}')">
           <td>${lead.date ? new Date(lead.date).toLocaleDateString('he-IL') : '-'}</td>
           <td>${lead.name || '-'}</td>
           <td>${lead.email || '-'}</td>
           <td>${lead.phone || '-'}</td>
-          <td><span class="tag tag-${tagClass}">${leadType === 'PURCHASE' ? 'רכישה' : (leadType === 'INTERESTED' ? 'צור קשר' : leadType)}</span></td>
+          <td><span class="tag tag-${tagClass}">${typeLabel}</span></td>
           <td><span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8em;">${status}</span></td>
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.message || lead.products || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
