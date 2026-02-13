@@ -697,17 +697,14 @@
           <option value="PURCHASE">רכישה</option>
           <option value="INTERESTED">צור קשר</option>
         </select>
-        <button onclick="importLeadsFromEmail()" style="background: #ff9800;">📧 ייבא מהמייל</button>
-        <button onclick="triggerCsvImport()" style="background: #4caf50;">📥 ייבוא CSV</button>
+        <button onclick="importLeadsFromEmail()" style="background: #ff9800;">📧 ייבוא לידים חדשים</button>
         <button onclick="exportLeadsBackup()" style="background: #3f51b5;">💾 שמירת גיבוי</button>
         <button onclick="triggerBackupImport()" style="background: #607d8b;">♻️ שחזור גיבוי</button>
-        <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="handleCsvFile(this.files[0])">
         <input type="file" id="leadsBackupInput" accept=".json" style="display:none;" onchange="handleBackupFile(this.files[0])">
       </div>
 
       <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; color: #555; font-size: 0.9em;">
-        ✳️ עריכות/מחיקות/סטטוס כאן הן מקומיות בלבד (באתר) ואינן משנות את Google Sheets.
-        הסקריפט בגוגל מיועד רק למשיכת לידים חדשים והוספה שלהם.
+        ✳️ מחיקות מסירות גם מ-Google Sheets. עריכות וסטטוס הן מקומיות בלבד.
       </div>
       
       <div class="leads-table">
@@ -881,7 +878,7 @@
     const ADMIN_PASSWORD = 'barbur2026'; // שני את הסיסמה לפי רצונך!
     
     // Google Apps Script URL
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwX1SeLvByB3ROdeSRzGcueRj2JFJog2CPORk8hP89rMbzHP-gkBqgPX1pZInhg47iq3A/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwERXb0r6d2qb16fo8sOrnOp3QvIrfAaw3ThHUDkTBr6RYVEiISKZv_gq6kiSHxT4io4w/exec';
     
     // Toast notification system
     function showToast(message, type = 'info', duration = 3000) {
