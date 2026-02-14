@@ -770,7 +770,11 @@ function categoriesToString(input) {
 function getProductsForPanel() {
   try {
     const sheet = getOrCreateProductsSheet();
-    const data = sheet.getDataRange().getValues();
+    let data = sheet.getDataRange().getValues();
+    if (data.length <= 1) {
+      seedProductsFromFilesForPanel();
+      data = sheet.getDataRange().getValues();
+    }
     const header = data[0] || [];
     const hasCategories = header[8] === 'categories';
     const products = [];

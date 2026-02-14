@@ -815,17 +815,13 @@
     <div class="tab-content" id="products">
       <h2 style="margin-bottom: 1.5rem; color: #667eea;">🛍️ ניהול מוצרים להורדה</h2>
       
-      <button onclick="showProductForm()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 20px;">
-        ➕ הוסף מוצר חדש
-      </button>
-
-      <button onclick="seedProductsFromFiles()" style="background: #607d8b; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 20px; margin-right: 10px;">
-        🔄 יצירת מוצרים מקבצים (Drive)
-      </button>
+      <div style="margin-bottom: 20px; color: #666; font-size: 14px;">
+        ניתן לערוך ולמחוק מוצרים קיימים בלבד.
+      </div>
       
       <!-- Product Form (hidden by default) -->
       <div id="productForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-        <h3 style="margin-bottom: 15px; color: #667eea;">מוצר חדש / עריכת מוצר</h3>
+        <h3 style="margin-bottom: 15px; color: #667eea;">עריכת מוצר</h3>
         <input type="hidden" id="productId">
         
         <label>כותרת המוצר (תוצג באתר):</label>
@@ -942,7 +938,7 @@
     const ADMIN_PASSWORD = 'barbur2026'; // שני את הסיסמה לפי רצונך!
     
     // Google Apps Script URL
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWkOujqP0acIasGuLcewHqlLKj5mWPTD_bcmRVgLudbpW4M-Twq-NwXTaoNd4J_IRNHg/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzD7jKAOkaXtblTBDvGJEx_yu8GkU318WaeB03c4aBaQid_uMmc3VOoXDAKzdBgY8-0Vg/exec';
     
     // Toast notification system
     function showToast(message, type = 'info', duration = 3000) {
@@ -2294,8 +2290,6 @@
     // ===== Products Management Functions =====
     let allProducts = [];
 
-    let isSeedingProducts = false;
-
     async function loadProducts() {
       try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getProducts`);
@@ -2303,11 +2297,6 @@
         
         if (result.success && Array.isArray(result.products)) {
           allProducts = result.products;
-          if (allProducts.length === 0 && !isSeedingProducts) {
-            isSeedingProducts = true;
-            await seedProductsFromFiles();
-            return;
-          }
           renderProductsTable();
         } else {
           document.getElementById('productsTable').innerHTML = 
@@ -2538,26 +2527,6 @@
       }
     }
 
-    async function seedProductsFromFiles() {
-      if (!confirm('ליצור מוצרים לכל הקבצים שבתיקיית Drive? ניתן לערוך אחר כך.')) return;
-
-      try {
-        showToast('סורק קבצים...', 'info');
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=seedProductsFromFiles`);
-        const result = await response.json();
-
-        if (result.success) {
-          showToast(`✅ נוספו ${result.added} מוצרים חדשים`, 'success');
-          isSeedingProducts = false;
-          loadProducts();
-        } else {
-          throw new Error(result.error || 'שגיאה בסנכרון');
-        }
-      } catch (error) {
-        isSeedingProducts = false;
-        showToast('❌ שגיאה: ' + error.message, 'error');
-      }
-    }
   </script>
 </body>
 </html>
