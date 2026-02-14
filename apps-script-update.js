@@ -343,13 +343,22 @@ function getCustomersList() {
 
 function getFilesList() {
   const folders = DriveApp.getFoldersByName("חנות קבצים");
-  if (!folders.hasNext()) return [];
-  const files = folders.next().getFiles();
+  if (!folders.hasNext()) {
+    Logger.log('getFilesList: תיקיית חנות קבצים לא נמצאה!');
+    return [];
+  }
+  const folder = folders.next();
+  Logger.log('getFilesList: נמצאה תיקייה: ' + folder.getName() + ' (ID: ' + folder.getId() + ')');
+  const files = folder.getFiles();
   const list = [];
   while (files.hasNext()) {
     const f = files.next();
-    if (f.getName().toLowerCase().endsWith(".pdf")) list.push(f.getName());
+    const name = f.getName();
+    const mime = f.getMimeType();
+    Logger.log('  קובץ: ' + name + ' | סוג: ' + mime);
+    list.push(name);
   }
+  Logger.log('getFilesList: סה"כ ' + list.length + ' קבצים');
   return list.sort();
 }
 
@@ -609,12 +618,11 @@ function getFilesListForPanel() {
   try {
     const files = getFilesList();
     Logger.log('getFilesListForPanel: found ' + files.length + ' files');
-    if (files.length > 0) Logger.log('First files: ' + files.slice(0, 5).join(', '));
     return ContentService.createTextOutput(JSON.stringify(files))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     Logger.log('getFilesListForPanel ERROR: ' + error.toString());
-    return ContentService.createTextOutput(JSON.stringify({ error: error.toString(), files: [] }))
+    return ContentService.createTextOutput(JSON.stringify([]))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }

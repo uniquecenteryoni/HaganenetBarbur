@@ -1992,7 +1992,7 @@
         allFiles = Array.isArray(data) ? data : (data.files || []);
         console.log('✅ נטענו', allFiles.length, 'קבצים:', allFiles);
         if (allFiles.length === 0) {
-          filesList.innerHTML = '<div class="list-item" style="text-align: center; color: #e74c3c;">⚠️ לא נמצאו קבצי PDF בתיקיית "חנות קבצים" ב-Drive.<br><small>ודאי שהתיקייה קיימת ושהקוד ב-Apps Script עודכן ופורסם מחדש.</small></div>';
+          filesList.innerHTML = '<div class="list-item" style="text-align: center; color: #e74c3c;">⚠️ לא נמצאו קבצים בתיקיית "חנות קבצים" ב-Drive.<br><small>ודאי שהקוד ב-Apps Script עודכן ופורסם כ-New deployment.</small></div>';
         } else {
           renderFileList(allFiles);
         }
