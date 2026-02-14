@@ -975,7 +975,11 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       
-      event.target.classList.add('active');
+      // סמן את הטאב הנכון - גם אם נקרא מקוד ולא מלחיצה
+      const clickedTab = document.querySelector(`.tab[onclick*="'${tabName}'"]`);
+      if (clickedTab) clickedTab.classList.add('active');
+      else if (typeof event !== 'undefined' && event && event.target) event.target.classList.add('active');
+      
       document.getElementById(tabName).classList.add('active');
       
       if (tabName === 'filesender') {
@@ -986,7 +990,10 @@
     function switchFileTab(tabName) {
       const tabs = document.querySelectorAll('#filesender .tab');
       tabs.forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
+      // סמן את הטאב הנכון
+      const targetTab = document.querySelector(`#filesender .tab[onclick*="'${tabName}'"]`);
+      if (targetTab) targetTab.classList.add('active');
+      else if (typeof event !== 'undefined' && event && event.target) event.target.classList.add('active');
       
       document.getElementById('groupTab').style.display = tabName === 'group' ? 'block' : 'none';
       document.getElementById('manualTab').style.display = tabName === 'manual' ? 'block' : 'none';
@@ -1512,7 +1519,7 @@
       }
     }
 
-    function sendFileToLead(email, name, products) {
+    async function sendFileToLead(email, name, products) {
       email = safeDecode(email);
       name = safeDecode(name);
       products = safeDecode(products || '');
@@ -1520,6 +1527,9 @@
       // עבור לטאב שליחת קבצים
       switchTab('filesender');
       switchFileTab('manual');
+      
+      // טען קבצים ולקוחות מהשרת (חייב לחכות!)
+      await loadCustomersAndFiles();
       
       // בחר את המייל הזה
       selectedEmails.clear();
