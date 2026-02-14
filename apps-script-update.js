@@ -59,6 +59,7 @@ function doGet(e) {
   if (action === 'processAndSendFiles') return processAndSendFilesFromPanel(e.parameter.startDate, e.parameter.endDate, e.parameter.key);
   if (action === 'trackVisit') return trackVisitForPanel();
   if (action === 'getVisits') return getVisitsForPanel();
+  if (action === 'debugFiles') return ContentService.createTextOutput(JSON.stringify(getFilesDebug())).setMimeType(ContentService.MimeType.JSON);
   return ContentService.createTextOutput(JSON.stringify({ error: 'Invalid action' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
@@ -349,17 +350,59 @@ function getFilesList() {
   }
   const folder = folders.next();
   Logger.log('getFilesList: נמצאה תיקייה: ' + folder.getName() + ' (ID: ' + folder.getId() + ')');
+  
+  // קודם בודק קבצים ישירות בתיקייה
   const files = folder.getFiles();
   const list = [];
   while (files.hasNext()) {
     const f = files.next();
-    const name = f.getName();
-    const mime = f.getMimeType();
-    Logger.log('  קובץ: ' + name + ' | סוג: ' + mime);
-    list.push(name);
+    list.push(f.getName());
   }
+  
+  // אם אין קבצים ישירות, בודק תתי-תיקיות
+  if (list.length === 0) {
+    Logger.log('getFilesList: אין קבצים ישירות, בודק תתי-תיקיות...');
+    const subFolders = folder.getFolders();
+    while (subFolders.hasNext()) {
+      const sub = subFolders.next();
+      Logger.log('  תת-תיקייה: ' + sub.getName());
+      const subFiles = sub.getFiles();
+      while (subFiles.hasNext()) {
+        const sf = subFiles.next();
+        list.push(sf.getName());
+      }
+    }
+  }
+  
   Logger.log('getFilesList: סה"כ ' + list.length + ' קבצים');
   return list.sort();
+}
+
+// פונקציית דיבוג - מחזירה מידע מלא על התיקייה
+function getFilesDebug() {
+  const result = { folders: [], files: [], subFolders: [] };
+  const folders = DriveApp.getFoldersByName("חנות קבצים");
+  while (folders.hasNext()) {
+    const f = folders.next();
+    result.folders.push({ name: f.getName(), id: f.getId() });
+    const files = f.getFiles();
+    while (files.hasNext()) {
+      const file = files.next();
+      result.files.push({ name: file.getName(), mime: file.getMimeType(), size: file.getSize() });
+    }
+    const subs = f.getFolders();
+    while (subs.hasNext()) {
+      const sub = subs.next();
+      const subInfo = { name: sub.getName(), files: [] };
+      const subFiles = sub.getFiles();
+      while (subFiles.hasNext()) {
+        const sf = subFiles.next();
+        subInfo.files.push(sf.getName());
+      }
+      result.subFolders.push(subInfo);
+    }
+  }
+  return result;
 }
 
 function getPreviewStats(startDate, endDate) {
