@@ -62,6 +62,9 @@ function doGet(e) {
   if (action === 'getVisits') return getVisitsForPanel();
   if (action === 'debugFiles') return ContentService.createTextOutput(JSON.stringify(getFilesDebug())).setMimeType(ContentService.MimeType.JSON);
   if (action === 'getProducts') return getProductsForPanel();
+  if (action === 'saveProduct') return saveProductForPanel(JSON.parse(e.parameter.product || '{}'));
+  if (action === 'deleteProduct') return deleteProductForPanel(e.parameter.id);
+  if (action === 'seedProductsFromFiles') return seedProductsFromFilesForPanel();
   return ContentService.createTextOutput(JSON.stringify({ error: 'Invalid action' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
@@ -721,15 +724,55 @@ function getOrCreateProductsSheet() {
   let sheet = ss.getSheetByName('Products');
   if (!sheet) {
     sheet = ss.insertSheet('Products');
-    sheet.appendRow(['id', 'title', 'fileName', 'shortDesc', 'imageUrl', 'videoUrl', 'fullDesc', 'price', 'createdAt', 'updatedAt']);
+    sheet.appendRow(['id', 'title', 'fileName', 'shortDesc', 'imageUrl', 'videoUrl', 'fullDesc', 'price', 'categories', 'createdAt', 'updatedAt']);
   }
+  ensureProductsSheetSchema(sheet);
   return sheet;
+}
+
+function ensureProductsSheetSchema(sheet) {
+  const expected = ['id', 'title', 'fileName', 'shortDesc', 'imageUrl', 'videoUrl', 'fullDesc', 'price', 'categories', 'createdAt', 'updatedAt'];
+  const lastCol = Math.max(sheet.getLastColumn(), expected.length);
+  const header = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+
+  if (!header || header[0] !== 'id') {
+    sheet.clear();
+    sheet.appendRow(expected);
+    return;
+  }
+
+  if (header.length < expected.length || header[8] !== 'categories') {
+    sheet.insertColumnAfter(8);
+    sheet.getRange(1, 1, 1, expected.length).setValues([expected]);
+  }
+}
+
+function normalizeCategories(input) {
+  let list = [];
+  if (Array.isArray(input)) list = input;
+  else if (typeof input === 'string') list = input.split(',');
+
+  list = list.map(v => (v || '').toString().trim()).filter(Boolean);
+  if (!list.includes('all')) list.unshift('all');
+
+  const seen = new Set();
+  return list.filter(item => {
+    if (seen.has(item)) return false;
+    seen.add(item);
+    return true;
+  });
+}
+
+function categoriesToString(input) {
+  return normalizeCategories(input).join(',');
 }
 
 function getProductsForPanel() {
   try {
     const sheet = getOrCreateProductsSheet();
     const data = sheet.getDataRange().getValues();
+    const header = data[0] || [];
+    const hasCategories = header[8] === 'categories';
     const products = [];
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
@@ -742,8 +785,9 @@ function getProductsForPanel() {
         videoUrl: row[5],
         fullDesc: row[6],
         price: row[7],
-        createdAt: row[8],
-        updatedAt: row[9]
+        categories: hasCategories ? normalizeCategories(row[8]) : ['all'],
+        createdAt: hasCategories ? row[9] : row[8],
+        updatedAt: hasCategories ? row[10] : row[9]
       });
     }
     return ContentService.createTextOutput(JSON.stringify({ success: true, products: products }))
@@ -759,6 +803,7 @@ function saveProductForPanel(product) {
     const sheet = getOrCreateProductsSheet();
     const data = sheet.getDataRange().getValues();
     const now = new Date();
+    const categories = categoriesToString(product.categories || product.category || []);
     
     if (product.id) {
       // עדכון מוצר קיים
@@ -771,7 +816,8 @@ function saveProductForPanel(product) {
           sheet.getRange(i + 1, 6).setValue(product.videoUrl || '');
           sheet.getRange(i + 1, 7).setValue(product.fullDesc);
           sheet.getRange(i + 1, 8).setValue(product.price);
-          sheet.getRange(i + 1, 10).setValue(now);
+          sheet.getRange(i + 1, 9).setValue(categories);
+          sheet.getRange(i + 1, 11).setValue(now);
           return ContentService.createTextOutput(JSON.stringify({ success: true }))
             .setMimeType(ContentService.MimeType.JSON);
         }
@@ -788,6 +834,7 @@ function saveProductForPanel(product) {
         product.videoUrl || '',
         product.fullDesc,
         product.price,
+        categories,
         now,
         now
       ]);
@@ -815,6 +862,52 @@ function deleteProductForPanel(productId) {
       }
     }
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Product not found' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function seedProductsFromFilesForPanel() {
+  try {
+    const sheet = getOrCreateProductsSheet();
+    const data = sheet.getDataRange().getValues();
+    const existing = new Set();
+    for (let i = 1; i < data.length; i++) {
+      const fileName = (data[i][2] || '').toString().trim();
+      if (fileName) existing.add(fileName);
+    }
+
+    const folder = DriveApp.getFolderById(FILES_FOLDER_ID);
+    const files = folder.getFiles();
+    let added = 0;
+    const now = new Date();
+
+    while (files.hasNext()) {
+      const file = files.next();
+      const name = file.getName();
+      if (existing.has(name)) continue;
+
+      const title = name.replace(/\.pdf$/i, '').trim();
+      const newId = 'prod_' + now.getTime() + '_' + added;
+      sheet.appendRow([
+        newId,
+        title,
+        name,
+        '',
+        '',
+        '',
+        '',
+        '',
+        categoriesToString(['general']),
+        now,
+        now
+      ]);
+      added++;
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ success: true, added: added }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
