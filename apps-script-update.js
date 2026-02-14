@@ -20,6 +20,7 @@ function onOpen() {
 // --- הגדרות ---
 const SPREADSHEET_ID = '1KBinCX3LC2NhDAR__2TPgexY5QM1Q4QDjmwuwqD03TU';
 const SIGNATURE_FILE_ID = '14wfppVQEsnZHzRbMRbh3T_UJk0hoJovY';
+const FILES_FOLDER_ID = '1ZPoSs1r6KCljk0HwjlbHE1WOeJdwfJLU';
 
 // --- תבנית מייל ---
 function getEmailTemplate(productsHtml) {
@@ -229,9 +230,7 @@ function formatDateForGmail(dateObj) {
 
 // --- קבצים וקבוצות ---
 function processAndSendFiles(startDate, endDate, specificKey = null) {
-  const folders = DriveApp.getFoldersByName("חנות קבצים");
-  if (!folders.hasNext()) throw new Error("תיקיית 'חנות קבצים' לא נמצאה");
-  const folder = folders.next();
+  const folder = DriveApp.getFolderById(FILES_FOLDER_ID);
   const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets()[0];
   const data = sheet.getDataRange().getValues();
 
@@ -286,7 +285,7 @@ function processAndSendFiles(startDate, endDate, specificKey = null) {
 }
 
 function sendManualEmail(emails, fileNames) {
-  const folder = DriveApp.getFoldersByName("חנות קבצים").next();
+  const folder = DriveApp.getFolderById(FILES_FOLDER_ID);
   const attachments = fileNames.map(name => {
     const f = folder.getFilesByName(name);
     return f.hasNext() ? f.next().getBlob() : null;
@@ -343,66 +342,36 @@ function getCustomersList() {
 }
 
 function getFilesList() {
-  const folders = DriveApp.getFoldersByName("חנות קבצים");
-  if (!folders.hasNext()) {
-    Logger.log('getFilesList: תיקיית חנות קבצים לא נמצאה!');
+  try {
+    const folder = DriveApp.getFolderById(FILES_FOLDER_ID);
+    const files = folder.getFiles();
+    const list = [];
+    while (files.hasNext()) {
+      const f = files.next();
+      list.push(f.getName());
+    }
+    Logger.log('getFilesList: סה"כ ' + list.length + ' קבצים');
+    return list.sort();
+  } catch (e) {
+    Logger.log('getFilesList ERROR: ' + e.toString());
     return [];
   }
-  const folder = folders.next();
-  Logger.log('getFilesList: נמצאה תיקייה: ' + folder.getName() + ' (ID: ' + folder.getId() + ')');
-  
-  // קודם בודק קבצים ישירות בתיקייה
-  const files = folder.getFiles();
-  const list = [];
-  while (files.hasNext()) {
-    const f = files.next();
-    list.push(f.getName());
-  }
-  
-  // אם אין קבצים ישירות, בודק תתי-תיקיות
-  if (list.length === 0) {
-    Logger.log('getFilesList: אין קבצים ישירות, בודק תתי-תיקיות...');
-    const subFolders = folder.getFolders();
-    while (subFolders.hasNext()) {
-      const sub = subFolders.next();
-      Logger.log('  תת-תיקייה: ' + sub.getName());
-      const subFiles = sub.getFiles();
-      while (subFiles.hasNext()) {
-        const sf = subFiles.next();
-        list.push(sf.getName());
-      }
-    }
-  }
-  
-  Logger.log('getFilesList: סה"כ ' + list.length + ' קבצים');
-  return list.sort();
 }
 
 // פונקציית דיבוג - מחזירה מידע מלא על התיקייה
 function getFilesDebug() {
-  const result = { folders: [], files: [], subFolders: [] };
-  const folders = DriveApp.getFoldersByName("חנות קבצים");
-  while (folders.hasNext()) {
-    const f = folders.next();
-    result.folders.push({ name: f.getName(), id: f.getId() });
-    const files = f.getFiles();
+  try {
+    const folder = DriveApp.getFolderById(FILES_FOLDER_ID);
+    const result = { folderName: folder.getName(), folderId: FILES_FOLDER_ID, files: [] };
+    const files = folder.getFiles();
     while (files.hasNext()) {
       const file = files.next();
       result.files.push({ name: file.getName(), mime: file.getMimeType(), size: file.getSize() });
     }
-    const subs = f.getFolders();
-    while (subs.hasNext()) {
-      const sub = subs.next();
-      const subInfo = { name: sub.getName(), files: [] };
-      const subFiles = sub.getFiles();
-      while (subFiles.hasNext()) {
-        const sf = subFiles.next();
-        subInfo.files.push(sf.getName());
-      }
-      result.subFolders.push(subInfo);
-    }
+    return result;
+  } catch (e) {
+    return { error: e.toString() };
   }
-  return result;
 }
 
 function getPreviewStats(startDate, endDate) {
