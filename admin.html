@@ -679,11 +679,6 @@
           <div class="subtitle">סכום כולל</div>
         </div>
       </div>
-      
-      <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
-        <h3 style="margin-bottom: 15px; color: #667eea;">📅 לידים אחרונים (7 ימים)</h3>
-        <div id="recentLeadsChart"></div>
-      </div>
     </div>
 
     <!-- Leads Management Tab -->
@@ -1015,17 +1010,6 @@
         .filter(l => l.price && !isNaN(parseFloat(l.price)))
         .reduce((sum, l) => sum + parseFloat(l.price), 0);
       document.getElementById('totalRevenue').textContent = '₪' + totalRevenue.toLocaleString('he-IL');
-      
-      // Recent leads chart (simple text list)
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
-      const recentLeads = leads.filter(l => new Date(l.date) >= sevenDaysAgo);
-      const chartHtml = recentLeads.length > 0 
-        ? `<p style="color: #666;">לידים חדשים: <strong>${recentLeads.length}</strong></p>`
-        : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
-      
-      document.getElementById('recentLeadsChart').innerHTML = chartHtml;
     }
     
     function trackVisit() {
@@ -1541,7 +1525,7 @@
       selectedEmails.add(email);
       
       // נקה בחירת קבצים קודמת
-      selectedFiles.clear();
+      selectedFileNames.clear();
       
       // נתח ובחר קבצים אוטומטית לפי המוצרים
       if (products) {
@@ -1556,13 +1540,15 @@
         
         // עבור על כל הקבצים הזמינים ובדוק התאמה
         productLines.forEach(productName => {
+          const pLower = productName.toLowerCase();
           allFiles.forEach(fileName => {
-            const fileNameClean = fileName.replace('.pdf', '').trim();
+            const fileNameClean = fileName.replace(/\.pdf$/i, '').trim();
+            const fLower = fileNameClean.toLowerCase();
             // בדוק אם שם הקובץ תואם למוצר (התאמה מדויקת או חלקית)
-            if (fileNameClean === productName || 
-                fileNameClean.includes(productName) || 
-                productName.includes(fileNameClean)) {
-              selectedFiles.add(fileName);
+            if (fLower === pLower || 
+                fLower.includes(pLower) || 
+                pLower.includes(fLower)) {
+              selectedFileNames.add(fileName);
             }
           });
         });
@@ -1576,8 +1562,8 @@
       renderTags('file', 'selectedFiles');
       
       // הצג הודעה אם נבחרו קבצים אוטומטית
-      if (selectedFiles.size > 0) {
-        showToast(`✅ נבחרו ${selectedFiles.size} קבצים אוטומטית`);
+      if (selectedFileNames.size > 0) {
+        showToast(`✅ נבחרו ${selectedFileNames.size} קבצים אוטומטית`);
       } else if (products) {
         showToast('⚠️ לא נמצאו קבצים מתאימים. בחר ידנית', 'warning');
       }
@@ -1890,14 +1876,6 @@
       document.getElementById('totalInterested').textContent = interestedCount;
       document.getElementById('totalNewLeads').textContent = newLeadsCount;
       document.getElementById('totalRevenue').textContent = '₪' + totalRevenue.toLocaleString('he-IL');
-
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      const recentLeads = safeLeads.filter(l => l.date && new Date(l.date) >= sevenDaysAgo);
-      const chartHtml = recentLeads.length > 0 
-        ? `<p style="color: #666;">לידים חדשים: <strong>${recentLeads.length}</strong></p>`
-        : '<p style="color: #999;">אין לידים חדשים בשבוע האחרון</p>';
-      document.getElementById('recentLeadsChart').innerHTML = chartHtml;
     }
 
     function getVisitsCounts() {
@@ -2052,20 +2030,16 @@
       btn.textContent = 'שולח...';
       
       try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: 'sendManualEmail',
-            emails: emails,
-            files: files
-          }),
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        const params = new URLSearchParams({
+          action: 'sendManualEmail',
+          emails: JSON.stringify(emails),
+          files: JSON.stringify(files)
         });
-        
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
         const result = await response.json();
         
         if (result.success) {
-          alert(`✅ ${result.message || 'נשלח בהצלחה!'}`);
+          showToast(`✅ ${result.message || 'נשלח בהצלחה!'}`);
           
           // עדכן סטטוס לידים ל"טופל"
           if (window.pendingStatusUpdate) {
@@ -2153,17 +2127,13 @@
       btn.textContent = 'שולח...';
       
       try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: 'processAndSendFiles',
-            startDate: startDate,
-            endDate: endDate,
-            key: key
-          }),
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        const params = new URLSearchParams({
+          action: 'processAndSendFiles',
+          startDate: startDate,
+          endDate: endDate,
+          key: key
         });
-        
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
         const result = await response.json();
         
         if (result.success) {
