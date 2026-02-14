@@ -640,6 +640,7 @@
     <div class="tabs">
       <button class="tab active" onclick="switchTab('dashboard')">📊 סטטיסטיקות</button>
       <button class="tab" onclick="switchTab('leads')">👥 ניהול לידים</button>
+      <button class="tab" onclick="switchTab('products')">🛍️ ניהול מוצרים</button>
       <button class="tab" onclick="switchTab('newsletter')">📧 שליחת ניוזלטר</button>
       <button class="tab" onclick="switchTab('filesender')">📤 שליחת קבצים</button>
     </div>
@@ -808,6 +809,59 @@
 
       <button class="btn-test" onclick="sendNewsletter(true)">🧪 שלח בדיקה למייל שלי</button>
       <button class="btn-send" onclick="sendNewsletter(false)">🚀 שלח לכל המסוננים</button>
+    </div>
+
+    <!-- Products Management Tab -->
+    <div class="tab-content" id="products">
+      <h2 style="margin-bottom: 1.5rem; color: #667eea;">🛍️ ניהול מוצרים להורדה</h2>
+      
+      <button onclick="showProductForm()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 20px;">
+        ➕ הוסף מוצר חדש
+      </button>
+      
+      <!-- Product Form (hidden by default) -->
+      <div id="productForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+        <h3 style="margin-bottom: 15px; color: #667eea;">מוצר חדש / עריכת מוצר</h3>
+        <input type="hidden" id="productId">
+        
+        <label>כותרת המוצר (תוצג באתר):</label>
+        <input type="text" id="productTitle" placeholder="לדוגמה: כרטיסיות יום הולדת" required>
+        
+        <label style="margin-top: 15px;">שם הקובץ (כפי שמופיע בתיקייה):</label>
+        <input type="text" id="productFileName" placeholder="לדוגמה: כרטיסיות יום הולדת.pdf" required>
+        
+        <label style="margin-top: 15px;">תיאור קצר (יופיע בכרטיס המוצר):</label>
+        <textarea id="productShortDesc" rows="2" placeholder="תיאור קצר המושך את העין..." style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"></textarea>
+        
+        <label style="margin-top: 15px;">URL תמונה (יש להעלות ל-Google Drive ולשתף):</label>
+        <input type="text" id="productImageUrl" placeholder="https://drive.google.com/..." required>
+        
+        <label style="margin-top: 15px;">URL וידאו (אופציונלי - יופיע במעבר עכבר):</label>
+        <input type="text" id="productVideoUrl" placeholder="https://drive.google.com/... או YouTube">
+        
+        <label style="margin-top: 15px;">תיאור מלא (יופיע בעמוד המוצר):</label>
+        <textarea id="productFullDesc" rows="5" placeholder="תיאור מפורט של המוצר, תכנים, יתרונות..." style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"></textarea>
+        
+        <label style="margin-top: 15px;">מחיר (₪):</label>
+        <input type="number" id="productPrice" placeholder="0.00" step="0.01" min="0" required>
+        
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+          <button onclick="saveProduct()" style="background: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+            💾 שמור מוצר
+          </button>
+          <button onclick="cancelProductForm()" style="background: #999; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+            ביטול
+          </button>
+        </div>
+      </div>
+      
+      <!-- Products List -->
+      <div id="productsList" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h3 style="margin-bottom: 15px; color: #667eea;">רשימת מוצרים</h3>
+        <div id="productsTable">
+          <p style="text-align: center; color: #999;">טוען מוצרים...</p>
+        </div>
+      </div>
     </div>
 
     <!-- File Sender Tab -->
@@ -984,6 +1038,8 @@
       
       if (tabName === 'filesender') {
         loadCustomersAndFiles();
+      } else if (tabName === 'products') {
+        loadProducts();
       }
     }
     
@@ -2217,6 +2273,165 @@
         alert('❌ שגיאה: ' + error.message);
         btn.disabled = false;
         btn.textContent = originalText;
+      }
+    }
+
+    // ===== Products Management Functions =====
+    let allProducts = [];
+
+    async function loadProducts() {
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getProducts`);
+        const result = await response.json();
+        
+        if (result.success) {
+          allProducts = result.products;
+          renderProductsTable();
+        } else {
+          document.getElementById('productsTable').innerHTML = 
+            '<p style="text-align: center; color: #e74c3c;">שגיאה בטעינת מוצרים</p>';
+        }
+      } catch (error) {
+        console.error('Error loading products:', error);
+        document.getElementById('productsTable').innerHTML = 
+          '<p style="text-align: center; color: #e74c3c;">שגיאה בחיבור לשרת</p>';
+      }
+    }
+
+    function renderProductsTable() {
+      const container = document.getElementById('productsTable');
+      
+      if (allProducts.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #999;">אין עדיין מוצרים. לחצי על "הוסף מוצר חדש"</p>';
+        return;
+      }
+
+      let html = '<table style="width: 100%; border-collapse: collapse;">';
+      html += '<thead><tr>';
+      html += '<th style="padding: 12px; text-align: right; border-bottom: 2px solid #e0e0e0;">תמונה</th>';
+      html += '<th style="padding: 12px; text-align: right; border-bottom: 2px solid #e0e0e0;">כותרת</th>';
+      html += '<th style="padding: 12px; text-align: right; border-bottom: 2px solid #e0e0e0;">שם קובץ</th>';
+      html += '<th style="padding: 12px; text-align: right; border-bottom: 2px solid #e0e0e0;">מחיר</th>';
+      html += '<th style="padding: 12px; text-align: center; border-bottom: 2px solid #e0e0e0;">פעולות</th>';
+      html += '</tr></thead><tbody>';
+
+      allProducts.forEach(product => {
+        html += '<tr style="border-bottom: 1px solid #e0e0e0;">';
+        html += `<td style="padding: 12px;"><img src="${product.imageUrl}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"></td>`;
+        html += `<td style="padding: 12px;"><strong>${product.title}</strong><br><small style="color: #666;">${product.shortDesc}</small></td>`;
+        html += `<td style="padding: 12px;"><code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px;">${product.fileName}</code></td>`;
+        html += `<td style="padding: 12px;"><strong>₪${parseFloat(product.price).toFixed(2)}</strong></td>`;
+        html += `<td style="padding: 12px; text-align: center;">
+          <button onclick="editProduct('${product.id}')" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin: 0 4px;">✏️ ערוך</button>
+          <button onclick="deleteProduct('${product.id}')" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin: 0 4px;">🗑️ מחק</button>
+        </td>`;
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function showProductForm() {
+      document.getElementById('productForm').style.display = 'block';
+      clearProductForm();
+    }
+
+    function cancelProductForm() {
+      document.getElementById('productForm').style.display = 'none';
+      clearProductForm();
+    }
+
+    function clearProductForm() {
+      document.getElementById('productId').value = '';
+      document.getElementById('productTitle').value = '';
+      document.getElementById('productFileName').value = '';
+      document.getElementById('productShortDesc').value = '';
+      document.getElementById('productImageUrl').value = '';
+      document.getElementById('productVideoUrl').value = '';
+      document.getElementById('productFullDesc').value = '';
+      document.getElementById('productPrice').value = '';
+    }
+
+    function editProduct(productId) {
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) return;
+
+      document.getElementById('productId').value = product.id;
+      document.getElementById('productTitle').value = product.title;
+      document.getElementById('productFileName').value = product.fileName;
+      document.getElementById('productShortDesc').value = product.shortDesc;
+      document.getElementById('productImageUrl').value = product.imageUrl;
+      document.getElementById('productVideoUrl').value = product.videoUrl || '';
+      document.getElementById('productFullDesc').value = product.fullDesc;
+      document.getElementById('productPrice').value = product.price;
+
+      document.getElementById('productForm').style.display = 'block';
+      document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function saveProduct() {
+      const product = {
+        id: document.getElementById('productId').value || null,
+        title: document.getElementById('productTitle').value.trim(),
+        fileName: document.getElementById('productFileName').value.trim(),
+        shortDesc: document.getElementById('productShortDesc').value.trim(),
+        imageUrl: document.getElementById('productImageUrl').value.trim(),
+        videoUrl: document.getElementById('productVideoUrl').value.trim(),
+        fullDesc: document.getElementById('productFullDesc').value.trim(),
+        price: document.getElementById('productPrice').value
+      };
+
+      if (!product.title || !product.fileName || !product.imageUrl || !product.price) {
+        alert('נא למלא את כל השדות החובה');
+        return;
+      }
+
+      try {
+        showToast('שומר מוצר...', 'info');
+        
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'saveProduct', product: product })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showToast('✅ המוצר נשמר בהצלחה!', 'success');
+          cancelProductForm();
+          loadProducts();
+        } else {
+          throw new Error(result.error || 'שגיאה בשמירה');
+        }
+      } catch (error) {
+        showToast('❌ שגיאה: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteProduct(productId) {
+      if (!confirm('האם למחוק מוצר זה? פעולה זו אינה ניתנת לביטול')) return;
+
+      try {
+        showToast('מוחק מוצר...', 'info');
+        
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'deleteProduct', id: productId })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showToast('✅ המוצר נמחק בהצלחה', 'success');
+          loadProducts();
+        } else {
+          throw new Error(result.error || 'שגיאה במחיקה');
+        }
+      } catch (error) {
+        showToast('❌ שגיאה: ' + error.message, 'error');
       }
     }
   </script>

@@ -61,6 +61,7 @@ function doGet(e) {
   if (action === 'trackVisit') return trackVisitForPanel();
   if (action === 'getVisits') return getVisitsForPanel();
   if (action === 'debugFiles') return ContentService.createTextOutput(JSON.stringify(getFilesDebug())).setMimeType(ContentService.MimeType.JSON);
+  if (action === 'getProducts') return getProductsForPanel();
   return ContentService.createTextOutput(JSON.stringify({ error: 'Invalid action' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
@@ -75,6 +76,8 @@ function doPost(e) {
     if (action === 'updateLeadStatus') return updateLeadStatusFromPanel(data.email, data.status);
     if (action === 'updateLead') return updateLeadFromPanel(data.email, data.updates);
     if (action === 'deleteLead') return deleteLeadFromPanel(data.email, data.date);
+    if (action === 'saveProduct') return saveProductForPanel(data.product);
+    if (action === 'deleteProduct') return deleteProductForPanel(data.id);
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Invalid action' }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
@@ -705,6 +708,113 @@ function deleteLeadFromPanel(email, date) {
       }
     }
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'lead not found' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// --- ניהול מוצרים ---
+function getOrCreateProductsSheet() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheet = ss.getSheetByName('Products');
+  if (!sheet) {
+    sheet = ss.insertSheet('Products');
+    sheet.appendRow(['id', 'title', 'fileName', 'shortDesc', 'imageUrl', 'videoUrl', 'fullDesc', 'price', 'createdAt', 'updatedAt']);
+  }
+  return sheet;
+}
+
+function getProductsForPanel() {
+  try {
+    const sheet = getOrCreateProductsSheet();
+    const data = sheet.getDataRange().getValues();
+    const products = [];
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      products.push({
+        id: row[0],
+        title: row[1],
+        fileName: row[2],
+        shortDesc: row[3],
+        imageUrl: row[4],
+        videoUrl: row[5],
+        fullDesc: row[6],
+        price: row[7],
+        createdAt: row[8],
+        updatedAt: row[9]
+      });
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: true, products: products }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function saveProductForPanel(product) {
+  try {
+    const sheet = getOrCreateProductsSheet();
+    const data = sheet.getDataRange().getValues();
+    const now = new Date();
+    
+    if (product.id) {
+      // עדכון מוצר קיים
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === product.id) {
+          sheet.getRange(i + 1, 2).setValue(product.title);
+          sheet.getRange(i + 1, 3).setValue(product.fileName);
+          sheet.getRange(i + 1, 4).setValue(product.shortDesc);
+          sheet.getRange(i + 1, 5).setValue(product.imageUrl);
+          sheet.getRange(i + 1, 6).setValue(product.videoUrl || '');
+          sheet.getRange(i + 1, 7).setValue(product.fullDesc);
+          sheet.getRange(i + 1, 8).setValue(product.price);
+          sheet.getRange(i + 1, 10).setValue(now);
+          return ContentService.createTextOutput(JSON.stringify({ success: true }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+    } else {
+      // הוספת מוצר חדש
+      const newId = 'prod_' + now.getTime();
+      sheet.appendRow([
+        newId,
+        product.title,
+        product.fileName,
+        product.shortDesc,
+        product.imageUrl,
+        product.videoUrl || '',
+        product.fullDesc,
+        product.price,
+        now,
+        now
+      ]);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, id: newId }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Product not found' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function deleteProductForPanel(productId) {
+  try {
+    const sheet = getOrCreateProductsSheet();
+    const data = sheet.getDataRange().getValues();
+    for (let i = data.length - 1; i >= 1; i--) {
+      if (data[i][0] === productId) {
+        sheet.deleteRow(i + 1);
+        return ContentService.createTextOutput(JSON.stringify({ success: true }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Product not found' }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
