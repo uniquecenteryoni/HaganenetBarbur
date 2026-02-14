@@ -196,7 +196,7 @@ const LeadsManager = {
 /**
  * Site Visits Tracker - מעקב אחר ביקורים באתר
  */
-const VISITS_API_URL = 'https://script.google.com/macros/s/AKfycbwNEhXhDSHEUDhyu4M4ej9_C-B6SYdXwe3F90Hmm-ATMSLKaqJzOFO4gQfZPgy9gxRgVA/exec';
+const VISITS_API_URL = 'https://script.google.com/macros/s/AKfycbyWkOujqP0acIasGuLcewHqlLKj5mWPTD_bcmRVgLudbpW4M-Twq-NwXTaoNd4J_IRNHg/exec';
 
 const VisitsTracker = {
   /**
