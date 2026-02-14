@@ -1982,16 +1982,25 @@
       
       // טען קבצים מ-Google Drive
       try {
+        const filesList = document.getElementById('filesList');
+        filesList.innerHTML = '<div class="list-item" style="text-align: center; color: #999;">⏳ טוען קבצים מהדרייב...</div>';
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getFilesList`);
-        const data = await response.json();
+        const rawText = await response.text();
+        console.log('📦 תשובת getFilesList גולמית:', rawText);
+        let data;
+        try { data = JSON.parse(rawText); } catch(e) { data = []; console.error('שגיאה בפרסינג:', e); }
         allFiles = Array.isArray(data) ? data : (data.files || []);
-        renderFileList(allFiles);
-        console.log('✅ נטענו', allFiles.length, 'קבצים');
+        console.log('✅ נטענו', allFiles.length, 'קבצים:', allFiles);
+        if (allFiles.length === 0) {
+          filesList.innerHTML = '<div class="list-item" style="text-align: center; color: #e74c3c;">⚠️ לא נמצאו קבצי PDF בתיקיית "חנות קבצים" ב-Drive.<br><small>ודאי שהתיקייה קיימת ושהקוד ב-Apps Script עודכן ופורסם מחדש.</small></div>';
+        } else {
+          renderFileList(allFiles);
+        }
       } catch (error) {
         console.error('שגיאה בטעינת קבצים:', error);
         allFiles = [];
         document.getElementById('filesList').innerHTML = 
-          '<div class="list-item" style="text-align: center; color: #e74c3c;">שגיאה בטעינת קבצים מהדרייב. בדקי את החיבור ל-Apps Script.</div>';
+          '<div class="list-item" style="text-align: center; color: #e74c3c;">❌ שגיאה בטעינת קבצים מהדרייב.<br><small>' + error.message + '</small></div>';
       }
     }
     
@@ -2011,9 +2020,13 @@
     
     function renderFileList(files) {
       const list = document.getElementById('filesList');
+      if (!files || files.length === 0) {
+        list.innerHTML = '<div class="list-item" style="text-align: center; color: #999;">אין קבצים</div>';
+        return;
+      }
       list.innerHTML = files.map(f => `
         <div class="list-item" onclick="toggleSelection('file', '${encodeAttr(f)}', '${encodeAttr(f)}')">
-          ${f}
+          📄 ${f}
         </div>
       `).join('');
     }

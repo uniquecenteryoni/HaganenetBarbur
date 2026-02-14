@@ -608,10 +608,13 @@ function getCustomersListForPanel() {
 function getFilesListForPanel() {
   try {
     const files = getFilesList();
+    Logger.log('getFilesListForPanel: found ' + files.length + ' files');
+    if (files.length > 0) Logger.log('First files: ' + files.slice(0, 5).join(', '));
     return ContentService.createTextOutput(JSON.stringify(files))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify([]))
+    Logger.log('getFilesListForPanel ERROR: ' + error.toString());
+    return ContentService.createTextOutput(JSON.stringify({ error: error.toString(), files: [] }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
