@@ -57,6 +57,8 @@ function doGet(e) {
   if (action === 'deleteLead') return deleteLeadFromPanel(e.parameter.email, e.parameter.date);
   if (action === 'sendManualEmail') return sendManualEmailFromPanel(JSON.parse(e.parameter.emails), JSON.parse(e.parameter.files));
   if (action === 'processAndSendFiles') return processAndSendFilesFromPanel(e.parameter.startDate, e.parameter.endDate, e.parameter.key);
+  if (action === 'trackVisit') return trackVisitForPanel();
+  if (action === 'getVisits') return getVisitsForPanel();
   return ContentService.createTextOutput(JSON.stringify({ error: 'Invalid action' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
@@ -681,6 +683,79 @@ function deleteLeadFromPanel(email, date) {
     }
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'lead not found' }))
       .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// --- מונה מבקרים ---
+function getOrCreateVisitsSheet() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheet = ss.getSheetByName('Visits');
+  if (!sheet) {
+    sheet = ss.insertSheet('Visits');
+    sheet.appendRow(['date', 'count']);
+  }
+  return sheet;
+}
+
+function trackVisitForPanel() {
+  try {
+    const sheet = getOrCreateVisitsSheet();
+    const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    const data = sheet.getDataRange().getValues();
+    
+    let found = false;
+    for (let i = 1; i < data.length; i++) {
+      const rowDate = Utilities.formatDate(new Date(data[i][0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      if (rowDate === today) {
+        const currentCount = parseInt(data[i][1]) || 0;
+        sheet.getRange(i + 1, 2).setValue(currentCount + 1);
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      sheet.appendRow([today, 1]);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function getVisitsForPanel() {
+  try {
+    const sheet = getOrCreateVisitsSheet();
+    const data = sheet.getDataRange().getValues();
+    const now = new Date();
+    const today = Utilities.formatDate(now, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    let daily = 0, weekly = 0, monthly = 0, total = 0;
+    
+    for (let i = 1; i < data.length; i++) {
+      const rowDate = new Date(data[i][0]);
+      const count = parseInt(data[i][1]) || 0;
+      const dateStr = Utilities.formatDate(rowDate, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      
+      total += count;
+      if (dateStr === today) daily = count;
+      if (rowDate >= sevenDaysAgo) weekly += count;
+      if (rowDate >= thirtyDaysAgo) monthly += count;
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: true, 
+      visits: { daily, weekly, monthly, total }
+    })).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);

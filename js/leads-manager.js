@@ -196,6 +196,8 @@ const LeadsManager = {
 /**
  * Site Visits Tracker - מעקב אחר ביקורים באתר
  */
+const VISITS_API_URL = 'https://script.google.com/macros/s/AKfycbwERXb0r6d2qb16fo8sOrnOp3QvIrfAaw3ThHUDkTBr6RYVEiISKZv_gq6kiSHxT4io4w/exec';
+
 const VisitsTracker = {
   /**
    * רישום ביקור חדש
@@ -213,9 +215,23 @@ const VisitsTracker = {
         
         // שמירת מידע נוסף על הביקור
         this.saveVisitInfo();
+
+        // שליחת ביקור לשרת (Google Sheets)
+        this.trackVisitOnServer();
       }
     } catch (error) {
       console.error('שגיאה במעקב ביקורים:', error);
+    }
+  },
+
+  /**
+   * שליחת ביקור לשרת
+   */
+  trackVisitOnServer() {
+    try {
+      fetch(`${VISITS_API_URL}?action=trackVisit`).catch(() => {});
+    } catch (e) {
+      // שקט - לא קריטי
     }
   },
 

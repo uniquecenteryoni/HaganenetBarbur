@@ -961,6 +961,7 @@
       // Load data
       loadDashboard();
       loadLeadsFromGoogleSheets(); // טוען תמיד מ-Google Sheets - שיקוף לייב
+      loadVisitsFromServer(); // טעינת נתוני מבקרים מהשרת
       trackVisit();
 
       const visitsCard = document.getElementById('visitsCard');
@@ -1529,28 +1530,60 @@
       
       // נתח ובחר קבצים אוטומטית לפי המוצרים
       if (products) {
+        // פונקציית ניקוי - מסירה מתנה, אימוג'י, מקף בסוף, רווחים מיותרים
+        function cleanProductForMatch(text) {
+          return text
+            .replace(/\s*-\s*מתנה\s*$/g, '')   // הסר "- מתנה" בסוף
+            .replace(/\s*מתנה\s*/g, '')         // הסר מילת "מתנה"
+            .replace(/🎁/g, '')                  // הסר אימוג'י
+            .replace(/^\d+\.\s*/, '')            // הסר מספור (1. 2.)
+            .replace(/\s*-\s*$/, '')             // הסר מקף בסוף
+            .replace(/\s*–\s*$/, '')             // הסר em-dash בסוף
+            .replace(/\s+/g, ' ')               // נרמל רווחים
+            .trim();
+        }
+        
         // פיצול המוצרים לפי שורות
-        const productLines = products.split('\n').map(line => 
-          line.trim()
-            .replace(/^\d+\.\s*/, '') // הסר מספור
-            .replace(/🎁/g, '')        // הסר אימוג'י
-            .replace(/מתנה/g, '')      // הסר מילת "מתנה"
-            .trim()
-        ).filter(line => line);
+        const productLines = products.split('\n')
+          .map(line => cleanProductForMatch(line))
+          .filter(line => line.length > 2); // מינימום 3 תווים
+        
+        console.log('🔍 מוצרים מנוקים:', productLines);
+        console.log('📁 קבצים זמינים:', allFiles);
         
         // עבור על כל הקבצים הזמינים ובדוק התאמה
         productLines.forEach(productName => {
-          const pLower = productName.toLowerCase();
+          let bestMatch = null;
+          let bestScore = 0;
+          
           allFiles.forEach(fileName => {
-            const fileNameClean = fileName.replace(/\.pdf$/i, '').trim();
-            const fLower = fileNameClean.toLowerCase();
-            // בדוק אם שם הקובץ תואם למוצר (התאמה מדויקת או חלקית)
-            if (fLower === pLower || 
-                fLower.includes(pLower) || 
-                pLower.includes(fLower)) {
+            const fileNameClean = cleanProductForMatch(fileName.replace(/\.pdf$/i, ''));
+            
+            // בדוק התאמה מדויקת
+            if (fileNameClean === productName) {
               selectedFileNames.add(fileName);
+              console.log(`✅ התאמה מדויקת: "${productName}" → "${fileName}"`);
+              bestMatch = null; // כבר מצאנו
+              return;
+            }
+            
+            // בדוק התאמה חלקית (אחד מכיל את השני)
+            if (fileNameClean.includes(productName) || productName.includes(fileNameClean)) {
+              // חשב ציון לפי אורך ההתאמה
+              const shorter = Math.min(fileNameClean.length, productName.length);
+              const longer = Math.max(fileNameClean.length, productName.length);
+              const score = shorter / longer;
+              if (score > bestScore && score > 0.4) { // מינימום 40% התאמה
+                bestScore = score;
+                bestMatch = fileName;
+              }
             }
           });
+          
+          if (bestMatch) {
+            selectedFileNames.add(bestMatch);
+            console.log(`🔄 התאמה חלקית (${Math.round(bestScore*100)}%): "${productName}" → "${bestMatch}"`);
+          }
         });
       }
       
@@ -1879,10 +1912,20 @@
     }
 
     function getVisitsCounts() {
-      const daily = parseInt(localStorage.getItem('siteVisitsDailyCount') || '0');
-      const weekly = parseInt(localStorage.getItem('siteVisitsWeeklyCount') || '0');
-      const monthly = parseInt(localStorage.getItem('siteVisitsMonthlyCount') || '0');
-      return { daily, weekly, monthly };
+      return window._visitsCounts || { daily: 0, weekly: 0, monthly: 0, total: 0 };
+    }
+
+    async function loadVisitsFromServer() {
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getVisits`);
+        const data = await response.json();
+        if (data.success && data.visits) {
+          window._visitsCounts = data.visits;
+          updateVisitsDisplay();
+        }
+      } catch (e) {
+        console.error('שגיאה בטעינת מבקרים:', e);
+      }
     }
 
     function updateVisitsDisplay() {
