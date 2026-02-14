@@ -1178,7 +1178,7 @@
           <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${lead.products || lead.message || '-'}</td>
           <td>${lead.price ? '₪' + lead.price : '-'}</td>
           <td>
-            <button class="action-btn action-send" onclick="event.stopPropagation(); sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}')">📤 שלח קובץ</button>
+            <button class="action-btn action-send" onclick="event.stopPropagation(); sendFileToLead('${encodeAttr(lead.email)}', '${encodeAttr(lead.name)}', '${encodeAttr(lead.products || lead.message || '')}')">📤 שלח קובץ</button>
             <button class="action-btn action-delete" onclick="event.stopPropagation(); deleteLeadLocal('${encodeAttr(lead.id)}')">🗑️ מחיקה</button>
           </td>
         </tr>
@@ -1527,9 +1527,11 @@
       }
     }
 
-    function sendFileToLead(email, name) {
+    function sendFileToLead(email, name, products) {
       email = safeDecode(email);
       name = safeDecode(name);
+      products = safeDecode(products || '');
+      
       // עבור לטאב שליחת קבצים
       switchTab('filesender');
       switchFileTab('manual');
@@ -1538,11 +1540,47 @@
       selectedEmails.clear();
       selectedEmails.add(email);
       
+      // נקה בחירת קבצים קודמת
+      selectedFiles.clear();
+      
+      // נתח ובחר קבצים אוטומטית לפי המוצרים
+      if (products) {
+        // פיצול המוצרים לפי שורות
+        const productLines = products.split('\n').map(line => 
+          line.trim()
+            .replace(/^\d+\.\s*/, '') // הסר מספור
+            .replace(/🎁/g, '')        // הסר אימוג'י
+            .replace(/מתנה/g, '')      // הסר מילת "מתנה"
+            .trim()
+        ).filter(line => line);
+        
+        // עבור על כל הקבצים הזמינים ובדוק התאמה
+        productLines.forEach(productName => {
+          allFiles.forEach(fileName => {
+            const fileNameClean = fileName.replace('.pdf', '').trim();
+            // בדוק אם שם הקובץ תואם למוצר (התאמה מדויקת או חלקית)
+            if (fileNameClean === productName || 
+                fileNameClean.includes(productName) || 
+                productName.includes(fileNameClean)) {
+              selectedFiles.add(fileName);
+            }
+          });
+        });
+      }
+      
       // שמור את המייל לעדכון סטטוס אחרי השליחה
       window.pendingStatusUpdate = email;
       
       // עדכן תצוגה
       renderTags('email', 'selectedCustomers');
+      renderTags('file', 'selectedFiles');
+      
+      // הצג הודעה אם נבחרו קבצים אוטומטית
+      if (selectedFiles.size > 0) {
+        showToast(`✅ נבחרו ${selectedFiles.size} קבצים אוטומטית`);
+      } else if (products) {
+        showToast('⚠️ לא נמצאו קבצים מתאימים. בחר ידנית', 'warning');
+      }
       
       // גלול למטה
       setTimeout(() => {
@@ -2067,9 +2105,14 @@
       try {
         const url = `${GOOGLE_SCRIPT_URL}?action=getPreviewStats&startDate=${start}&endDate=${end}`;
         const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const groups = await response.json();
         
-        if (!groups || Object.keys(groups).length === 0) {
+        if (!groups || typeof groups !== 'object' || Object.keys(groups).length === 0) {
           document.getElementById('groupResult').innerHTML = 
             '<p style="text-align: center; color: #999;">אין נתונים בטווח תאריכים זה</p>';
           return;
@@ -2078,11 +2121,12 @@
         let html = '';
         for (let key in groups) {
           const group = groups[key];
+          const escapedKey = encodeURIComponent(key);
           html += `
             <div class="card">
               <b>קבצים:</b> ${group.products.join(", ")}<br>
               <div class="cust-list"><b>לקוחות שיקבלו:</b><br>${group.customers.join(" | ")}</div>
-              <button onclick="sendGroup('${start}', '${end}', '${key}')" 
+              <button onclick="sendGroup('${start}', '${end}', '${escapedKey}')" 
                       style="background:#2196F3; font-size:13px; padding:8px 16px; margin-top:10px; color:white; border:none; border-radius:5px; cursor:pointer;">
                 שלח לקבוצה זו (${group.customers.length} נמענים)
               </button>
@@ -2099,9 +2143,10 @@
       }
     }
     
-    async function sendGroup(startDate, endDate, key) {
+    async function sendGroup(startDate, endDate, encodedKey) {
       if (!confirm('לשלוח קבצים לקבוצה זו?')) return;
       
+      const key = decodeURIComponent(encodedKey);
       const btn = event.target;
       const originalText = btn.textContent;
       btn.disabled = true;
