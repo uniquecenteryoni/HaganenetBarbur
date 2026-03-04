@@ -453,7 +453,15 @@ function sendNewsletter(payload) {
         inlineImages: { "signature": sigBlob }
       };
       if (newsletterInlineImage) mailOptions.inlineImages.newsletterImage = newsletterInlineImage;
-      MailApp.sendEmail(mailOptions);
+      GmailApp.sendEmail(
+        mailOptions.to,
+        mailOptions.subject,
+        '',
+        {
+          htmlBody: mailOptions.htmlBody,
+          inlineImages: mailOptions.inlineImages
+        }
+      );
     });
     return recipients.length;
   } catch (e) { throw new Error(e.message); }
@@ -609,7 +617,15 @@ function sendNewsletterFromPanel(payload) {
         inlineImages: { "signature": sigBlob }
       };
       if (newsletterInlineImage) mailOptions.inlineImages.newsletterImage = newsletterInlineImage;
-      MailApp.sendEmail(mailOptions);
+      GmailApp.sendEmail(
+        mailOptions.to,
+        mailOptions.subject,
+        '',
+        {
+          htmlBody: mailOptions.htmlBody,
+          inlineImages: mailOptions.inlineImages
+        }
+      );
     });
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
