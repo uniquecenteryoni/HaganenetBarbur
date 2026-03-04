@@ -1893,13 +1893,25 @@
         const result = await response.json();
         
         if (result.success) {
+          const clientSelectedImage = !!payload.newsletterImage;
+          const hasServerImageInfo = !!result.imageInfo;
           let imageStatus = '';
-          if (result.imageInfo && result.imageInfo.provided) {
-            imageStatus = result.imageInfo.usedInline
-              ? '\n🖼️ התמונה הוטמעה בגוף המייל בהצלחה.'
-              : '\n⚠️ התמונה לא הוטמעה בגוף המייל. סיבה: ' + (result.imageInfo.reason || 'unknown');
+
+          if (clientSelectedImage && !hasServerImageInfo) {
+            imageStatus = '\n⚠️ נבחרה תמונה, אבל השרת לא החזיר imageInfo (כנראה גרסת Apps Script ישנה).';
+          } else if (!clientSelectedImage) {
+            imageStatus = '\nℹ️ לא נבחרה תמונה לשליחה.';
+          } else if (result.imageInfo.usedInline) {
+            imageStatus = '\n🖼️ התמונה הוטמעה בגוף המייל בהצלחה.';
+          } else {
+            imageStatus = '\n⚠️ התמונה לא הוטמעה בגוף המייל. סיבה: ' + (result.imageInfo.reason || 'unknown');
           }
-          alert(`✅ ניוזלטר נשלח בהצלחה ל-${result.count} נמענים!${imageStatus}`);
+
+          const serverVersion = result.scriptVersion
+            ? `\n🔧 גרסת שרת: ${result.scriptVersion}`
+            : '\n🔧 גרסת שרת: לא דווחה';
+
+          alert(`✅ ניוזלטר נשלח בהצלחה ל-${result.count} נמענים!${imageStatus}${serverVersion}`);
           // נקה טופס
           document.getElementById('subject').value = '';
           quill.root.innerHTML = '';

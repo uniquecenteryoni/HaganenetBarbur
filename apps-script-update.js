@@ -21,6 +21,7 @@ function onOpen() {
 const SPREADSHEET_ID = '1KBinCX3LC2NhDAR__2TPgexY5QM1Q4QDjmwuwqD03TU';
 const SIGNATURE_FILE_ID = '14wfppVQEsnZHzRbMRbh3T_UJk0hoJovY';
 const FILES_FOLDER_ID = '1ZPoSs1r6KCljk0HwjlbHE1WOeJdwfJLU';
+const SCRIPT_VERSION = 'newsletter-inline-v4-2026-03-05';
 
 // --- תבנית מייל ---
 function getEmailTemplate(productsHtml) {
@@ -630,7 +631,8 @@ function sendNewsletterFromPanel(payload) {
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
       count: recipients.length,
-      imageInfo: imageResult.info
+      imageInfo: imageResult.info,
+      scriptVersion: SCRIPT_VERSION
     }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
