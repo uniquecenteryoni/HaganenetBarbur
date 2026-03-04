@@ -441,7 +441,8 @@ function sendNewsletter(payload) {
     const recipients = payload.isTest ? ["haganenet.barbur@gmail.com"] : [...new Set(getFilteredEmails(payload.filters))];
     if (recipients.length === 0) throw new Error("לא נמצאו נמענים");
     const sigBlob = DriveApp.getFileById(SIGNATURE_FILE_ID).getBlob();
-    const newsletterInlineImage = buildNewsletterInlineImage(payload.newsletterImage);
+    const imageResult = prepareNewsletterInlineImage(payload.newsletterImage);
+    const newsletterInlineImage = imageResult.blob;
     const newsletterImageHtml = newsletterInlineImage ? '<br><br><img src="cid:newsletterImage" style="max-width:100%;height:auto;">' : '';
     const fullHtml = `<div dir="rtl" style="font-family: Arial; text-align: right;">${payload.bodyHtml}${newsletterImageHtml}<br><br><img src="cid:signature" style="max-width:300px;"></div>`;
     recipients.forEach(email => {
@@ -458,12 +459,44 @@ function sendNewsletter(payload) {
   } catch (e) { throw new Error(e.message); }
 }
 
-function buildNewsletterInlineImage(newsletterImage) {
-  if (!newsletterImage || !newsletterImage.base64Data) return null;
-  const fileName = newsletterImage.fileName || 'newsletter-image';
-  const mimeType = newsletterImage.mimeType || 'application/octet-stream';
-  const bytes = Utilities.base64Decode(newsletterImage.base64Data);
-  return Utilities.newBlob(bytes, mimeType, fileName);
+function prepareNewsletterInlineImage(newsletterImage) {
+  const info = {
+    provided: false,
+    usedInline: false,
+    mimeType: null,
+    fileName: null,
+    byteSize: 0,
+    reason: null
+  };
+
+  if (!newsletterImage || !newsletterImage.base64Data) {
+    info.reason = 'no-image';
+    return { blob: null, info: info };
+  }
+
+  info.provided = true;
+  info.mimeType = (newsletterImage.mimeType || '').toLowerCase();
+  info.fileName = newsletterImage.fileName || 'newsletter-image';
+
+  const supportedInlineMime = /^image\/(jpeg|jpg|png|gif|webp)$/i;
+  if (!supportedInlineMime.test(info.mimeType)) {
+    info.reason = 'unsupported-mime';
+    return { blob: null, info: info };
+  }
+
+  try {
+    const bytes = Utilities.base64Decode(newsletterImage.base64Data);
+    info.byteSize = bytes.length;
+    info.usedInline = true;
+    info.reason = 'ok';
+    return {
+      blob: Utilities.newBlob(bytes, info.mimeType, info.fileName),
+      info: info
+    };
+  } catch (error) {
+    info.reason = 'decode-failed';
+    return { blob: null, info: info };
+  }
 }
 
 // --- פונקציות לפאנל הניהול ---
@@ -561,7 +594,8 @@ function sendNewsletterFromPanel(payload) {
       : getFilteredEmailsList(payload.filters);
     if (recipients.length === 0) throw new Error('לא נמצאו נמענים');
     const sigBlob = DriveApp.getFileById(SIGNATURE_FILE_ID).getBlob();
-    const newsletterInlineImage = buildNewsletterInlineImage(payload.newsletterImage);
+    const imageResult = prepareNewsletterInlineImage(payload.newsletterImage);
+    const newsletterInlineImage = imageResult.blob;
     const newsletterImageHtml = newsletterInlineImage ? '<br><br><img src="cid:newsletterImage" style="max-width:100%;height:auto;">' : '';
     const fullHtml = `<div dir="rtl" style="font-family: Arial; text-align: right;">
       ${payload.bodyHtml}${newsletterImageHtml}<br><br>
@@ -577,7 +611,11 @@ function sendNewsletterFromPanel(payload) {
       if (newsletterInlineImage) mailOptions.inlineImages.newsletterImage = newsletterInlineImage;
       MailApp.sendEmail(mailOptions);
     });
-    return ContentService.createTextOutput(JSON.stringify({ success: true, count: recipients.length }))
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      count: recipients.length,
+      imageInfo: imageResult.info
+    }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
