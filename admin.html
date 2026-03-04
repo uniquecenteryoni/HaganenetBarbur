@@ -615,6 +615,100 @@
     .toast-notification.error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
     .toast-notification.info { background: linear-gradient(135deg, #3498db, #2980b9); }
     .toast-notification.warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
+
+    /* Send Confirmation Dialog */
+    .send-dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(14, 22, 46, 0.45);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+      padding: 20px;
+    }
+
+    .send-dialog-overlay.show {
+      display: flex;
+    }
+
+    .send-dialog-card {
+      width: min(560px, 92vw);
+      border-radius: 22px;
+      padding: 28px 24px 22px;
+      text-align: center;
+      color: #1f2937;
+      background: linear-gradient(145deg, #ffffff, #f6f8ff);
+      box-shadow: 0 24px 60px rgba(28, 38, 84, 0.3);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .send-dialog-card.success {
+      border-color: rgba(46, 204, 113, 0.35);
+      box-shadow: 0 24px 60px rgba(39, 174, 96, 0.2);
+    }
+
+    .send-dialog-card.error {
+      border-color: rgba(231, 76, 60, 0.35);
+      box-shadow: 0 24px 60px rgba(192, 57, 43, 0.2);
+    }
+
+    .send-dialog-icon {
+      font-size: 42px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .send-dialog-title {
+      margin: 0;
+      font-size: 1.55rem;
+      color: #243b76;
+      font-weight: 700;
+    }
+
+    .send-dialog-message {
+      margin: 14px 0 0;
+      font-size: 1.02rem;
+      line-height: 1.65;
+      color: #374151;
+      white-space: pre-line;
+    }
+
+    .send-dialog-actions {
+      margin-top: 22px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .send-dialog-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 20px;
+      min-width: 130px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .send-dialog-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .send-dialog-btn.primary {
+      color: #fff;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 10px 24px rgba(102, 126, 234, 0.35);
+    }
+
+    .send-dialog-btn.secondary {
+      color: #374151;
+      background: #eef2ff;
+      box-shadow: 0 6px 16px rgba(76, 99, 181, 0.15);
+    }
   </style>
 </head>
 <body>
@@ -626,6 +720,18 @@
       <input type="password" id="passwordInput" placeholder="הזיני סיסמה" autocomplete="current-password">
       <button onclick="login()">כניסה</button>
       <p class="error-message" id="errorMessage">סיסמה שגויה, נסי שוב</p>
+    </div>
+  </div>
+
+  <div id="sendDialogOverlay" class="send-dialog-overlay" dir="rtl">
+    <div id="sendDialogCard" class="send-dialog-card info">
+      <div id="sendDialogIcon" class="send-dialog-icon">📨</div>
+      <h3 id="sendDialogTitle" class="send-dialog-title">אישור שליחה</h3>
+      <p id="sendDialogMessage" class="send-dialog-message"></p>
+      <div class="send-dialog-actions">
+        <button id="sendDialogCancel" class="send-dialog-btn secondary" type="button">ביטול</button>
+        <button id="sendDialogConfirm" class="send-dialog-btn primary" type="button">אישור</button>
+      </div>
     </div>
   </div>
 
@@ -896,6 +1002,43 @@
         setTimeout(() => toast.remove(), 400);
       }, duration);
     }
+
+    let sendDialogResolver = null;
+
+    function showSendDialog({ title, message, type = 'info', confirmText = 'אישור', cancelText = 'ביטול', showCancel = true }) {
+      return new Promise((resolve) => {
+        sendDialogResolver = resolve;
+        const overlay = document.getElementById('sendDialogOverlay');
+        const card = document.getElementById('sendDialogCard');
+        const icon = document.getElementById('sendDialogIcon');
+        const titleEl = document.getElementById('sendDialogTitle');
+        const messageEl = document.getElementById('sendDialogMessage');
+        const confirmBtn = document.getElementById('sendDialogConfirm');
+        const cancelBtn = document.getElementById('sendDialogCancel');
+
+        card.className = `send-dialog-card ${type}`;
+        titleEl.textContent = title || 'הודעה';
+        messageEl.textContent = message || '';
+        confirmBtn.textContent = confirmText;
+        cancelBtn.textContent = cancelText;
+        cancelBtn.style.display = showCancel ? 'inline-block' : 'none';
+
+        if (type === 'success') icon.textContent = '✅';
+        else if (type === 'error') icon.textContent = '⚠️';
+        else icon.textContent = '📨';
+
+        overlay.classList.add('show');
+      });
+    }
+
+    function closeSendDialog(confirmed) {
+      const overlay = document.getElementById('sendDialogOverlay');
+      overlay.classList.remove('show');
+      if (sendDialogResolver) {
+        sendDialogResolver(confirmed);
+        sendDialogResolver = null;
+      }
+    }
     
     // Initialize Quill Editor (for newsletter)
     let quill;
@@ -919,6 +1062,17 @@
       document.getElementById('passwordInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') login();
       });
+
+      const sendDialogConfirm = document.getElementById('sendDialogConfirm');
+      const sendDialogCancel = document.getElementById('sendDialogCancel');
+      const sendDialogOverlay = document.getElementById('sendDialogOverlay');
+      if (sendDialogConfirm) sendDialogConfirm.addEventListener('click', () => closeSendDialog(true));
+      if (sendDialogCancel) sendDialogCancel.addEventListener('click', () => closeSendDialog(false));
+      if (sendDialogOverlay) {
+        sendDialogOverlay.addEventListener('click', (e) => {
+          if (e.target === sendDialogOverlay) closeSendDialog(false);
+        });
+      }
     });
     
     // Login Function
@@ -1856,7 +2010,17 @@
         return;
       }
       
-      if (!confirm(isTest ? 'לשלוח בדיקה למייל שלך?' : `האם לשלוח לכל המסוננים?`)) return;
+      const isConfirmed = await showSendDialog({
+        title: 'אישור שליחת ניוזלטר',
+        message: isTest
+          ? 'לשלוח הודעת בדיקה למייל שלך?'
+          : 'לשלוח עכשיו את הניוזלטר לכל הנמענים המסוננים?',
+        type: 'info',
+        confirmText: 'כן, שלחי',
+        cancelText: 'ביטול',
+        showCancel: true
+      });
+      if (!isConfirmed) return;
       
       const btn = event ? event.target : document.querySelector('.btn-send');
       const originalText = btn.textContent;
@@ -1876,7 +2040,13 @@
         
         await sendNewsletterToScript(payload, btn, originalText);
       } catch (error) {
-        showToast('❌ שגיאה בשליחה: ' + error.message, 'error', 5000);
+        await showSendDialog({
+          title: 'שגיאה בשליחה',
+          message: error.message,
+          type: 'error',
+          confirmText: 'סגור',
+          showCancel: false
+        });
         btn.disabled = false;
         btn.textContent = originalText;
       }
@@ -1893,7 +2063,13 @@
         const result = await response.json();
         
         if (result.success) {
-          showToast(`✅ נשלח בהצלחה ל-${result.count} נמענים`, 'success', 5000);
+          await showSendDialog({
+            title: 'נשלח בהצלחה',
+            message: `הניוזלטר נשלח ל-${result.count} נמענים.`,
+            type: 'success',
+            confirmText: 'מעולה',
+            showCancel: false
+          });
 
           if (payload.newsletterImage && result.imageInfo && !result.imageInfo.usedInline) {
             showToast('⚠️ התמונה לא הוטמעה בגוף המייל. סיבה: ' + (result.imageInfo.reason || 'unknown'), 'warning', 7000);
