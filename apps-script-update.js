@@ -444,7 +444,15 @@ function sendNewsletter(payload) {
     const sigBlob = DriveApp.getFileById(SIGNATURE_FILE_ID).getBlob();
     const imageResult = prepareNewsletterInlineImage(payload.newsletterImage);
     const newsletterInlineImage = imageResult.blob;
-    const newsletterImageHtml = newsletterInlineImage ? '<br><br><img src="cid:newsletterImage" style="max-width:100%;height:auto;">' : '';
+    const normalizedLinkUrl = normalizeNewsletterLinkUrl(payload.linkUrl);
+    const newsletterImageTag = newsletterInlineImage
+      ? '<img src="cid:newsletterImage" style="max-width:100%;height:auto;">'
+      : '';
+    const newsletterImageHtml = newsletterInlineImage
+      ? ('<br><br>' + (normalizedLinkUrl
+        ? `<a href="${normalizedLinkUrl}" target="_blank" rel="noopener noreferrer">${newsletterImageTag}</a>`
+        : newsletterImageTag))
+      : '';
     const fullHtml = `<div dir="rtl" style="font-family: Arial; text-align: right;">${payload.bodyHtml}${newsletterImageHtml}<br><br><img src="cid:signature" style="max-width:300px;"></div>`;
     recipients.forEach(email => {
       const mailOptions = {
@@ -506,6 +514,17 @@ function prepareNewsletterInlineImage(newsletterImage) {
     info.reason = 'decode-failed';
     return { blob: null, info: info };
   }
+}
+
+function normalizeNewsletterLinkUrl(linkUrl) {
+  if (!linkUrl) return '';
+  let url = String(linkUrl).trim();
+  if (!url) return '';
+  if (!/^https?:\/\//i.test(url)) {
+    url = 'https://' + url;
+  }
+  if (!/^https?:\/\//i.test(url)) return '';
+  return url;
 }
 
 // --- פונקציות לפאנל הניהול ---
@@ -605,7 +624,15 @@ function sendNewsletterFromPanel(payload) {
     const sigBlob = DriveApp.getFileById(SIGNATURE_FILE_ID).getBlob();
     const imageResult = prepareNewsletterInlineImage(payload.newsletterImage);
     const newsletterInlineImage = imageResult.blob;
-    const newsletterImageHtml = newsletterInlineImage ? '<br><br><img src="cid:newsletterImage" style="max-width:100%;height:auto;">' : '';
+    const normalizedLinkUrl = normalizeNewsletterLinkUrl(payload.linkUrl);
+    const newsletterImageTag = newsletterInlineImage
+      ? '<img src="cid:newsletterImage" style="max-width:100%;height:auto;">'
+      : '';
+    const newsletterImageHtml = newsletterInlineImage
+      ? ('<br><br>' + (normalizedLinkUrl
+        ? `<a href="${normalizedLinkUrl}" target="_blank" rel="noopener noreferrer">${newsletterImageTag}</a>`
+        : newsletterImageTag))
+      : '';
     const fullHtml = `<div dir="rtl" style="font-family: Arial; text-align: right;">
       ${payload.bodyHtml}${newsletterImageHtml}<br><br>
       <img src="cid:signature" style="max-width:300px;">
