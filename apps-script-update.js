@@ -441,10 +441,29 @@ function sendNewsletter(payload) {
     const recipients = payload.isTest ? ["haganenet.barbur@gmail.com"] : [...new Set(getFilteredEmails(payload.filters))];
     if (recipients.length === 0) throw new Error("לא נמצאו נמענים");
     const sigBlob = DriveApp.getFileById(SIGNATURE_FILE_ID).getBlob();
-    const fullHtml = `<div dir="rtl" style="font-family: Arial; text-align: right;">${payload.bodyHtml}<br><br><img src="cid:signature" style="max-width:300px;"></div>`;
-    recipients.forEach(email => MailApp.sendEmail({ to: email, subject: payload.subject, htmlBody: fullHtml, inlineImages: { "signature": sigBlob } }));
+    const newsletterInlineImage = buildNewsletterInlineImage(payload.newsletterImage);
+    const newsletterImageHtml = newsletterInlineImage ? '<br><br><img src="cid:newsletterImage" style="max-width:100%;height:auto;">' : '';
+    const fullHtml = `<div dir="rtl" style="font-family: Arial; text-align: right;">${payload.bodyHtml}${newsletterImageHtml}<br><br><img src="cid:signature" style="max-width:300px;"></div>`;
+    recipients.forEach(email => {
+      const mailOptions = {
+        to: email,
+        subject: payload.subject,
+        htmlBody: fullHtml,
+        inlineImages: { "signature": sigBlob }
+      };
+      if (newsletterInlineImage) mailOptions.inlineImages.newsletterImage = newsletterInlineImage;
+      MailApp.sendEmail(mailOptions);
+    });
     return recipients.length;
   } catch (e) { throw new Error(e.message); }
+}
+
+function buildNewsletterInlineImage(newsletterImage) {
+  if (!newsletterImage || !newsletterImage.base64Data) return null;
+  const fileName = newsletterImage.fileName || 'newsletter-image';
+  const mimeType = newsletterImage.mimeType || 'application/octet-stream';
+  const bytes = Utilities.base64Decode(newsletterImage.base64Data);
+  return Utilities.newBlob(bytes, mimeType, fileName);
 }
 
 // --- פונקציות לפאנל הניהול ---
@@ -542,17 +561,21 @@ function sendNewsletterFromPanel(payload) {
       : getFilteredEmailsList(payload.filters);
     if (recipients.length === 0) throw new Error('לא נמצאו נמענים');
     const sigBlob = DriveApp.getFileById(SIGNATURE_FILE_ID).getBlob();
+    const newsletterInlineImage = buildNewsletterInlineImage(payload.newsletterImage);
+    const newsletterImageHtml = newsletterInlineImage ? '<br><br><img src="cid:newsletterImage" style="max-width:100%;height:auto;">' : '';
     const fullHtml = `<div dir="rtl" style="font-family: Arial; text-align: right;">
-      ${payload.bodyHtml}<br><br>
+      ${payload.bodyHtml}${newsletterImageHtml}<br><br>
       <img src="cid:signature" style="max-width:300px;">
     </div>`;
     recipients.forEach(email => {
-      MailApp.sendEmail({
+      const mailOptions = {
         to: email,
         subject: payload.subject,
         htmlBody: fullHtml,
         inlineImages: { "signature": sigBlob }
-      });
+      };
+      if (newsletterInlineImage) mailOptions.inlineImages.newsletterImage = newsletterInlineImage;
+      MailApp.sendEmail(mailOptions);
     });
     return ContentService.createTextOutput(JSON.stringify({ success: true, count: recipients.length }))
       .setMimeType(ContentService.MimeType.JSON);

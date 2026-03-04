@@ -1808,6 +1808,27 @@
         return true;
       }).map(lead => lead.email);
     }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('שגיאה בקריאת הקובץ'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function buildNewsletterImagePayload(file) {
+      if (!file) return null;
+      const dataUrl = await readFileAsDataUrl(file);
+      const commaIndex = dataUrl.indexOf(',');
+      if (commaIndex === -1) throw new Error('פורמט קובץ לא תקין');
+      return {
+        fileName: file.name || 'newsletter-image',
+        mimeType: file.type || 'application/octet-stream',
+        base64Data: dataUrl.substring(commaIndex + 1)
+      };
+    }
     
     async function sendNewsletter(isTest) {
       const subject = document.getElementById('subject').value;
@@ -1839,12 +1860,14 @@
       btn.textContent = 'שולח...';
       
       try {
+        const newsletterImage = await buildNewsletterImagePayload(imageFile);
         const payload = {
           isTest: isTest,
           filters: filters,
           subject: subject,
           bodyHtml: bodyHtml,
-          linkUrl: linkUrl
+          linkUrl: linkUrl,
+          newsletterImage: newsletterImage
         };
         
         await sendNewsletterToScript(payload, btn, originalText);
