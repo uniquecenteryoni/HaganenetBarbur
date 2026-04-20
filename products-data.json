@@ -110,6 +110,13 @@
       "description": "10 לוחות הגעתי לגן עם 4-6 אפשרויות",
       "price": "₪25.00",
       "image": "images/product1-slide3.svg"
+    },
+    {
+      "id": 4,
+      "title": "ערכת אביב",
+      "description": "ערכת פעילות אביבית עם 5 פעילויות מגוונות לחיזוק מיומנויות שונות בגן",
+      "price": "₪25.00",
+      "image": "images/Products/aviv.svg"
     }
   ],
   "body": [

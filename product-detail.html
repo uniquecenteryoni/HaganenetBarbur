@@ -225,6 +225,41 @@
     const params = new URLSearchParams(location.search);
     const cat = params.get('cat');
     const file = params.get('file');
+    const CUSTOM_PRODUCTS_KEY = 'customProducts';
+    const PRODUCT_MANAGEMENT_KEY = 'productManagementConfig';
+
+    function safeJsonParse(rawValue, fallback) {
+      try {
+        const parsed = JSON.parse(rawValue);
+        return parsed == null ? fallback : parsed;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function getCustomProducts() {
+      const products = safeJsonParse(localStorage.getItem(CUSTOM_PRODUCTS_KEY), []);
+      return Array.isArray(products) ? products : [];
+    }
+
+    function getProductManagementConfig() {
+      const config = safeJsonParse(localStorage.getItem(PRODUCT_MANAGEMENT_KEY), {});
+      return {
+        items: config && typeof config.items === 'object' ? config.items : {}
+      };
+    }
+
+    function normalizeMediaPath(fileName, fallbackPath) {
+      if (!fileName || typeof fileName !== 'string') return fallbackPath;
+      const trimmed = fileName.trim();
+      if (!trimmed) return fallbackPath;
+      return trimmed.startsWith('images/') ? trimmed : `images/Products/${trimmed}`;
+    }
+
+    function formatMultilineForHtml(text) {
+      if (text == null) return '';
+      return text.toString().replace(/\r\n/g, '\n').replace(/\n/g, '<br>');
+    }
     
     // Update back button to return to the correct category
     const backBtn = document.getElementById('backToShop');
@@ -474,6 +509,21 @@
         isFree: true,
         image: 'images/Products/19.webp'
       },
+      'general-5': {
+        title: 'ערכת אביב',
+        shortDesc: 'ערכת אביב עם 5 פעילויות מוכנות לעבודה על מיומנויות שונות',
+        description: `הערכה כוללת 5 פעילויות (מערכים כתובים וחומרי עזר להדפסה) שעובדות על מיומנויות שונות.<br><br>
+<strong>הפעילויות:</strong><br>
+✨ קוביית אביב - פעילות בתנועה להכרת סימני האביב<br>
+✨ מי הזוג שלי? - התאמת כמות למספר<br>
+✨ בינגו סימני אביב<br>
+✨ גינה לי חביבה - עבודה לפי דגם<br>
+✨ מי שלא מביט מפסיד - דף עזר לטיול מחוץ לבית`,
+        price: '₪25.00',
+        isFree: false,
+        image: 'images/Products/aviv.svg',
+        previewVideo: 'images/Products/aviv.mp4'
+      },
       'body-1': {
         title: 'סרגל אותיות – שפת הסימנים',
         shortDesc: 'סרגל אותיות שפת הסימנים להדפסה בעברית',
@@ -525,33 +575,94 @@
 
       }
     };
+
+    // Merge admin-managed products from localStorage into runtime catalog.
+    getCustomProducts().forEach((item) => {
+      const key = `${item.category}-custom-${item.id}`;
+      products[key] = {
+        title: item.title || 'קובץ חדש',
+        shortDesc: item.shortDescription || '',
+        description: item.longDescription || item.shortDescription || '',
+        price: item.price || '₪25.00',
+        isFree: false,
+        image: normalizeMediaPath(item.imageName, 'images/Products/aviv.svg'),
+        previewVideo: normalizeMediaPath(item.videoName, '')
+      };
+    });
     
     const productKey = cat + '-' + file;
+    const managementConfig = getProductManagementConfig();
+    const managedOverride = managementConfig.items[productKey] || null;
     const product = products[productKey];
+    let isHiddenProduct = false;
+    let isDeletedProduct = false;
+    let isGiftProduct = false;
+    let originalPriceForGift = '';
     
     if (product) {
-      document.getElementById('categoryName').textContent = categoryNames[cat] || 'מוצרים';
-      document.getElementById('productNameBreadcrumb').textContent = product.title;
-      document.getElementById('productTitle').textContent = product.title;
+      if (managedOverride) {
+        if (managedOverride.title) product.title = managedOverride.title;
+        if (managedOverride.shortDescription) product.shortDesc = managedOverride.shortDescription;
+        if (managedOverride.longDescription) product.description = managedOverride.longDescription;
+        if (managedOverride.price) product.price = managedOverride.price;
+        if (managedOverride.imageName) product.image = normalizeMediaPath(managedOverride.imageName, product.image);
+        if (managedOverride.videoName) product.previewVideo = normalizeMediaPath(managedOverride.videoName, product.previewVideo || '');
+        if (managedOverride.isGift) {
+          isGiftProduct = true;
+          originalPriceForGift = managedOverride.price || product.price || '₪0.00';
+        }
+        if (managedOverride.deleted) {
+          document.getElementById('productTitle').textContent = 'המוצר אינו זמין כרגע';
+          document.getElementById('productDescription').textContent = 'המוצר נמחק מהאתר ואינו זמין לצפייה.';
+          document.getElementById('addToCartBtn').style.display = 'none';
+          isDeletedProduct = true;
+        }
+        if (managedOverride.hidden) {
+          document.getElementById('productTitle').textContent = 'המוצר אינו זמין כרגע';
+          document.getElementById('productDescription').textContent = 'המוצר הוסר מהחנות באופן זמני.';
+          document.getElementById('addToCartBtn').style.display = 'none';
+          isHiddenProduct = true;
+        }
+      }
+
+      if (product.isFree) {
+        isGiftProduct = true;
+        originalPriceForGift = product.price || '₪0.00';
+      }
+
+      if (isHiddenProduct || isDeletedProduct) {
+        document.title = 'מוצר אינו זמין - גננת בר';
+      } else {
+
+        document.getElementById('categoryName').textContent = categoryNames[cat] || 'מוצרים';
+        document.getElementById('productNameBreadcrumb').textContent = product.title;
+        document.getElementById('productTitle').textContent = product.title;
       
       // עבור מוצרי מתנה - להציג רק "מתנה" בגופן גדול ומודגש
-      if (product.isFree) {
-        document.getElementById('productPrice').innerHTML = '<span style="font-size: 2.5rem; font-weight: 700; color: var(--primary-purple); display: flex; align-items: center; gap: 0.5rem;">מתנה <span class="gift-icon-wiggle" style="font-size: 2.5rem;">🎁</span></span>';
+        if (isGiftProduct) {
+          document.getElementById('productPrice').innerHTML = `<span class="price-strike">${originalPriceForGift}</span> <span class="free-price">₪0.00</span> <span class="gift-icon-wiggle" style="font-size: 2rem;">🎁</span>`;
         
-        const imageWrapper = document.querySelector('.product-image-wrapper');
-        const badge = document.createElement('div');
-        badge.className = 'free-gift-badge';
-        badge.textContent = 'מתנה';
-        imageWrapper.style.position = 'relative';
-        imageWrapper.appendChild(badge);
-      } else {
-        document.getElementById('productPrice').innerHTML = product.price;
-      }
+          const imageWrapper = document.querySelector('.product-image-wrapper');
+          const badge = document.createElement('div');
+          badge.className = 'free-gift-badge';
+          badge.textContent = 'מתנה';
+          imageWrapper.style.position = 'relative';
+          imageWrapper.appendChild(badge);
+        } else {
+          document.getElementById('productPrice').innerHTML = product.price;
+        }
       
-      document.getElementById('productDescription').innerHTML = product.description;
-      document.getElementById('productImage').src = product.image;
-      document.getElementById('productImage').alt = product.title;
-      document.title = product.title + ' - גננת בר';
+        document.getElementById('productDescription').innerHTML = formatMultilineForHtml(product.description);
+        document.getElementById('productDescription').style.whiteSpace = 'normal';
+        document.getElementById('productImage').src = product.image;
+        document.getElementById('productImage').alt = product.title;
+        if (product.previewVideo) {
+          document.getElementById('productImage').dataset.previewVideo = product.previewVideo;
+        } else {
+          document.getElementById('productImage').removeAttribute('data-preview-video');
+        }
+        document.title = product.title + ' - גננת בר';
+      }
     }
     
     // Cart management functions
@@ -579,6 +690,8 @@
       const product = products[productKey];
       
       if (!product) return;
+
+      if (managedOverride && (managedOverride.deleted || managedOverride.hidden)) return;
       
       const cart = getCart();
       
@@ -696,8 +809,8 @@
       const imgPath = img.getAttribute('src');
       const originalSrc = imgPath;
       const basePath = imgPath.substring(0, imgPath.lastIndexOf('.'));
-      const previewImagePath = basePath + '_p.webp';
-      const previewVideoPath = basePath + '.mp4';
+      const previewImagePath = img.dataset.previewImage || (basePath + '_p.webp');
+      const previewVideoPath = img.dataset.previewVideo || (basePath + '.mp4');
       
       console.log('Original image:', imgPath);
       console.log('Preview paths:', {image: previewImagePath, video: previewVideoPath});
@@ -721,7 +834,11 @@
         previewElement.autoplay = false;
         previewElement.loop = true;
         previewElement.muted = true;
+        previewElement.defaultMuted = true;
         previewElement.playsInline = true;
+        previewElement.setAttribute('muted', '');
+        previewElement.setAttribute('playsinline', '');
+        previewElement.preload = 'metadata';
         previewElement.style.width = '100%';
         previewElement.style.height = 'auto';
         previewElement.style.aspectRatio = '1/1';
@@ -763,7 +880,16 @@
             container.replaceChild(previewElement, currentImg);
             container.appendChild(icon);
             if (isVideoPreview) {
-              previewElement.play().catch(e => console.log('Video play failed:', e));
+              const tryPlay = () => {
+                previewElement.currentTime = 0;
+                previewElement.play().catch(e => console.log('Video play failed:', e));
+              };
+              if (previewElement.readyState >= 2) {
+                tryPlay();
+              } else {
+                previewElement.addEventListener('canplay', tryPlay, { once: true });
+                previewElement.load();
+              }
             }
           }
         }

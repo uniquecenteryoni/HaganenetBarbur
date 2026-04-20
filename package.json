@@ -1,0 +1,10 @@
+{
+  "name": "haganenet-barbur-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static site local runner",
+  "scripts": {
+    "dev": "ruby -run -e httpd . -p 8080",
+    "start": "ruby -run -e httpd . -p 8080"
+  }
+}

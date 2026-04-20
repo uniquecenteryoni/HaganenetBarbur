@@ -575,10 +575,99 @@
       gap: 10px;
       margin-top: 16px;
     }
+
+    .products-admin-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .admin-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-card h3 {
+      margin-bottom: 12px;
+      color: #667eea;
+    }
+
+    .products-list {
+      max-height: none;
+      min-height: 520px;
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fafbff;
+    }
+
+    .category-section {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 8px;
+      margin-bottom: 12px;
+      background: #ffffff;
+    }
+
+    .category-title {
+      font-weight: 700;
+      color: #4f46e5;
+      margin: 4px 0 10px;
+      font-size: 0.95rem;
+    }
+
+    .product-item {
+      border: 1px solid #dde3ff;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .product-item-title {
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .product-item-meta {
+      margin-top: 6px;
+      font-size: 0.86em;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .product-item-actions {
+      margin-top: 8px;
+    }
+
+    .row-inline {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .description-input {
+      width: 100%;
+      display: block;
+      min-height: 140px;
+      resize: vertical;
+      padding: 12px;
+      font-size: 0.98rem;
+      line-height: 1.65;
+    }
     
     @media (max-width: 768px) {
       .filter-grid,
-      .selection-container {
+      .selection-container,
+      .products-admin-grid {
         grid-template-columns: 1fr;
       }
       
@@ -748,6 +837,7 @@
       <button class="tab" onclick="switchTab('leads')">👥 ניהול לידים</button>
       <button class="tab" onclick="switchTab('newsletter')">📧 שליחת ניוזלטר</button>
       <button class="tab" onclick="switchTab('filesender')">📤 שליחת קבצים</button>
+      <button class="tab" onclick="switchTab('productsadmin')">🗂️ ניהול קבצים לחנות</button>
     </div>
 
     <!-- Dashboard Tab -->
@@ -969,6 +1059,99 @@
         <button class="btn-send" onclick="sendManualFiles()">שלח קבצים לנבחרים</button>
       </div>
     </div>
+
+    <!-- Products Admin Tab -->
+    <div class="tab-content" id="productsadmin">
+      <h2 style="margin-bottom: 1.5rem; color: #667eea;">🗂️ ניהול קבצים לחנות</h2>
+
+      <div class="products-admin-grid">
+        <div class="admin-card">
+          <h3>➕ הוספת קובץ חדש</h3>
+          <div class="filter-grid">
+            <div>
+              <label for="prodTitle">כותרת <small style="color:#b91c1c; font-weight:700;">(השם חייב להיות תואם לשם הקובץ בדרייב)</small></label>
+              <input type="text" id="prodTitle" placeholder="לדוגמה: ערכת קיץ">
+            </div>
+            <div>
+              <label for="prodCategory">שיוך לקטגוריה</label>
+              <select id="prodCategory">
+                <option value="general">כללי</option>
+                <option value="recipes">מתכונים</option>
+                <option value="birthday">יום הולדת</option>
+                <option value="holidays">חגים</option>
+                <option value="body">אני וגופי</option>
+              </select>
+              <div class="row-inline" style="margin-top:8px;">
+                <input type="text" id="newCategoryName" placeholder="הוספת קטגוריה חדשה" style="flex:1;">
+                <button class="action-btn action-send" type="button" onclick="addCategoryOption()">הוסף קטגוריה</button>
+              </div>
+            </div>
+          </div>
+
+          <label for="prodShortDesc">תיאור קצר</label>
+          <textarea id="prodShortDesc" class="description-input" rows="6" placeholder="טקסט קצר לכרטיס המוצר"></textarea>
+
+          <label for="prodLongDesc" style="margin-top: 10px;">תיאור ארוך</label>
+          <textarea id="prodLongDesc" class="description-input" rows="14" placeholder="טקסט מלא לדף המוצר"></textarea>
+
+          <div class="filter-grid" style="margin-top: 10px;">
+            <div>
+              <label for="prodImageName">שם תמונה</label>
+              <input type="text" id="prodImageName" placeholder="למשל: aviv.svg">
+            </div>
+            <div>
+              <label for="prodVideoName">שם וידאו במעבר עכבר</label>
+              <input type="text" id="prodVideoName" placeholder="למשל: aviv.mp4">
+            </div>
+          </div>
+          <small style="display:block; margin-top:6px; color:#475569;">התמונה והוידאו נשמרים אוטומטית מתוך התיקייה: <strong>images/Products/</strong> (אין צורך להזין נתיב מלא)</small>
+
+          <div class="filter-grid" style="margin-top: 10px;">
+            <div>
+              <label for="prodPrice">מחיר</label>
+              <input type="text" id="prodPrice" placeholder="למשל: ₪25.00">
+            </div>
+            <div class="row-inline" style="align-self:end;">
+              <input type="checkbox" id="prodIsGift">
+              <label for="prodIsGift" style="margin:0;">להציג את הקובץ כמתנה</label>
+            </div>
+          </div>
+
+          <input type="hidden" id="prodEditKey" value="">
+
+          <div class="row-inline" style="margin-top: 12px;">
+            <button id="prodSaveBtn" class="btn-send" type="button" onclick="addManagedProduct()" style="margin:0;">💾 שמירה והוספה</button>
+            <button class="btn-test" type="button" onclick="resetProductForm()" style="margin:0;">ניקוי טופס</button>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h3>📣 קידום בכניסה לאתר</h3>
+          <div class="row-inline" style="margin-bottom: 10px;">
+            <input type="checkbox" id="promoEnabled" checked>
+            <label for="promoEnabled" style="margin:0;">להציג פופאפ כשנכנסים לאתר</label>
+          </div>
+
+          <label for="promoProductSelect">בחירת קובץ לפרסום</label>
+          <select id="promoProductSelect"></select>
+
+          <div class="row-inline" style="margin-top: 12px; margin-bottom: 12px;">
+            <input type="checkbox" id="promoIsGift">
+            <label for="promoIsGift" style="margin:0;">לשווק כמתנה (ללא מחיר)</label>
+          </div>
+
+          <button class="btn-test" type="button" onclick="saveHomepagePromoSettings()" style="margin-bottom: 0;">✅ שמירת הגדרות פרסום</button>
+
+          <h3 style="margin-top: 20px;">🧭 כל הקבצים באתר לפי קטגוריה</h3>
+          <p style="font-size:0.9em;color:#64748b;margin-bottom:10px;">אפשר לערוך, למחוק (הסתרה מהאתר) ולשנות סדר הופעה.</p>
+          <label for="catalogCategoryFilter">סינון לפי קטגוריה</label>
+          <select id="catalogCategoryFilter" onchange="renderManagedProducts()" style="margin-bottom:10px;"></select>
+          <div id="managedProductsList" class="products-list">
+            <div style="text-align:center;color:#999;padding:10px;">אין קבצים שהוספו עדיין</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Quill Editor Script -->
@@ -1050,6 +1233,12 @@
     let selectedFileNames = new Set();
     let allCustomers = [];
     let allFiles = [];
+    const CUSTOM_PRODUCTS_KEY = 'customProducts';
+    const HOMEPAGE_PROMO_CONFIG_KEY = 'homepagePromoConfig';
+    const PRODUCT_MANAGEMENT_KEY = 'productManagementConfig';
+    const PRODUCT_CATEGORIES_KEY = 'productCategories';
+    let siteCatalogByCategory = {};
+    let siteCatalogByKey = {};
     
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
@@ -1117,6 +1306,7 @@
       loadLeadsFromGoogleSheets(); // טוען תמיד מ-Google Sheets - שיקוף לייב
       loadVisitsFromServer(); // טעינת נתוני מבקרים מהשרת
       trackVisit();
+      initProductsAdmin();
 
       const visitsCard = document.getElementById('visitsCard');
       if (visitsCard) {
@@ -1139,6 +1329,9 @@
       if (tabName === 'filesender') {
         loadCustomersAndFiles();
       }
+      if (tabName === 'productsadmin') {
+        initProductsAdmin();
+      }
     }
     
     function switchFileTab(tabName) {
@@ -1151,6 +1344,641 @@
       
       document.getElementById('groupTab').style.display = tabName === 'group' ? 'block' : 'none';
       document.getElementById('manualTab').style.display = tabName === 'manual' ? 'block' : 'none';
+    }
+
+    function safeJsonParse(rawValue, fallback) {
+      try {
+        const parsed = JSON.parse(rawValue);
+        return parsed == null ? fallback : parsed;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function getManagedProducts() {
+      const list = safeJsonParse(localStorage.getItem(CUSTOM_PRODUCTS_KEY), []);
+      return Array.isArray(list) ? list : [];
+    }
+
+    function saveManagedProducts(products) {
+      localStorage.setItem(CUSTOM_PRODUCTS_KEY, JSON.stringify(products));
+    }
+
+    function getProductManagementConfig() {
+      const config = safeJsonParse(localStorage.getItem(PRODUCT_MANAGEMENT_KEY), {});
+      return {
+        items: config && typeof config.items === 'object' ? config.items : {},
+        order: config && typeof config.order === 'object' ? config.order : {}
+      };
+    }
+
+    function saveProductManagementConfig(config) {
+      localStorage.setItem(PRODUCT_MANAGEMENT_KEY, JSON.stringify(config));
+    }
+
+    function normalizePrice(value) {
+      const trimmed = (value || '').toString().trim();
+      if (!trimmed) return '';
+      return trimmed.startsWith('₪') ? trimmed : `₪${trimmed}`;
+    }
+
+    function normalizeFileName(value) {
+      return (value || '').toString().trim();
+    }
+
+    function normalizeAssetFileName(value) {
+      const raw = (value || '').toString().trim();
+      if (!raw) return '';
+      if (raw.includes('/')) {
+        const parts = raw.split('/').filter(Boolean);
+        return parts[parts.length - 1] || '';
+      }
+      return raw;
+    }
+
+    function deriveVideoFileNameFromImage(imageName) {
+      const imageFile = normalizeAssetFileName(imageName);
+      if (!imageFile || !imageFile.includes('.')) return '';
+      return imageFile.replace(/\.[^.]+$/, '.mp4');
+    }
+
+    function getCustomCategories() {
+      const categories = safeJsonParse(localStorage.getItem(PRODUCT_CATEGORIES_KEY), []);
+      return Array.isArray(categories) ? categories : [];
+    }
+
+    function saveCustomCategories(categories) {
+      localStorage.setItem(PRODUCT_CATEGORIES_KEY, JSON.stringify(categories));
+    }
+
+    function getAllCategories() {
+      const defaults = ['general', 'recipes', 'birthday', 'holidays', 'body'];
+      const extras = getCustomCategories();
+      const merged = [...defaults];
+      extras.forEach((cat) => {
+        if (cat && !merged.includes(cat)) merged.push(cat);
+      });
+      return merged;
+    }
+
+    function refreshCategorySelect(selectedValue) {
+      const select = document.getElementById('prodCategory');
+      if (!select) return;
+      const categories = getAllCategories();
+      select.innerHTML = categories.map((cat) => `<option value="${cat}">${getCategoryLabel(cat)}</option>`).join('');
+      if (selectedValue && categories.includes(selectedValue)) {
+        select.value = selectedValue;
+      }
+    }
+
+    function refreshCatalogCategoryFilterOptions(selectedValue) {
+      const select = document.getElementById('catalogCategoryFilter');
+      if (!select) return;
+      const categories = Object.keys(siteCatalogByCategory).sort((a, b) => {
+        const order = getCategorySortOrder();
+        return order.indexOf(a) - order.indexOf(b);
+      });
+      const options = ['<option value="all">כל הקטגוריות</option>'];
+      categories.forEach((cat) => {
+        options.push(`<option value="${cat}">${getCategoryLabel(cat)}</option>`);
+      });
+      select.innerHTML = options.join('');
+      if (selectedValue && (selectedValue === 'all' || categories.includes(selectedValue))) {
+        select.value = selectedValue;
+      }
+    }
+
+    function addCategoryOption() {
+      const input = document.getElementById('newCategoryName');
+      const raw = (input?.value || '').trim();
+      if (!raw) {
+        showToast('יש להזין שם קטגוריה', 'warning');
+        return;
+      }
+      const normalized = raw.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-\u0590-\u05FF]/g, '');
+      if (!normalized) {
+        showToast('שם קטגוריה לא תקין', 'warning');
+        return;
+      }
+      const categories = getCustomCategories();
+      if (!categories.includes(normalized) && !['general','recipes','birthday','holidays','body'].includes(normalized)) {
+        categories.push(normalized);
+        saveCustomCategories(categories);
+      }
+      refreshCategorySelect(normalized);
+      if (input) input.value = '';
+      showToast('קטגוריה נוספה', 'success', 1800);
+    }
+
+    function parseProductKeyFromHref(href) {
+      try {
+        const url = new URL(href, window.location.origin);
+        const cat = url.searchParams.get('cat');
+        const file = url.searchParams.get('file');
+        if (!cat || !file) return null;
+        return `${cat}-${file}`;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getCategorySortOrder() {
+      return getAllCategories();
+    }
+
+    function getCategoryLabel(category) {
+      const labels = {
+        recipes: 'מתכונים',
+        birthday: 'יום הולדת',
+        holidays: 'חגים',
+        body: 'אני וגופי',
+        general: 'כללי'
+      };
+      return labels[category] || category.replace(/-/g, ' ');
+    }
+
+    function decodeJsString(raw) {
+      if (!raw) return '';
+      return raw
+        .replace(/\\'/g, "'")
+        .replace(/\\`/g, '`')
+        .replace(/\\n/g, '\n')
+        .replace(/\\r/g, '\r')
+        .replace(/\\t/g, '\t')
+        .replace(/\\\\/g, '\\')
+        .trim();
+    }
+
+    async function loadDetailProductsMetadata() {
+      const metadata = {};
+
+      try {
+        const response = await fetch(`product-detail.html?ts=${Date.now()}`);
+        const html = await response.text();
+
+        // Parse products object entries from product-detail runtime map.
+        const entryRegex = /'([a-z]+-[^']+)'\s*:\s*\{([\s\S]*?)\n\s*\},/g;
+        let entryMatch;
+
+        while ((entryMatch = entryRegex.exec(html)) !== null) {
+          const key = entryMatch[1];
+          const body = entryMatch[2];
+
+          const titleMatch = body.match(/title\s*:\s*'([\s\S]*?)',/);
+          const shortMatch = body.match(/shortDesc\s*:\s*'([\s\S]*?)',/);
+          const descTemplateMatch = body.match(/description\s*:\s*`([\s\S]*?)`,/);
+          const descSingleMatch = body.match(/description\s*:\s*'([\s\S]*?)',/);
+          const priceMatch = body.match(/price\s*:\s*'([\s\S]*?)',/);
+          const imageMatch = body.match(/image\s*:\s*'([\s\S]*?)',/);
+          const previewMatch = body.match(/previewVideo\s*:\s*'([\s\S]*?)',/);
+
+          metadata[key] = {
+            title: decodeJsString(titleMatch ? titleMatch[1] : ''),
+            shortDescription: decodeJsString(shortMatch ? shortMatch[1] : ''),
+            longDescription: decodeJsString(descTemplateMatch ? descTemplateMatch[1] : (descSingleMatch ? descSingleMatch[1] : '')),
+            price: decodeJsString(priceMatch ? priceMatch[1] : ''),
+            imageName: decodeJsString(imageMatch ? imageMatch[1] : ''),
+            videoName: decodeJsString(previewMatch ? previewMatch[1] : '')
+          };
+        }
+      } catch (error) {
+        console.error('שגיאה בטעינת מטא-דאטה מדף מוצר:', error);
+      }
+
+      return metadata;
+    }
+
+    async function loadSiteCatalogFromIndex() {
+      const catalogByCategory = {};
+      const catalogByKeyLocal = {};
+      const detailMetadata = await loadDetailProductsMetadata();
+
+      try {
+        const response = await fetch(`index.html?ts=${Date.now()}`);
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+        doc.querySelectorAll('.product-panel').forEach((panel) => {
+          const panelCategory = panel.dataset.panel;
+          if (!panelCategory || panelCategory === 'all') return;
+
+          if (!catalogByCategory[panelCategory]) catalogByCategory[panelCategory] = [];
+
+          panel.querySelectorAll('.file-card').forEach((card) => {
+            const link = card.querySelector('a[href*="product-detail.html"]');
+            const img = card.querySelector('img');
+            const desc = card.querySelector('.file-desc');
+            if (!link || !img || !desc) return;
+
+            const key = parseProductKeyFromHref(link.getAttribute('href'));
+            if (!key) return;
+
+            if (catalogByKeyLocal[key]) return;
+
+            const item = {
+              key,
+              category: panelCategory,
+              title: (detailMetadata[key]?.title || (img.getAttribute('alt') || '').trim() || key),
+              shortDescription: (detailMetadata[key]?.shortDescription || (desc.textContent || '').trim()),
+              longDescription: (detailMetadata[key]?.longDescription || ''),
+              imageName: normalizeAssetFileName(detailMetadata[key]?.imageName || (img.getAttribute('src') || '').trim()),
+              videoName: normalizeAssetFileName((img.getAttribute('data-preview-video') || '').trim()),
+              price: (detailMetadata[key]?.price || '')
+            };
+
+            if (!item.videoName && detailMetadata[key]?.videoName) {
+              item.videoName = normalizeAssetFileName(detailMetadata[key].videoName);
+            }
+            if (!item.videoName) {
+              item.videoName = deriveVideoFileNameFromImage(item.imageName);
+            }
+
+            catalogByCategory[panelCategory].push(item);
+            catalogByKeyLocal[key] = item;
+          });
+        });
+      } catch (error) {
+        console.error('שגיאה בטעינת קטלוג מהאתר:', error);
+      }
+
+      // Merge custom products saved from admin
+      getManagedProducts().forEach((p) => {
+        const key = `${p.category}-custom-${p.id}`;
+        if (!catalogByCategory[p.category]) catalogByCategory[p.category] = [];
+        const item = {
+          key,
+          category: p.category,
+          title: p.title || detailMetadata[key]?.title || 'קובץ חדש',
+          shortDescription: p.shortDescription || detailMetadata[key]?.shortDescription || '',
+          longDescription: p.longDescription || detailMetadata[key]?.longDescription || '',
+          imageName: normalizeAssetFileName(p.imageName || detailMetadata[key]?.imageName || ''),
+          videoName: normalizeAssetFileName(p.videoName || detailMetadata[key]?.videoName || ''),
+          price: p.price || detailMetadata[key]?.price || ''
+        };
+        if (!item.videoName) {
+          item.videoName = deriveVideoFileNameFromImage(item.imageName);
+        }
+        if (!catalogByKeyLocal[key]) {
+          catalogByCategory[p.category].push(item);
+        }
+        catalogByKeyLocal[key] = item;
+      });
+
+      siteCatalogByCategory = catalogByCategory;
+      siteCatalogByKey = catalogByKeyLocal;
+    }
+
+    function getProductOptionCatalog() {
+      const options = [];
+
+      Object.keys(siteCatalogByCategory).forEach((category) => {
+        siteCatalogByCategory[category].forEach((item) => {
+          options.push({
+            key: item.key,
+            label: `${item.title} (${getCategoryLabel(category)})`
+          });
+        });
+      });
+
+      if (!options.some(opt => opt.key === 'general-5')) {
+        options.unshift({ key: 'general-5', label: 'ערכת אביב (כללי)' });
+      }
+
+      return options;
+    }
+
+    function renderManagedProducts() {
+      const container = document.getElementById('managedProductsList');
+      if (!container) return;
+
+      const config = getProductManagementConfig();
+      const filterValue = document.getElementById('catalogCategoryFilter')?.value || 'all';
+      const categories = Object.keys(siteCatalogByCategory).sort((a, b) => {
+        const order = getCategorySortOrder();
+        return order.indexOf(a) - order.indexOf(b);
+      }).filter((cat) => filterValue === 'all' || cat === filterValue);
+
+      if (!categories.length) {
+        container.innerHTML = '<div style="text-align:center;color:#999;padding:10px;">אין קבצים שהוספו עדיין</div>';
+        return;
+      }
+
+      container.innerHTML = categories.map((category) => {
+        const items = [...(siteCatalogByCategory[category] || [])];
+        const orderList = Array.isArray(config.order[category]) ? config.order[category] : [];
+        const rank = new Map(orderList.map((k, i) => [k, i]));
+
+        items.sort((a, b) => {
+          const aIn = rank.has(a.key);
+          const bIn = rank.has(b.key);
+          if (aIn && bIn) return rank.get(a.key) - rank.get(b.key);
+          if (aIn) return -1;
+          if (bIn) return 1;
+          return 0;
+        });
+
+        return `
+          <div class="category-section">
+            <div class="category-title">${getCategoryLabel(category)}</div>
+            ${items.map((item, idx) => {
+              const override = config.items[item.key] || {};
+              const title = override.title || item.title || item.key;
+              const shortDescription = override.shortDescription || item.shortDescription || '';
+              const longDescription = override.longDescription || item.longDescription || '';
+              const imageName = override.imageName || item.imageName || '-';
+              const videoName = override.videoName || item.videoName || '-';
+              const price = override.price || item.price || '-';
+              const hidden = !!override.hidden;
+              const deleted = !!override.deleted;
+              const isGift = !!override.isGift;
+
+              return `
+                <div class="product-item" style="opacity:${hidden || deleted ? '0.55' : '1'};">
+                  <div class="product-item-title">${title}</div>
+                  <div class="product-item-meta">
+                    מפתח: ${item.key}<br>
+                    תיאור קצר: ${shortDescription || '-'}<br>
+                    תיאור ארוך: ${longDescription ? `${longDescription.substring(0, 120)}...` : '-'}<br>
+                    מחיר: ${price}<br>
+                    תמונה: ${imageName}<br>
+                    וידאו hover: ${videoName}<br>
+                    מצב: ${deleted ? 'נמחק מהאתר' : (hidden ? 'מוסתר' : 'מוצג')} ${isGift ? '• מתנה' : ''}
+                  </div>
+                  <div class="product-item-actions">
+                    <button class="action-btn action-send" onclick="startEditCatalogItem('${encodeURIComponent(item.key)}')">✏️ עריכה</button>
+                    <button class="action-btn action-send" onclick="moveCatalogItem('${encodeURIComponent(category)}','${encodeURIComponent(item.key)}',-1)" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
+                    <button class="action-btn action-send" onclick="moveCatalogItem('${encodeURIComponent(category)}','${encodeURIComponent(item.key)}',1)" ${idx === items.length - 1 ? 'disabled' : ''}>⬇️</button>
+                    ${deleted
+                      ? `<button class="action-btn action-send" onclick="toggleCatalogItemDeleted('${encodeURIComponent(item.key)}', false)">↩️ שחזור</button>`
+                      : `<button class="action-btn action-delete" onclick="toggleCatalogItemDeleted('${encodeURIComponent(item.key)}', true)">❌ מחיקה מהאתר</button>`}
+                    ${hidden
+                      ? `<button class="action-btn action-send" onclick="toggleCatalogItemHidden('${encodeURIComponent(item.key)}', false)">👁️ החזרה</button>`
+                      : `<button class="action-btn action-delete" onclick="toggleCatalogItemHidden('${encodeURIComponent(item.key)}', true)">🗑️ הסתרה</button>`}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function refreshPromoProductOptions(selectedValue) {
+      const select = document.getElementById('promoProductSelect');
+      if (!select) return;
+
+      const options = getProductOptionCatalog();
+      select.innerHTML = options.map((opt) => `<option value="${opt.key}">${opt.label}</option>`).join('');
+
+      if (selectedValue && options.some(opt => opt.key === selectedValue)) {
+        select.value = selectedValue;
+      }
+    }
+
+    function loadHomepagePromoSettings() {
+      const config = safeJsonParse(localStorage.getItem(HOMEPAGE_PROMO_CONFIG_KEY), {});
+      const selectedKey = config.productKey || 'general-5';
+
+      refreshPromoProductOptions(selectedKey);
+
+      const enabledEl = document.getElementById('promoEnabled');
+      const giftEl = document.getElementById('promoIsGift');
+      if (enabledEl) enabledEl.checked = config.enabled !== false;
+      if (giftEl) giftEl.checked = !!config.isGift;
+    }
+
+    async function initProductsAdmin() {
+      await loadSiteCatalogFromIndex();
+      refreshCategorySelect(document.getElementById('prodCategory')?.value || 'general');
+      refreshCatalogCategoryFilterOptions(document.getElementById('catalogCategoryFilter')?.value || 'all');
+      renderManagedProducts();
+      loadHomepagePromoSettings();
+    }
+
+    function resetProductForm() {
+      document.getElementById('prodEditKey').value = '';
+      refreshCategorySelect('general');
+      document.getElementById('prodTitle').value = '';
+      document.getElementById('prodShortDesc').value = '';
+      document.getElementById('prodLongDesc').value = '';
+      document.getElementById('prodImageName').value = '';
+      document.getElementById('prodVideoName').value = '';
+      document.getElementById('prodPrice').value = '';
+      document.getElementById('prodIsGift').checked = false;
+      const btn = document.getElementById('prodSaveBtn');
+      if (btn) btn.textContent = '💾 שמירה והוספה';
+    }
+
+    function startEditCatalogItem(encodedKey) {
+      const key = decodeURIComponent(encodedKey);
+      const baseItem = siteCatalogByKey[key];
+      if (!baseItem) return;
+
+      const config = getProductManagementConfig();
+      const override = config.items[key] || {};
+      const title = override.title || baseItem.title || '';
+      const shortDescription = override.shortDescription || baseItem.shortDescription || '';
+      const longDescription = override.longDescription || baseItem.longDescription || '';
+      const imageName = override.imageName || baseItem.imageName || '';
+      const videoName = override.videoName || baseItem.videoName || '';
+      const price = override.price || baseItem.price || '';
+      const isGift = !!override.isGift;
+
+      document.getElementById('prodEditKey').value = key;
+      refreshCategorySelect(baseItem.category || 'general');
+      document.getElementById('prodTitle').value = title;
+      document.getElementById('prodShortDesc').value = shortDescription;
+      document.getElementById('prodLongDesc').value = longDescription;
+      document.getElementById('prodImageName').value = normalizeAssetFileName(imageName);
+      document.getElementById('prodVideoName').value = normalizeAssetFileName(videoName || deriveVideoFileNameFromImage(imageName));
+      document.getElementById('prodPrice').value = price;
+      document.getElementById('prodIsGift').checked = isGift;
+      const btn = document.getElementById('prodSaveBtn');
+      if (btn) btn.textContent = '💾 שמירת עריכה';
+      showToast('מצב עריכה הופעל עבור הקובץ שנבחר', 'info');
+    }
+
+    function moveCatalogItem(encodedCategory, encodedKey, direction) {
+      const category = decodeURIComponent(encodedCategory);
+      const key = decodeURIComponent(encodedKey);
+      const config = getProductManagementConfig();
+      const sourceItems = (siteCatalogByCategory[category] || []).map(item => item.key);
+      const currentOrder = Array.isArray(config.order[category]) ? [...config.order[category]] : [...sourceItems];
+
+      sourceItems.forEach((k) => {
+        if (!currentOrder.includes(k)) currentOrder.push(k);
+      });
+
+      const idx = currentOrder.indexOf(key);
+      if (idx === -1) return;
+      const target = idx + direction;
+      if (target < 0 || target >= currentOrder.length) return;
+
+      [currentOrder[idx], currentOrder[target]] = [currentOrder[target], currentOrder[idx]];
+      config.order[category] = currentOrder;
+      saveProductManagementConfig(config);
+      renderManagedProducts();
+      showToast('הסדר עודכן', 'success', 1500);
+    }
+
+    function toggleCatalogItemHidden(encodedKey, hidden) {
+      const key = decodeURIComponent(encodedKey);
+      const config = getProductManagementConfig();
+      const item = config.items[key] || {};
+      item.hidden = !!hidden;
+      config.items[key] = item;
+      saveProductManagementConfig(config);
+      renderManagedProducts();
+      showToast(hidden ? 'הקובץ הוסתר מהאתר' : 'הקובץ הוחזר להצגה', 'info');
+    }
+
+    function toggleCatalogItemDeleted(encodedKey, deleted) {
+      const key = decodeURIComponent(encodedKey);
+      const config = getProductManagementConfig();
+      const item = config.items[key] || {};
+      item.deleted = !!deleted;
+      if (deleted) item.hidden = false;
+      config.items[key] = item;
+      saveProductManagementConfig(config);
+      renderManagedProducts();
+      showToast(deleted ? 'הקובץ נמחק מהאתר' : 'הקובץ שוחזר לאתר', deleted ? 'warning' : 'success');
+    }
+
+    function addManagedProduct() {
+      const editKey = document.getElementById('prodEditKey')?.value || '';
+      const title = document.getElementById('prodTitle')?.value.trim();
+      const category = document.getElementById('prodCategory')?.value;
+      const shortDescription = document.getElementById('prodShortDesc')?.value || '';
+      const longDescription = document.getElementById('prodLongDesc')?.value || '';
+      const imageName = normalizeAssetFileName(document.getElementById('prodImageName')?.value);
+      const videoName = normalizeAssetFileName(document.getElementById('prodVideoName')?.value) || deriveVideoFileNameFromImage(imageName);
+      const price = normalizePrice(document.getElementById('prodPrice')?.value);
+      const isGift = !!document.getElementById('prodIsGift')?.checked;
+
+      if (!title || !category || !shortDescription.trim() || !longDescription.trim() || !imageName || !price) {
+        showToast('יש למלא את כל השדות החובה', 'warning');
+        return;
+      }
+
+      if (editKey) {
+        const config = getProductManagementConfig();
+        config.items[editKey] = {
+          ...(config.items[editKey] || {}),
+          title,
+          shortDescription,
+          longDescription,
+          imageName,
+          videoName,
+          price,
+          isGift,
+          deleted: false,
+          hidden: false
+        };
+        saveProductManagementConfig(config);
+
+        if (editKey.includes('-custom-')) {
+          const customId = editKey.split('-custom-')[1];
+          const products = getManagedProducts();
+          const idx = products.findIndex((p) => String(p.id) === String(customId));
+          if (idx !== -1) {
+            products[idx] = {
+              ...products[idx],
+              title,
+              shortDescription,
+              longDescription,
+              imageName,
+              videoName,
+              price,
+              isGift
+            };
+            saveManagedProducts(products);
+          }
+        }
+
+        resetProductForm();
+        initProductsAdmin();
+        showToast('✅ העריכה נשמרה', 'success');
+        return;
+      }
+
+      const products = getManagedProducts();
+      const newId = Date.now().toString(36);
+      products.push({
+        id: newId,
+        title,
+        category,
+        shortDescription,
+        longDescription,
+        imageName,
+        videoName,
+        price,
+        isGift,
+        createdAt: new Date().toISOString()
+      });
+      saveManagedProducts(products);
+
+      const config = getProductManagementConfig();
+      const newKey = `${category}-custom-${newId}`;
+      config.items[newKey] = {
+        title,
+        shortDescription,
+        longDescription,
+        imageName,
+        videoName,
+        price,
+        isGift,
+        deleted: false,
+        hidden: false
+      };
+      saveProductManagementConfig(config);
+
+      resetProductForm();
+      initProductsAdmin();
+      showToast('✅ הקובץ נשמר בהצלחה ויהיה זמין באתר', 'success');
+    }
+
+    function deleteManagedProduct(encodedId) {
+      const id = decodeURIComponent(encodedId);
+      const products = getManagedProducts();
+      const next = products.filter((item) => String(item.id) !== String(id));
+      saveManagedProducts(next);
+
+      const config = getProductManagementConfig();
+      delete config.items[`general-custom-${id}`];
+      delete config.items[`recipes-custom-${id}`];
+      delete config.items[`birthday-custom-${id}`];
+      delete config.items[`holidays-custom-${id}`];
+      delete config.items[`body-custom-${id}`];
+      Object.keys(config.order).forEach((cat) => {
+        if (Array.isArray(config.order[cat])) {
+          config.order[cat] = config.order[cat].filter((key) => !key.endsWith(`custom-${id}`));
+        }
+      });
+      saveProductManagementConfig(config);
+
+      // אם נמחק מוצר שנבחר כפופאפ, חוזרים לברירת מחדל.
+      const promo = safeJsonParse(localStorage.getItem(HOMEPAGE_PROMO_CONFIG_KEY), {});
+      if ((promo.productKey || '').endsWith(`custom-${id}`)) {
+        promo.productKey = 'general-5';
+        localStorage.setItem(HOMEPAGE_PROMO_CONFIG_KEY, JSON.stringify(promo));
+      }
+
+      initProductsAdmin();
+      showToast('🗑️ הקובץ נמחק', 'info');
+    }
+
+    function saveHomepagePromoSettings() {
+      const enabled = !!document.getElementById('promoEnabled')?.checked;
+      const productKey = document.getElementById('promoProductSelect')?.value || 'general-5';
+      const isGift = !!document.getElementById('promoIsGift')?.checked;
+
+      localStorage.setItem(HOMEPAGE_PROMO_CONFIG_KEY, JSON.stringify({
+        enabled,
+        productKey,
+        isGift
+      }));
+
+      showToast('✅ הגדרות הפרסום נשמרו', 'success');
     }
     
     // ===== DASHBOARD =====
