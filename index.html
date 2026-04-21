@@ -12,7 +12,7 @@
   </script>
   
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>גננת בר - חנות קבצים חינוכיים</title>
   <meta name="description" content="קבצים חינוכיים איכותיים להורדה לגיל הרך - מתכונים אוריינים, ערכות חגים, כרטיסיות ולוחות, ייעוץ מקצועי לגננות. כל מה שגננת צריכה במקום אחד.">
   
@@ -71,9 +71,17 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
+      height: 100vh;
+      height: 100dvh;
       z-index: 10000;
       animation: fadeIn 0.3s ease-out;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
     }
 
     .popup-overlay {
@@ -97,8 +105,9 @@
 
     .popup-content {
       position: relative;
+      width: min(600px, 100%);
       max-width: 600px;
-      margin: 50px auto;
+      margin: 24px auto;
       background: linear-gradient(135deg, #fef9ff 0%, #fff 100%);
       border-radius: 24px;
       padding: 0;
@@ -106,7 +115,10 @@
       animation: popupSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       overflow: hidden;
       max-height: 90vh;
+      max-height: 90dvh;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
     .popup-close {
@@ -278,8 +290,9 @@
     /* Mobile responsive */
     @media (max-width: 768px) {
       .popup-content {
-        margin: 20px;
+        margin: 0;
         max-height: 95vh;
+        max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       }
       
       .popup-title {
@@ -1402,8 +1415,14 @@
 
         applyPopupContent();
 
+        const scrollY = window.scrollY || window.pageYOffset || 0;
         popup.style.display = 'block';
-        document.body.style.overflow = 'hidden';
+        document.body.dataset.popupScrollY = String(scrollY);
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
 
         const popupVideo = popup.querySelector('.popup-video');
         if (popupVideo) {
@@ -1419,27 +1438,37 @@
         const overlay = popup.querySelector('.popup-overlay');
         const shopBtn = document.getElementById('popupShopBtn');
 
-        function closePopup() {
-          popup.style.display = 'none';
-          document.body.style.overflow = '';
-          if (popupVideo) popupVideo.pause();
-          if (stopConfetti) stopConfetti();
-        }
-
-        closeBtn.addEventListener('click', closePopup);
-        overlay.addEventListener('click', closePopup);
-        
-        // סגירה ומעבר לחנות
-        shopBtn.addEventListener('click', function() {
-          closePopup();
-        });
-
-        // סגירה עם ESC
-        document.addEventListener('keydown', function(e) {
+        const onEscapeKey = (e) => {
           if (e.key === 'Escape') {
             closePopup();
           }
-        });
+        };
+
+        function closePopup() {
+          popup.style.display = 'none';
+          const savedScrollY = parseInt(document.body.dataset.popupScrollY || '0', 10) || 0;
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          document.body.style.width = '';
+          delete document.body.dataset.popupScrollY;
+          window.scrollTo(0, savedScrollY);
+          if (popupVideo) popupVideo.pause();
+          if (stopConfetti) stopConfetti();
+          document.removeEventListener('keydown', onEscapeKey);
+        }
+
+        closeBtn.addEventListener('click', closePopup, { once: true });
+        overlay.addEventListener('click', closePopup, { once: true });
+        
+        // סגירה ומעבר לחנות
+        if (shopBtn) {
+          shopBtn.addEventListener('click', closePopup, { once: true });
+        }
+
+        // סגירה עם ESC
+        document.addEventListener('keydown', onEscapeKey);
       }
 
       // הצגת הפופאפ אם צריך
