@@ -1,4 +1,4 @@
-/* This stylesheet is loaded only by /storytime/. Brand variables come from style.css. */
+/* This stylesheet is loaded only by /Sipur/. Brand variables come from style.css. */
 .storytime { --st-cream:#fbf8f2; --st-lilac:#f4eef9; --st-sage:#eff3ec; --st-ink:#352b3b; color:var(--st-ink); font-size:17px; line-height:1.8; }
 .storytime .st-container { width:min(1160px, 100%); margin-inline:auto; padding-inline:32px; }
 .storytime a { color:var(--primary-purple); }
