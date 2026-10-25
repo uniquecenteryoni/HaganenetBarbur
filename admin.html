@@ -1737,7 +1737,7 @@
 
     function loadHomepagePromoSettings() {
       const config = safeJsonParse(localStorage.getItem(HOMEPAGE_PROMO_CONFIG_KEY), {});
-      const selectedKey = config.productKey || 'general-5';
+      const selectedKey = config.productKey || 'holidays-2';
 
       refreshPromoProductOptions(selectedKey);
 
@@ -1969,7 +1969,7 @@
 
     function saveHomepagePromoSettings() {
       const enabled = !!document.getElementById('promoEnabled')?.checked;
-      const productKey = document.getElementById('promoProductSelect')?.value || 'general-5';
+      const productKey = document.getElementById('promoProductSelect')?.value || 'holidays-2';
       const isGift = !!document.getElementById('promoIsGift')?.checked;
 
       localStorage.setItem(HOMEPAGE_PROMO_CONFIG_KEY, JSON.stringify({

@@ -419,29 +419,29 @@
     })();
   </script>
 
-  <!-- Spring Kit Popup Modal -->
+  <!-- Hanukkah Kit Popup Modal -->
   <div id="februaryPopup" class="popup-modal" style="display: none;">
     <div class="popup-overlay"></div>
     <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
     <div class="popup-content">
       <button class="popup-close" aria-label="סגור">×</button>
       <div class="popup-header">
-        <h2 class="popup-title">🌸 חדש באתר: ערכת אביב 🌸</h2>
-        <p class="popup-subtitle">תוכן חדש ועדכני שמתאים בדיוק לתקופה</p>
+        <h2 class="popup-title">🕎 ערכת חנוכה לגן 🕎</h2>
+        <p class="popup-subtitle">פעילויות חגיגיות ומוכנות להדפסה לחג החנוכה</p>
       </div>
       <div class="popup-body">
         <div class="popup-video-wrapper">
           <video class="popup-video" autoplay loop muted playsinline>
-            <source src="images/Products/aviv.mp4" type="video/mp4">
+            <source src="images/Products/4-2.mp4" type="video/mp4">
             התדפדפן שלך לא תומך בתגית וידאו.
           </video>
         </div>
-        <h3 class="popup-product-title">ערכת אביב</h3>
+        <h3 class="popup-product-title">ערכת חנוכה</h3>
         <p class="popup-description">
-          עלתה ערכה חדשה בנושא אביב, עם פעילויות מגוונות שעובדות על מיומנויות שונות בצורה חווייתית.<br><br>
-          זה זמן מצוין לשלב בגן תוכן עונתי מרענן ומוכן לעבודה.
+          6 מערכי פעילות בקבוצה, כרטיסיות מעוצבות להדפסה ו־2 לוחות "הגעתי לגן" לחג החנוכה.<br><br>
+          כל מה שצריך לחוויית חג עשירה ומשמעותית בגן.
         </p>
-        <a href="product-detail.html?cat=general&file=5" class="popup-btn" id="popupShopBtn">לצפייה בערכת אביב</a>
+        <a href="product-detail.html?cat=holidays&file=2" class="popup-btn" id="popupShopBtn">לצפייה בערכת חנוכה</a>
       </div>
     </div>
   </div>
@@ -1269,21 +1269,21 @@
       initScrollAnimations();
     }
 
-    // Spring Kit Popup Logic
+    // Hanukkah Kit Popup Logic
     (function() {
       function getHomepagePromoData() {
         const config = safeJsonParse(localStorage.getItem(HOMEPAGE_PROMO_CONFIG_KEY), {});
-        const selectedKey = (config && config.productKey) ? config.productKey : 'general-5';
+        const selectedKey = (config && config.productKey) ? config.productKey : 'holidays-2';
         const isGift = !!(config && config.isGift);
 
         const defaults = {
-          title: 'ערכת אביב',
-          subtitle: 'תוכן חדש ועדכני שמתאים בדיוק לתקופה',
-          description: 'עלתה ערכה חדשה בנושא אביב, עם פעילויות מגוונות שעובדות על מיומנויות שונות בצורה חווייתית.<br><br>זה זמן מצוין לשלב בגן תוכן עונתי מרענן ומוכן לעבודה.',
-          link: 'product-detail.html?cat=general&file=5',
-          video: 'images/Products/aviv.mp4',
-          heading: '🌸 חדש באתר: ערכת אביב 🌸',
-          cta: 'לצפייה בערכת אביב'
+          title: 'ערכת חנוכה',
+          subtitle: 'פעילויות חגיגיות ומוכנות להדפסה לחג החנוכה',
+          description: '6 מערכי פעילות בקבוצה, כרטיסיות מעוצבות להדפסה ו־2 לוחות "הגעתי לגן" לחג החנוכה.<br><br>כל מה שצריך לחוויית חג עשירה ומשמעותית בגן.',
+          link: 'product-detail.html?cat=holidays&file=2',
+          video: 'images/Products/4-2.mp4',
+          heading: '🕎 ערכת חנוכה לגן 🕎',
+          cta: 'לצפייה בערכת חנוכה'
         };
 
         const [category, file] = selectedKey.split('-');
