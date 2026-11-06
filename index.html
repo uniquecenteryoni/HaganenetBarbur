@@ -57,7 +57,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
   <link rel="stylesheet" href="css/responsive.css?v=6">
   <link rel="stylesheet" href="css/animations.css?v=1">
   <link rel="stylesheet" href="css/toast.css?v=1">
@@ -65,7 +65,7 @@
   <!-- Leads Manager -->
   <script src="js/leads-manager.js"></script>
   <style>
-    /* February Popup Modal Styles */
+    /* Budget app promotion */
     .popup-modal {
       position: fixed;
       top: 0;
@@ -320,6 +320,13 @@
         padding: 15px 20px;
       }
     }
+    .budget-promo-visual { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:14px; margin-bottom:16px; }
+    .budget-promo-visual img { object-fit:contain; }
+    .budget-trial { background:#f0e3f8; color:#61187f; padding:8px 14px; border-radius:24px; font-weight:700; }
+    .budget-promo-features { padding-right:22px; margin:0 0 22px; color:#555; line-height:1.9; }
+    .budget-promo-note { text-align:center; color:#666; font-size:.85rem; margin-top:12px; }
+    #budgetPopup .popup-header { padding:32px 50px 24px; }
+    @media (prefers-reduced-motion:reduce) { #budgetPopup, #budgetPopup * { animation:none; transition:none; } }
   </style>
 </head>
 <body>
@@ -346,6 +353,7 @@
             <li><a href="#about">עליי</a></li>
             <li><a href="#shop">תכנים להורדה</a></li>
             <li><a href="consulting.html">ייעוץ</a></li>
+            <li><a href="/budget/" class="budget-nav-link">ניהול תקציב הגן</a></li>
             <li><a href="#contact">צור קשר</a></li>
           </ul>
         </nav>
@@ -419,29 +427,30 @@
     })();
   </script>
 
-  <!-- Hanukkah Kit Popup Modal -->
-  <div id="februaryPopup" class="popup-modal" style="display: none;">
+  <!-- Budget App Popup Modal -->
+  <div id="budgetPopup" class="popup-modal" style="display: none;">
     <div class="popup-overlay"></div>
     <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
-    <div class="popup-content">
+    <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="budgetPopupTitle" aria-describedby="budgetPopupDescription" tabindex="-1">
       <button class="popup-close" aria-label="סגור">×</button>
       <div class="popup-header">
-        <h2 class="popup-title">🕎 ערכת חנוכה לגן 🕎</h2>
-        <p class="popup-subtitle">פעילויות חגיגיות ומוכנות להדפסה לחג החנוכה</p>
+        <h2 class="popup-title" id="budgetPopupTitle">חדש: ניהול תקציב הגן</h2>
+        <p class="popup-subtitle">את הלב את נותנת לגן. לתקציב, נעשה סדר.</p>
       </div>
       <div class="popup-body">
-        <div class="popup-video-wrapper">
-          <video class="popup-video" autoplay loop muted playsinline>
-            <source src="images/Products/4-2.mp4" type="video/mp4">
-            התדפדפן שלך לא תומך בתגית וידאו.
-          </video>
+        <div class="budget-promo-visual">
+          <img src="images/budget/logo.webp" alt="תקציב הגן" width="110" height="110">
+          <span class="budget-trial">30 ימי ניסיון חינם לגן חדש</span>
         </div>
-        <h3 class="popup-product-title">ערכת חנוכה</h3>
-        <p class="popup-description">
-          6 מערכי פעילות בקבוצה, כרטיסיות מעוצבות להדפסה ו־2 לוחות "הגעתי לגן" לחג החנוכה.<br><br>
-          כל מה שצריך לחוויית חג עשירה ומשמעותית בגן.
-        </p>
-        <a href="product-detail.html?cat=holidays&file=2" class="popup-btn" id="popupShopBtn">לצפייה בערכת חנוכה</a>
+        <h3 class="popup-product-title">קצת סדר. הרבה שקט.</h3>
+        <p class="popup-description" id="budgetPopupDescription">הקניות, הקבלות וההוצאות של כל הצוות — במקום אחד נעים ופשוט. כדי שתדעי מה יצא, מה נשאר ומי שילמה.</p>
+        <ul class="budget-promo-features">
+          <li>צילום קבלות והזנת הוצאות</li>
+          <li>מעקב אחר התקציב והיתרה</li>
+          <li>עבודה משותפת עם צוות הגן</li>
+        </ul>
+        <a href="/budget/" class="popup-btn" id="popupBudgetBtn">בואי להכיר את תקציב הגן ←</a>
+        <p class="budget-promo-note">ללא כרטיס אשראי · מנוי אחד לכל הגן</p>
       </div>
     </div>
   </div>
@@ -1269,75 +1278,8 @@
       initScrollAnimations();
     }
 
-    // Hanukkah Kit Popup Logic
+    // Budget app popup. Keep the existing admin visibility switch.
     (function() {
-      function getHomepagePromoData() {
-        const config = safeJsonParse(localStorage.getItem(HOMEPAGE_PROMO_CONFIG_KEY), {});
-        const selectedKey = (config && config.productKey) ? config.productKey : 'holidays-2';
-        const isGift = !!(config && config.isGift);
-
-        const defaults = {
-          title: 'ערכת חנוכה',
-          subtitle: 'פעילויות חגיגיות ומוכנות להדפסה לחג החנוכה',
-          description: '6 מערכי פעילות בקבוצה, כרטיסיות מעוצבות להדפסה ו־2 לוחות "הגעתי לגן" לחג החנוכה.<br><br>כל מה שצריך לחוויית חג עשירה ומשמעותית בגן.',
-          link: 'product-detail.html?cat=holidays&file=2',
-          video: 'images/Products/4-2.mp4',
-          heading: '🕎 ערכת חנוכה לגן 🕎',
-          cta: 'לצפייה בערכת חנוכה'
-        };
-
-        const [category, file] = selectedKey.split('-');
-        if (file && file.startsWith('custom-')) {
-          const customId = file.replace('custom-', '');
-          const product = getCustomProducts().find(item => String(item.id) === String(customId));
-          if (product) {
-            const link = `product-detail.html?cat=${encodeURIComponent(product.category)}&file=custom-${encodeURIComponent(product.id)}`;
-            return {
-              title: product.title || defaults.title,
-              subtitle: isGift ? 'קובץ מיוחד מחכה לכן במתנה' : 'תוכן חדש ועדכני שמתאים בדיוק לתקופה',
-              description: (product.shortDescription || defaults.description),
-              link,
-              video: normalizeMediaPath(product.videoName, defaults.video),
-              heading: `🌸 חדש באתר: ${product.title || 'קובץ חדש'} 🌸`,
-              cta: isGift ? 'לצפייה בקובץ המתנה' : `לצפייה ב${product.title || 'הקובץ החדש'}`
-            };
-          }
-        }
-
-        return {
-          ...defaults,
-          subtitle: isGift ? 'קובץ מיוחד מחכה לכן במתנה' : defaults.subtitle,
-          cta: isGift ? 'לצפייה בקובץ המתנה' : defaults.cta
-        };
-      }
-
-      function applyPopupContent() {
-        const popup = document.getElementById('februaryPopup');
-        if (!popup) return;
-
-        const promo = getHomepagePromoData();
-        const titleEl = popup.querySelector('.popup-title');
-        const subtitleEl = popup.querySelector('.popup-subtitle');
-        const productTitleEl = popup.querySelector('.popup-product-title');
-        const descriptionEl = popup.querySelector('.popup-description');
-        const ctaEl = popup.querySelector('#popupShopBtn');
-        const videoSourceEl = popup.querySelector('.popup-video source');
-        const videoEl = popup.querySelector('.popup-video');
-
-        if (titleEl) titleEl.textContent = promo.heading;
-        if (subtitleEl) subtitleEl.textContent = promo.subtitle;
-        if (productTitleEl) productTitleEl.textContent = promo.title;
-        if (descriptionEl) descriptionEl.innerHTML = formatMultilineForHtml(promo.description);
-        if (ctaEl) {
-          ctaEl.href = promo.link;
-          ctaEl.textContent = promo.cta;
-        }
-        if (videoSourceEl) {
-          videoSourceEl.src = promo.video;
-        }
-        if (videoEl) videoEl.load();
-      }
-
       function shouldShowPopup() {
         const config = safeJsonParse(localStorage.getItem(HOMEPAGE_PROMO_CONFIG_KEY), {});
         return config.enabled !== false;
@@ -1410,13 +1352,14 @@
       }
 
       function showPopup() {
-        const popup = document.getElementById('februaryPopup');
+        const popup = document.getElementById('budgetPopup');
         if (!popup) return;
 
-        applyPopupContent();
-
+        const previousFocus = document.activeElement;
+        const dialog = popup.querySelector('[role=dialog]');
         const scrollY = window.scrollY || window.pageYOffset || 0;
         popup.style.display = 'block';
+        dialog.focus({ preventScroll: true });
         document.body.dataset.popupScrollY = String(scrollY);
         document.body.style.position = 'fixed';
         document.body.style.top = `-${scrollY}px`;
@@ -1431,14 +1374,20 @@
         }
         
         // התחלת אנימציית קונפטי
-        const stopConfetti = createConfetti();
+        const stopConfetti = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? null : createConfetti();
 
         // סגירה עם כפתור X
         const closeBtn = popup.querySelector('.popup-close');
         const overlay = popup.querySelector('.popup-overlay');
-        const shopBtn = document.getElementById('popupShopBtn');
+        const shopBtn = document.getElementById('popupBudgetBtn');
 
         const onEscapeKey = (e) => {
+          if (e.key === 'Tab') {
+            const focusable = [...dialog.querySelectorAll('button, a[href]')];
+            const first = focusable[0], last = focusable[focusable.length - 1];
+            if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog)) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && (document.activeElement === last || document.activeElement === dialog)) { e.preventDefault(); first.focus(); }
+          }
           if (e.key === 'Escape') {
             closePopup();
           }
@@ -1446,6 +1395,7 @@
 
         function closePopup() {
           popup.style.display = 'none';
+          if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
           const savedScrollY = parseInt(document.body.dataset.popupScrollY || '0', 10) || 0;
           document.body.style.position = '';
           document.body.style.top = '';

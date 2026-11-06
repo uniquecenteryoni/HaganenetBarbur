@@ -1132,13 +1132,7 @@
             <label for="promoEnabled" style="margin:0;">להציג פופאפ כשנכנסים לאתר</label>
           </div>
 
-          <label for="promoProductSelect">בחירת קובץ לפרסום</label>
-          <select id="promoProductSelect"></select>
-
-          <div class="row-inline" style="margin-top: 12px; margin-bottom: 12px;">
-            <input type="checkbox" id="promoIsGift">
-            <label for="promoIsGift" style="margin:0;">לשווק כמתנה (ללא מחיר)</label>
-          </div>
+          <p style="margin-bottom:12px;">הפופאפ מקדם את אפליקציית תקציב הגן ומפנה אל <a href="/budget/">דף הנחיתה באתר ברבור</a>.</p>
 
           <button class="btn-test" type="button" onclick="saveHomepagePromoSettings()" style="margin-bottom: 0;">✅ שמירת הגדרות פרסום</button>
 
@@ -1969,13 +1963,11 @@
 
     function saveHomepagePromoSettings() {
       const enabled = !!document.getElementById('promoEnabled')?.checked;
-      const productKey = document.getElementById('promoProductSelect')?.value || 'holidays-2';
-      const isGift = !!document.getElementById('promoIsGift')?.checked;
+      const config = safeJsonParse(localStorage.getItem(HOMEPAGE_PROMO_CONFIG_KEY), {});
 
       localStorage.setItem(HOMEPAGE_PROMO_CONFIG_KEY, JSON.stringify({
-        enabled,
-        productKey,
-        isGift
+        ...config,
+        enabled
       }));
 
       showToast('✅ הגדרות הפרסום נשמרו', 'success');

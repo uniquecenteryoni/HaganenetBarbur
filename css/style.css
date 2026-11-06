@@ -43,7 +43,7 @@ img { max-width:100%; display:block; }
 .nav-list { margin:0 auto; justify-content:center; display:flex; align-items:center; line-height:1; }
 
 .nav-toggle { display:none; background:none; border:1px solid var(--primary-purple); color:var(--primary-purple); padding:.4rem .7rem; border-radius:var(--radius-sm); font-size:1.1rem; cursor:pointer; }
-.nav-list { list-style:none; display:flex; gap:2rem; }
+.nav-list { list-style:none; display:flex; gap:clamp(.7rem, 1.8vw, 2rem); }
 .nav-list a { text-decoration:none; color:var(--text-dark); font-weight:500; position:relative; padding:.4rem .2rem; display:flex; align-items:center; }
 .nav-list a::after { content:""; position:absolute; inset:auto 0 0 0; height:3px; background:var(--primary-purple); transform:scaleX(0); transform-origin:center; transition:var(--transition); border-radius:2px; }
 .nav-list a:hover::after, .nav-list a:focus::after, .nav-list a.active::after { transform:scaleX(1); }
@@ -494,3 +494,5 @@ section { padding:4.5rem 0 3.5rem; position:relative; }
   5. חיפוש:
     - בזמן פוקוס על קטגוריה החיפוש מושבת (מתעלם מקלט) כדי לא לבלבל את המשתמש.
   ============================= */
+
+.nav-list a.budget-nav-link { color:var(--primary-purple); font-weight:700; }
