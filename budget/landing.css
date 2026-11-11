@@ -104,9 +104,10 @@
 .kgl-faq details p { padding-top:12px; color:#59788e; font-size:14px; line-height:1.9; }
 .kgl .kgl-signin { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; background:#ede4f5; padding:48px; border:1px solid #e3d5ed; border-radius:30px; scroll-margin-top:20px; }
 .kgl-signin>div>p { color:#59788e; margin-top:18px; font-size:15px; line-height:1.9; }
-.kgl .kgl-google { justify-self:center; background:#fff; color:#2e4050; border:1px solid #c3d0db; box-shadow:none; gap:12px; }
-.kgl .kgl-google:hover { background:#f6f8fa; color:#2e4050; }
-.kgl-google svg { flex-shrink:0; }
+.kgl .kgl-google { justify-self:center; width:min(100%, 320px); min-height:68px; background:#684980; border-color:#684980; box-shadow:0 6px 16px #51366838; gap:14px; font-size:clamp(20px, 3vw, 24px); font-weight:800; }
+.kgl .kgl-google:hover { background:#513668; border-color:#513668; }
+.kgl-google:focus-visible { outline:2px solid #513668; outline-offset:4px; }
+.kgl-google svg { flex-shrink:0; width:32px; height:32px; padding:6px; background:#fff; border-radius:50%; }
 .kgl-unavailable { background:#f5edf9; padding:14px; border-radius:12px; }
 .kgl-footer { display:flex; align-items:center; justify-content:space-between; gap:20px; padding-block:32px; font-size:12px; color:#59788e; }.kgl-footer>span { display:flex; align-items:center; gap:8px; }
 @media(max-width:1000px) {
