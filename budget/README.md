@@ -8,7 +8,9 @@ Source of the design and offer: `app/components/kindergarten/landing.tsx` and
 `landing.css` in the Unique website, as available locally on 2026-11-06.
 The fictional review carousel was omitted. FAQ sections use native HTML details.
 
-The only outbound product link is the sign-in/registration button, pointing to
+The header login link opens the Google account chooser through Unique’s
+`/auth/google?entry=kindergarten&next=%2Fkindergarten` endpoint. The
+sign-in/registration button in the sign-in section points to
 `https://unique-center.co.il/kindergarten#login`. Google sign-in and all account
 and budget operations remain on Unique. The page does not collect credentials.
 
