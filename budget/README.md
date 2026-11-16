@@ -2,7 +2,8 @@
 
 `/budget/` is a standalone static version of the public budget landing page from
 Unique, adapted to stay on `haganenet-barbur.com`. It requires no framework,
-server proxy, iframe, or third-party authentication on the Barbur domain.
+server proxy, or third-party authentication on the Barbur domain. The demo
+video is embedded from YouTube.
 
 Source of the design and offer: `app/components/kindergarten/landing.tsx` and
 `landing.css` in the Unique website, as available locally on 2026-11-06.
