@@ -986,7 +986,7 @@
             }
             // Replace with original image
             const newImg = document.createElement('img');
-            newImg.src = originalSrc;
+            newImg.src = container.dataset.coverUrl || originalSrc;
             newImg.alt = imgAlt;
             newImg.style.width = '100%';
             newImg.style.aspectRatio = '1/1';
@@ -1141,5 +1141,6 @@
       }
     })();
   </script>
+  <script src="js/product-covers.js"></script>
 </body>
 </html>

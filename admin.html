@@ -1064,6 +1064,18 @@
     <div class="tab-content" id="productsadmin">
       <h2 style="margin-bottom: 1.5rem; color: #667eea;">🗂️ ניהול קבצים לחנות</h2>
 
+      <section class="admin-card" style="margin-bottom:24px;" aria-labelledby="coverEditorTitle">
+        <h3 id="coverEditorTitle">החלפת תמונת שער</h3>
+        <p>בחרי מוצר ותמונה מהמחשב או מהטלפון. לאחר השמירה התמונה תתעדכן לכל המבקרים באתר.</p>
+        <label for="coverProduct">מוצר</label>
+        <select id="coverProduct" onchange="updateCoverPreview()"></select>
+        <label for="coverFile">תמונת שער חדשה</label>
+        <input id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewCoverFile()">
+        <small>JPG, PNG או WebP, עד 5MB. התמונה תישמר במידות ובאיכות המקוריות.</small>
+        <img id="coverPreview" alt="תצוגה מקדימה של תמונת השער" style="display:none; max-width:100%; width:240px; max-height:260px; object-fit:contain; margin:16px 0;">
+        <button id="coverUpload" class="btn-send" type="button" onclick="uploadProductCover()">שמירת תמונת השער באתר</button>
+        <p id="coverStatus" role="status" aria-live="polite"></p>
+      </section>
       <div class="products-admin-grid">
         <div class="admin-card">
           <h3>➕ הוספת קובץ חדש</h3>
@@ -1148,12 +1160,13 @@
     </div>
   </div>
 
+  <script src="js/cover-admin.js"></script>
   <!-- Quill Editor Script -->
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
   
   <script>
     // Password Configuration
-    const ADMIN_PASSWORD = 'barbur2026'; // שני את הסיסמה לפי רצונך!
+    // Authentication is verified by the server; no password is shipped to visitors.
     
     // Google Apps Script URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzD7jKAOkaXtblTBDvGJEx_yu8GkU318WaeB03c4aBaQid_uMmc3VOoXDAKzdBgY8-0Vg/exec';
@@ -1236,11 +1249,10 @@
     
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
-      // Check if already logged in
-      if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-        showAdminPanel();
-      }
-      
+      fetch('/api/cover-session', {cache: 'no-store'}).then(r => r.json()).then(session => {
+        if (session.authenticated) showAdminPanel();
+      }).catch(() => {});
+
       // Enter key to login
       document.getElementById('passwordInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') login();
@@ -1259,23 +1271,34 @@
     });
     
     // Login Function
-    function login() {
-      const password = document.getElementById('passwordInput').value.trim();
-      if (password === ADMIN_PASSWORD) {
-        sessionStorage.setItem('adminLoggedIn', 'true');
-        showAdminPanel();
-      } else {
-        document.getElementById('errorMessage').style.display = 'block';
+    async function login() {
+      const error = document.getElementById('errorMessage');
+      const button = document.querySelector('.login-box button');
+      button.disabled = true;
+      error.style.display = 'none';
+      try {
+        const response = await fetch('/api/cover-session', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({password: document.getElementById('passwordInput').value})
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'שירות הכניסה עדיין לא חובר לאתר.');
         document.getElementById('passwordInput').value = '';
-      }
+        showAdminPanel();
+      } catch (e) {
+        error.textContent = e.message;
+        error.style.display = 'block';
+      } finally { button.disabled = false; }
     }
-    
-    // Logout Function
-    function logout() {
-      sessionStorage.removeItem('adminLoggedIn');
-      location.reload();
+
+    async function logout() {
+      try {
+        const response = await fetch('/api/cover-session', {method: 'DELETE'});
+        if (!response.ok) throw new Error();
+        location.reload();
+      } catch { showToast('היציאה לא הושלמה. נסי שוב.', 'error'); }
     }
-    
+
     // Show Admin Panel
     function showAdminPanel() {
       document.getElementById('loginScreen').style.display = 'none';
@@ -1511,7 +1534,7 @@
         const html = await response.text();
 
         // Parse products object entries from product-detail runtime map.
-        const entryRegex = /'([a-z]+-[^']+)'\s*:\s*\{([\s\S]*?)\n\s*\},/g;
+        const entryRegex = /'([a-z]+-[^']+)'\s*:\s*\{([\s\S]*?)\n\s*\},?/g;
         let entryMatch;
 
         while ((entryMatch = entryRegex.exec(html)) !== null) {
@@ -1523,7 +1546,7 @@
           const descTemplateMatch = body.match(/description\s*:\s*`([\s\S]*?)`,/);
           const descSingleMatch = body.match(/description\s*:\s*'([\s\S]*?)',/);
           const priceMatch = body.match(/price\s*:\s*'([\s\S]*?)',/);
-          const imageMatch = body.match(/image\s*:\s*'([\s\S]*?)',/);
+          const imageMatch = body.match(/image\s*:\s*'([^']*)'/);
           const previewMatch = body.match(/previewVideo\s*:\s*'([\s\S]*?)',/);
 
           metadata[key] = {
@@ -1746,6 +1769,7 @@
       refreshCategorySelect(document.getElementById('prodCategory')?.value || 'general');
       refreshCatalogCategoryFilterOptions(document.getElementById('catalogCategoryFilter')?.value || 'all');
       renderManagedProducts();
+      await initCoverEditor();
       loadHomepagePromoSettings();
     }
 

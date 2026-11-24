@@ -666,6 +666,10 @@
       }
     }
     
+    document.addEventListener('product-cover-updated', ({detail}) => {
+      if (product && detail.key === productKey) product.image = detail.url;
+    });
+
     // Cart management functions
     function getCart() {
       const cart = localStorage.getItem('cart');
@@ -905,7 +909,7 @@
           }
           const newImg = document.createElement('img');
           newImg.id = 'productImage';
-          newImg.src = originalSrc;
+          newImg.src = container.dataset.coverUrl || originalSrc;
           newImg.alt = img.alt;
           newImg.style.width = '100%';
           newImg.style.height = 'auto';
@@ -946,5 +950,6 @@
     }
   </script>
   <script src="js/main.js"></script>
+  <script src="js/product-covers.js"></script>
 </body>
 </html>
