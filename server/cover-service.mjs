@@ -21,7 +21,9 @@ async function authenticated(request, env) {
   return crypto.subtle.verify('HMAC', await signingKey(env.ADMIN_PASSWORD), Uint8Array.from(mac.match(/../g), s => parseInt(s, 16)), encoder.encode(expires));
 }
 export async function session({request, env}) {
-  if (!configured(env)) return json({error: 'העלאת התמונות עדיין לא הוגדרה באחסון האתר.'}, 503);
+  if (!env.COVER_IMAGES) return json({error: 'אחסון התמונות עדיין לא חובר.'}, 503);
+  if (typeof env.ADMIN_PASSWORD !== 'string' || !env.ADMIN_PASSWORD) return json({error: 'סיסמת המנהל עדיין לא הוגדרה באחסון האתר.'}, 503);
+  if (!configured(env)) return json({error: 'סיסמת המנהל חייבת להכיל בין 16 ל־256 תווים. יש לעדכן את ADMIN_PASSWORD בהגדרות Cloudflare.'}, 503);
   if (request.method === 'GET') return json({authenticated: await authenticated(request, env)});
   if (!['POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
   if (!sameOrigin(request)) return json({error: 'Forbidden'}, 403);

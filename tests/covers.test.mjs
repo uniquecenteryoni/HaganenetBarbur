@@ -92,3 +92,13 @@ test('free quota failures return a clear error without successful writes or paid
   assert.equal(response.status,503); assert.equal(objects.size,0);
   assert.match((await response.json()).error,/מכסה/);
 });
+
+test('setup errors distinguish missing password and unsupported password length without revealing the secret', async () => {
+  const {env} = setup();
+  const request = new Request(origin + '/api/cover-session');
+  const missing = await session({env:{...env, ADMIN_PASSWORD:''},request});
+  assert.equal(missing.status,503); assert.match((await missing.json()).error,/לא הוגדרה/);
+  const tooShort = await session({env:{...env, ADMIN_PASSWORD:'short'},request});
+  assert.equal(tooShort.status,503);
+  const body = (await tooShort.json()).error; assert.match(body,/16/); assert.ok(!body.includes('short'));
+});
