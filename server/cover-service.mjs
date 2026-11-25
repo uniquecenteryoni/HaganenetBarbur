@@ -13,7 +13,7 @@ async function signature(secret, value) {
   const bytes = await crypto.subtle.sign('HMAC', await signingKey(secret), encoder.encode(value));
   return Array.from(new Uint8Array(bytes), n => n.toString(16).padStart(2, '0')).join('');
 }
-async function authenticated(request, env) {
+export async function authenticated(request, env) {
   const token = request.headers.get('Cookie')?.split(';').map(s => s.trim()).find(s => s.startsWith(cookieName + '='))?.slice(cookieName.length + 1);
   if (!token) return false;
   const [expires, mac] = token.split('.');

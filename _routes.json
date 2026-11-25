@@ -1,1 +1,1 @@
-{"version":1,"include":["/api/covers","/api/cover-session","/api/cover-image"],"exclude":[]}
+{"version": 1, "include": ["/api/covers", "/api/cover-session", "/api/cover-image", "/api/shop-products", "/api/shop-media", "/api/drive-products"], "exclude": []}

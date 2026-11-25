@@ -336,6 +336,7 @@
     }
     
     input[type="text"],
+    input[type="url"],
     input[type="date"],
     input[type="number"],
     input[type="file"],
@@ -578,7 +579,7 @@
 
     .products-admin-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
+      grid-template-columns: 0.65fr 1.6fr;
       gap: 18px;
       align-items: stretch;
     }
@@ -798,6 +799,29 @@
       background: #eef2ff;
       box-shadow: 0 6px 16px rgba(76, 99, 181, 0.15);
     }
+    #productDialog { border:0; border-radius:20px; width:min(780px,calc(100vw - 24px)); max-height:90dvh; margin:auto; padding:0; box-shadow:0 24px 80px #18214b55; color:#27324a; }
+    #prodShortDesc {min-height:84px;height:84px;border:2px solid #e0e0e0;border-radius:8px;}
+    #prodLongDesc {width:100%;padding:10px;font:inherit;border:2px solid #e0e0e0;border-radius:8px;}
+    #productDialog::backdrop { background:#15204499; }
+    #productForm {padding:24px;display:flex;flex-direction:column;gap:10px;}
+    .product-dialog-header {display:flex;align-items:center;justify-content:space-between;gap:16px;}
+    .product-dialog-header h2 {font-size:1.4rem;color:#5264c2;margin:0;}
+    #productDialogClose {border:0;background:#eef0f8;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;}
+    .product-dialog-actions {display:flex;gap:12px;position:sticky;bottom:-24px;background:white;padding:16px 0;margin-top:12px;}
+    .product-dialog-actions button {margin:0;flex:1;}
+    #prodCoverPreview,#prodVideoPreview {max-width:100%;width:220px;max-height:180px;object-fit:contain;border-radius:8px;margin-top:10px;}
+    #productDialog [hidden] {display:none !important;}
+    .field-help {font-size:14px;color:#64748b;line-height:1.6;margin:0;}
+    .add-product-card {align-self:start;gap:14px;}
+    .add-product-button {background:#6474dc;color:#fff;border:0;border-radius:12px;padding:18px;font:inherit;font-weight:700;cursor:pointer;}
+    .add-product-button span {font-size:26px;vertical-align:middle;margin-left:8px;}
+    .products-table-wrap {overflow:auto;}
+    .shop-products-table {width:100%;border-collapse:collapse;font-size:14px;min-width:530px;}
+    .shop-products-table th,.shop-products-table td {padding:12px 8px;border-bottom:1px solid #e8ebf1;text-align:right;vertical-align:middle;}
+    .shop-products-table th {background:#f3f5fc;color:#52628d;}
+    .shop-products-table .product-name-button {border:0;background:none;color:#3446a0;font:inherit;font-weight:700;text-align:right;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+    .table-actions {display:flex;gap:5px;flex-wrap:wrap;}
+    .table-actions button {padding:5px 7px;font-size:12px;}
   </style>
 </head>
 <body>
@@ -1064,79 +1088,12 @@
     <div class="tab-content" id="productsadmin">
       <h2 style="margin-bottom: 1.5rem; color: #667eea;">🗂️ ניהול קבצים לחנות</h2>
 
-      <section class="admin-card" style="margin-bottom:24px;" aria-labelledby="coverEditorTitle">
-        <h3 id="coverEditorTitle">החלפת תמונת שער</h3>
-        <p>בחרי מוצר ותמונה מהמחשב או מהטלפון. לאחר השמירה התמונה תתעדכן לכל המבקרים באתר. העדכון עשוי לקחת כדקה.</p>
-        <label for="coverProduct">מוצר</label>
-        <select id="coverProduct" onchange="updateCoverPreview()"></select>
-        <label for="coverFile">תמונת שער חדשה</label>
-        <input id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewCoverFile()">
-        <small>JPG, PNG או WebP, עד 5MB. התמונה תישמר במידות ובאיכות המקוריות.</small>
-        <img id="coverPreview" alt="תצוגה מקדימה של תמונת השער" style="display:none; max-width:100%; width:240px; max-height:260px; object-fit:contain; margin:16px 0;">
-        <button id="coverUpload" class="btn-send" type="button" onclick="uploadProductCover()">שמירת תמונת השער באתר</button>
-        <p id="coverStatus" role="status" aria-live="polite"></p>
-      </section>
       <div class="products-admin-grid">
-        <div class="admin-card">
-          <h3>➕ הוספת קובץ חדש</h3>
-          <div class="filter-grid">
-            <div>
-              <label for="prodTitle">כותרת <small style="color:#b91c1c; font-weight:700;">(השם חייב להיות תואם לשם הקובץ בדרייב)</small></label>
-              <input type="text" id="prodTitle" placeholder="לדוגמה: ערכת קיץ">
-            </div>
-            <div>
-              <label for="prodCategory">שיוך לקטגוריה</label>
-              <select id="prodCategory">
-                <option value="general">כללי</option>
-                <option value="recipes">מתכונים</option>
-                <option value="birthday">יום הולדת</option>
-                <option value="holidays">חגים</option>
-                <option value="body">אני וגופי</option>
-              </select>
-              <div class="row-inline" style="margin-top:8px;">
-                <input type="text" id="newCategoryName" placeholder="הוספת קטגוריה חדשה" style="flex:1;">
-                <button class="action-btn action-send" type="button" onclick="addCategoryOption()">הוסף קטגוריה</button>
-              </div>
-            </div>
-          </div>
-
-          <label for="prodShortDesc">תיאור קצר</label>
-          <textarea id="prodShortDesc" class="description-input" rows="6" placeholder="טקסט קצר לכרטיס המוצר"></textarea>
-
-          <label for="prodLongDesc" style="margin-top: 10px;">תיאור ארוך</label>
-          <textarea id="prodLongDesc" class="description-input" rows="14" placeholder="טקסט מלא לדף המוצר"></textarea>
-
-          <div class="filter-grid" style="margin-top: 10px;">
-            <div>
-              <label for="prodImageName">שם תמונה</label>
-              <input type="text" id="prodImageName" placeholder="למשל: aviv.svg">
-            </div>
-            <div>
-              <label for="prodVideoName">שם וידאו במעבר עכבר</label>
-              <input type="text" id="prodVideoName" placeholder="למשל: aviv.mp4">
-            </div>
-          </div>
-          <small style="display:block; margin-top:6px; color:#475569;">התמונה והוידאו נשמרים אוטומטית מתוך התיקייה: <strong>images/Products/</strong> (אין צורך להזין נתיב מלא)</small>
-
-          <div class="filter-grid" style="margin-top: 10px;">
-            <div>
-              <label for="prodPrice">מחיר</label>
-              <input type="text" id="prodPrice" placeholder="למשל: ₪25.00">
-            </div>
-            <div class="row-inline" style="align-self:end;">
-              <input type="checkbox" id="prodIsGift">
-              <label for="prodIsGift" style="margin:0;">להציג את הקובץ כמתנה</label>
-            </div>
-          </div>
-
-          <input type="hidden" id="prodEditKey" value="">
-
-          <div class="row-inline" style="margin-top: 12px;">
-            <button id="prodSaveBtn" class="btn-send" type="button" onclick="addManagedProduct()" style="margin:0;">💾 שמירה והוספה</button>
-            <button class="btn-test" type="button" onclick="resetProductForm()" style="margin:0;">ניקוי טופס</button>
-          </div>
-        </div>
-
+        <section class="admin-card add-product-card">
+          <h3>הוספת קובץ לחנות</h3>
+          <p>קובץ חדש, תמונת שער ופרטי המוצר — במקום אחד.</p>
+          <button class="add-product-button" type="button" onclick="openNewProductDialog()"><span aria-hidden="true">+</span> הוספת קובץ חדש</button>
+        </section>
         <div class="admin-card">
           <h3>📣 קידום בכניסה לאתר</h3>
           <div class="row-inline" style="margin-bottom: 10px;">
@@ -1152,7 +1109,7 @@
           <p style="font-size:0.9em;color:#64748b;margin-bottom:10px;">אפשר לערוך, למחוק (הסתרה מהאתר) ולשנות סדר הופעה.</p>
           <label for="catalogCategoryFilter">סינון לפי קטגוריה</label>
           <select id="catalogCategoryFilter" onchange="renderManagedProducts()" style="margin-bottom:10px;"></select>
-          <div id="managedProductsList" class="products-list">
+          <div id="managedProductsList" class="products-table-wrap">
             <div style="text-align:center;color:#999;padding:10px;">אין קבצים שהוספו עדיין</div>
           </div>
         </div>
@@ -1160,7 +1117,33 @@
     </div>
   </div>
 
-  <script src="js/cover-admin.js"></script>
+  <dialog id="productDialog" aria-labelledby="productDialogTitle">
+    <form id="productForm" onsubmit="event.preventDefault(); addManagedProduct();">
+      <div class="product-dialog-header"><h2 id="productDialogTitle">הוספת קובץ חדש</h2><button id="productDialogClose" type="button" aria-label="סגירת חלון" onclick="closeProductDialog()">✕</button></div>
+      <input type="hidden" id="prodEditKey">
+      <label for="prodDriveUrl">קישור לקובץ ב־Google Drive</label>
+      <input type="url" id="prodDriveUrl" dir="ltr" placeholder="https://drive.google.com/file/d/…/view">
+      <p class="field-help">הקובץ נשאר בדרייב של haganenet.barbur@gmail.com. אין צורך להפוך אותו לציבורי.</p>
+      <div class="filter-grid">
+        <div><label for="prodTitle">כותרת</label><input id="prodTitle" type="text" required maxlength="160"></div>
+        <div><label for="prodCategory">קטגוריה</label><select id="prodCategory" required></select></div>
+      </div>
+      <label for="prodShortDesc">תיאור קצר</label>
+      <textarea id="prodShortDesc" class="description-input" rows="3" required maxlength="2000"></textarea>
+      <details id="productLongDescription"><summary>תיאור נוסף לדף המוצר (אופציונלי)</summary><label for="prodLongDesc">תיאור מלא</label><textarea id="prodLongDesc" rows="5" maxlength="12000"></textarea></details>
+      <div class="filter-grid">
+        <div><label for="prodCoverUpload">תמונת שער</label><input id="prodCoverUpload" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewProductMedia('cover')"><span class="field-help">JPG, PNG או WebP, עד 5MB</span><img id="prodCoverPreview" alt="תצוגה מקדימה של תמונת השער" hidden></div>
+        <div><label for="prodVideoUpload">וידאו במעבר עכבר (אופציונלי)</label><input id="prodVideoUpload" type="file" accept="video/mp4" onchange="previewProductMedia('video')"><span class="field-help">MP4, עד 10MB</span><video id="prodVideoPreview" controls muted playsinline hidden></video><label id="prodRemoveVideoRow" class="row-inline"><input id="prodRemoveVideo" type="checkbox" onchange="removeProductVideo()"> הסרת וידאו קיים</label></div>
+      </div>
+      <input type="hidden" id="prodImageName"><input type="hidden" id="prodVideoName">
+      <div class="filter-grid"><div><label for="prodPrice">מחיר (₪)</label><input id="prodPrice" type="number" min="0" step="0.01" required></div><label class="row-inline"><input id="prodIsGift" type="checkbox" onchange="updateProductGiftState()"> להציג את הקובץ כמתנה</label></div>
+      <p id="productFormStatus" role="status" aria-live="polite"></p>
+      <div class="product-dialog-actions"><button id="prodSaveBtn" class="btn-send" type="submit">שמירה והוספה</button><button id="productCancelBtn" class="btn-test" type="button" onclick="closeProductDialog()">ביטול</button></div>
+    </form>
+  </dialog>
+  <script src="js/shop-catalog.js"></script>
+  <script src="js/product-editor.js"></script>
+
   <!-- Quill Editor Script -->
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
   
@@ -1374,7 +1357,7 @@
 
     function getManagedProducts() {
       const list = safeJsonParse(localStorage.getItem(CUSTOM_PRODUCTS_KEY), []);
-      return Array.isArray(list) ? list : [];
+      return ShopCatalog.customProducts(Array.isArray(list) ? list : []);
     }
 
     function saveManagedProducts(products) {
@@ -1384,7 +1367,7 @@
     function getProductManagementConfig() {
       const config = safeJsonParse(localStorage.getItem(PRODUCT_MANAGEMENT_KEY), {});
       return {
-        items: config && typeof config.items === 'object' ? config.items : {},
+        items: ShopCatalog.overrides(config && typeof config.items === 'object' ? config.items : {}),
         order: config && typeof config.order === 'object' ? config.order : {}
       };
     }
@@ -1406,6 +1389,7 @@
     function normalizeAssetFileName(value) {
       const raw = (value || '').toString().trim();
       if (!raw) return '';
+      if (raw.startsWith('/api/shop-media?')) return raw;
       if (raw.includes('/')) {
         const parts = raw.split('/').filter(Boolean);
         return parts[parts.length - 1] || '';
@@ -1442,7 +1426,7 @@
       const select = document.getElementById('prodCategory');
       if (!select) return;
       const categories = getAllCategories();
-      select.innerHTML = categories.map((cat) => `<option value="${cat}">${getCategoryLabel(cat)}</option>`).join('');
+      select.innerHTML = '<option value="">בחירת קטגוריה</option>' + categories.map((cat) => `<option value="${cat}">${getCategoryLabel(cat)}</option>`).join('');
       if (selectedValue && categories.includes(selectedValue)) {
         select.value = selectedValue;
       }
@@ -1629,6 +1613,7 @@
           shortDescription: p.shortDescription || detailMetadata[key]?.shortDescription || '',
           longDescription: p.longDescription || detailMetadata[key]?.longDescription || '',
           imageName: normalizeAssetFileName(p.imageName || detailMetadata[key]?.imageName || ''),
+          driveUrl: p.driveUrl || '',
           videoName: normalizeAssetFileName(p.videoName || detailMetadata[key]?.videoName || ''),
           price: p.price || detailMetadata[key]?.price || ''
         };
@@ -1664,81 +1649,7 @@
       return options;
     }
 
-    function renderManagedProducts() {
-      const container = document.getElementById('managedProductsList');
-      if (!container) return;
-
-      const config = getProductManagementConfig();
-      const filterValue = document.getElementById('catalogCategoryFilter')?.value || 'all';
-      const categories = Object.keys(siteCatalogByCategory).sort((a, b) => {
-        const order = getCategorySortOrder();
-        return order.indexOf(a) - order.indexOf(b);
-      }).filter((cat) => filterValue === 'all' || cat === filterValue);
-
-      if (!categories.length) {
-        container.innerHTML = '<div style="text-align:center;color:#999;padding:10px;">אין קבצים שהוספו עדיין</div>';
-        return;
-      }
-
-      container.innerHTML = categories.map((category) => {
-        const items = [...(siteCatalogByCategory[category] || [])];
-        const orderList = Array.isArray(config.order[category]) ? config.order[category] : [];
-        const rank = new Map(orderList.map((k, i) => [k, i]));
-
-        items.sort((a, b) => {
-          const aIn = rank.has(a.key);
-          const bIn = rank.has(b.key);
-          if (aIn && bIn) return rank.get(a.key) - rank.get(b.key);
-          if (aIn) return -1;
-          if (bIn) return 1;
-          return 0;
-        });
-
-        return `
-          <div class="category-section">
-            <div class="category-title">${getCategoryLabel(category)}</div>
-            ${items.map((item, idx) => {
-              const override = config.items[item.key] || {};
-              const title = override.title || item.title || item.key;
-              const shortDescription = override.shortDescription || item.shortDescription || '';
-              const longDescription = override.longDescription || item.longDescription || '';
-              const imageName = override.imageName || item.imageName || '-';
-              const videoName = override.videoName || item.videoName || '-';
-              const price = override.price || item.price || '-';
-              const hidden = !!override.hidden;
-              const deleted = !!override.deleted;
-              const isGift = !!override.isGift;
-
-              return `
-                <div class="product-item" style="opacity:${hidden || deleted ? '0.55' : '1'};">
-                  <div class="product-item-title">${title}</div>
-                  <div class="product-item-meta">
-                    מפתח: ${item.key}<br>
-                    תיאור קצר: ${shortDescription || '-'}<br>
-                    תיאור ארוך: ${longDescription ? `${longDescription.substring(0, 120)}...` : '-'}<br>
-                    מחיר: ${price}<br>
-                    תמונה: ${imageName}<br>
-                    וידאו hover: ${videoName}<br>
-                    מצב: ${deleted ? 'נמחק מהאתר' : (hidden ? 'מוסתר' : 'מוצג')} ${isGift ? '• מתנה' : ''}
-                  </div>
-                  <div class="product-item-actions">
-                    <button class="action-btn action-send" onclick="startEditCatalogItem('${encodeURIComponent(item.key)}')">✏️ עריכה</button>
-                    <button class="action-btn action-send" onclick="moveCatalogItem('${encodeURIComponent(category)}','${encodeURIComponent(item.key)}',-1)" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
-                    <button class="action-btn action-send" onclick="moveCatalogItem('${encodeURIComponent(category)}','${encodeURIComponent(item.key)}',1)" ${idx === items.length - 1 ? 'disabled' : ''}>⬇️</button>
-                    ${deleted
-                      ? `<button class="action-btn action-send" onclick="toggleCatalogItemDeleted('${encodeURIComponent(item.key)}', false)">↩️ שחזור</button>`
-                      : `<button class="action-btn action-delete" onclick="toggleCatalogItemDeleted('${encodeURIComponent(item.key)}', true)">❌ מחיקה מהאתר</button>`}
-                    ${hidden
-                      ? `<button class="action-btn action-send" onclick="toggleCatalogItemHidden('${encodeURIComponent(item.key)}', false)">👁️ החזרה</button>`
-                      : `<button class="action-btn action-delete" onclick="toggleCatalogItemHidden('${encodeURIComponent(item.key)}', true)">🗑️ הסתרה</button>`}
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-      }).join('');
-    }
+    function renderManagedProducts() { renderProductTable(); }
 
     function refreshPromoProductOptions(selectedValue) {
       const select = document.getElementById('promoProductSelect');
@@ -1765,56 +1676,17 @@
     }
 
     async function initProductsAdmin() {
+      await ShopCatalog.refresh();
       await loadSiteCatalogFromIndex();
-      refreshCategorySelect(document.getElementById('prodCategory')?.value || 'general');
+      if (!document.getElementById('productDialog').open) refreshCategorySelect('');
       refreshCatalogCategoryFilterOptions(document.getElementById('catalogCategoryFilter')?.value || 'all');
       renderManagedProducts();
-      await initCoverEditor();
+
       loadHomepagePromoSettings();
     }
 
-    function resetProductForm() {
-      document.getElementById('prodEditKey').value = '';
-      refreshCategorySelect('general');
-      document.getElementById('prodTitle').value = '';
-      document.getElementById('prodShortDesc').value = '';
-      document.getElementById('prodLongDesc').value = '';
-      document.getElementById('prodImageName').value = '';
-      document.getElementById('prodVideoName').value = '';
-      document.getElementById('prodPrice').value = '';
-      document.getElementById('prodIsGift').checked = false;
-      const btn = document.getElementById('prodSaveBtn');
-      if (btn) btn.textContent = '💾 שמירה והוספה';
-    }
-
-    function startEditCatalogItem(encodedKey) {
-      const key = decodeURIComponent(encodedKey);
-      const baseItem = siteCatalogByKey[key];
-      if (!baseItem) return;
-
-      const config = getProductManagementConfig();
-      const override = config.items[key] || {};
-      const title = override.title || baseItem.title || '';
-      const shortDescription = override.shortDescription || baseItem.shortDescription || '';
-      const longDescription = override.longDescription || baseItem.longDescription || '';
-      const imageName = override.imageName || baseItem.imageName || '';
-      const videoName = override.videoName || baseItem.videoName || '';
-      const price = override.price || baseItem.price || '';
-      const isGift = !!override.isGift;
-
-      document.getElementById('prodEditKey').value = key;
-      refreshCategorySelect(baseItem.category || 'general');
-      document.getElementById('prodTitle').value = title;
-      document.getElementById('prodShortDesc').value = shortDescription;
-      document.getElementById('prodLongDesc').value = longDescription;
-      document.getElementById('prodImageName').value = normalizeAssetFileName(imageName);
-      document.getElementById('prodVideoName').value = normalizeAssetFileName(videoName || deriveVideoFileNameFromImage(imageName));
-      document.getElementById('prodPrice').value = price;
-      document.getElementById('prodIsGift').checked = isGift;
-      const btn = document.getElementById('prodSaveBtn');
-      if (btn) btn.textContent = '💾 שמירת עריכה';
-      showToast('מצב עריכה הופעל עבור הקובץ שנבחר', 'info');
-    }
+    function resetProductForm() { resetProductEditor(); }
+    function startEditCatalogItem(encodedKey) { openExistingProductDialog(decodeURIComponent(encodedKey)); }
 
     function moveCatalogItem(encodedCategory, encodedKey, direction) {
       const category = decodeURIComponent(encodedCategory);
@@ -1839,121 +1711,10 @@
       showToast('הסדר עודכן', 'success', 1500);
     }
 
-    function toggleCatalogItemHidden(encodedKey, hidden) {
-      const key = decodeURIComponent(encodedKey);
-      const config = getProductManagementConfig();
-      const item = config.items[key] || {};
-      item.hidden = !!hidden;
-      config.items[key] = item;
-      saveProductManagementConfig(config);
-      renderManagedProducts();
-      showToast(hidden ? 'הקובץ הוסתר מהאתר' : 'הקובץ הוחזר להצגה', 'info');
-    }
+    async function toggleCatalogItemHidden(key, hidden) { await saveShopProductState(key, {hidden}); }
+    async function toggleCatalogItemDeleted(key, deleted) { await saveShopProductState(key, {deleted}); }
 
-    function toggleCatalogItemDeleted(encodedKey, deleted) {
-      const key = decodeURIComponent(encodedKey);
-      const config = getProductManagementConfig();
-      const item = config.items[key] || {};
-      item.deleted = !!deleted;
-      if (deleted) item.hidden = false;
-      config.items[key] = item;
-      saveProductManagementConfig(config);
-      renderManagedProducts();
-      showToast(deleted ? 'הקובץ נמחק מהאתר' : 'הקובץ שוחזר לאתר', deleted ? 'warning' : 'success');
-    }
-
-    function addManagedProduct() {
-      const editKey = document.getElementById('prodEditKey')?.value || '';
-      const title = document.getElementById('prodTitle')?.value.trim();
-      const category = document.getElementById('prodCategory')?.value;
-      const shortDescription = document.getElementById('prodShortDesc')?.value || '';
-      const longDescription = document.getElementById('prodLongDesc')?.value || '';
-      const imageName = normalizeAssetFileName(document.getElementById('prodImageName')?.value);
-      const videoName = normalizeAssetFileName(document.getElementById('prodVideoName')?.value) || deriveVideoFileNameFromImage(imageName);
-      const price = normalizePrice(document.getElementById('prodPrice')?.value);
-      const isGift = !!document.getElementById('prodIsGift')?.checked;
-
-      if (!title || !category || !shortDescription.trim() || !longDescription.trim() || !imageName || !price) {
-        showToast('יש למלא את כל השדות החובה', 'warning');
-        return;
-      }
-
-      if (editKey) {
-        const config = getProductManagementConfig();
-        config.items[editKey] = {
-          ...(config.items[editKey] || {}),
-          title,
-          shortDescription,
-          longDescription,
-          imageName,
-          videoName,
-          price,
-          isGift,
-          deleted: false,
-          hidden: false
-        };
-        saveProductManagementConfig(config);
-
-        if (editKey.includes('-custom-')) {
-          const customId = editKey.split('-custom-')[1];
-          const products = getManagedProducts();
-          const idx = products.findIndex((p) => String(p.id) === String(customId));
-          if (idx !== -1) {
-            products[idx] = {
-              ...products[idx],
-              title,
-              shortDescription,
-              longDescription,
-              imageName,
-              videoName,
-              price,
-              isGift
-            };
-            saveManagedProducts(products);
-          }
-        }
-
-        resetProductForm();
-        initProductsAdmin();
-        showToast('✅ העריכה נשמרה', 'success');
-        return;
-      }
-
-      const products = getManagedProducts();
-      const newId = Date.now().toString(36);
-      products.push({
-        id: newId,
-        title,
-        category,
-        shortDescription,
-        longDescription,
-        imageName,
-        videoName,
-        price,
-        isGift,
-        createdAt: new Date().toISOString()
-      });
-      saveManagedProducts(products);
-
-      const config = getProductManagementConfig();
-      const newKey = `${category}-custom-${newId}`;
-      config.items[newKey] = {
-        title,
-        shortDescription,
-        longDescription,
-        imageName,
-        videoName,
-        price,
-        isGift,
-        deleted: false,
-        hidden: false
-      };
-      saveProductManagementConfig(config);
-
-      resetProductForm();
-      initProductsAdmin();
-      showToast('✅ הקובץ נשמר בהצלחה ויהיה זמין באתר', 'success');
-    }
+    async function addManagedProduct() { await saveProductEditor(); }
 
     function deleteManagedProduct(encodedId) {
       const id = decodeURIComponent(encodedId);

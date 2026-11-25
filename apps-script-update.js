@@ -257,8 +257,10 @@ function processAndSendFiles(startDate, endDate, specificKey = null) {
   for (let key in groups) {
     if (specificKey && key !== specificKey) continue;
     const group = groups[key];
+    const storeFiles = getStoreDriveFileMap();
     const attachments = [];
     group.products.forEach(pName => {
+      if (storeFiles[pName]) { attachments.push(DriveApp.getFileById(storeFiles[pName]).getBlob()); return; }
       const files = folder.getFilesByName(pName + ".pdf");
       if (files.hasNext()) attachments.push(files.next().getBlob());
     });
@@ -287,7 +289,10 @@ function processAndSendFiles(startDate, endDate, specificKey = null) {
 
 function sendManualEmail(emails, fileNames) {
   const folder = DriveApp.getFolderById(FILES_FOLDER_ID);
+  const storeFiles = getStoreDriveFileMap();
   const attachments = fileNames.map(name => {
+    const title = cleanProductName(name.replace(/\.pdf$/i, ""));
+    if (storeFiles[title]) return DriveApp.getFileById(storeFiles[title]).getBlob();
     const f = folder.getFilesByName(name);
     return f.hasNext() ? f.next().getBlob() : null;
   }).filter(a => a);
@@ -351,6 +356,8 @@ function getFilesList() {
       const f = files.next();
       list.push(f.getName());
     }
+    const storeFiles = getStoreDriveFileMap();
+    Object.keys(storeFiles).forEach(title => { const name = title + '.pdf'; if (list.indexOf(name) === -1) list.push(name); });
     Logger.log('getFilesList: סה"כ ' + list.length + ' קבצים');
     return list.sort();
   } catch (e) {
@@ -889,4 +896,20 @@ function getVisitsForPanel() {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// Product links are private and read only by the owner's delivery script.
+// Set BARBUR_CATALOG_PASSWORD in Script Properties to the same value as
+// ADMIN_PASSWORD in Cloudflare. Never put the password in source code.
+function getStoreDriveFileMap() {
+  const secret = PropertiesService.getScriptProperties().getProperty('BARBUR_CATALOG_PASSWORD');
+  if (!secret) return {}; // Keep the existing folder delivery working during setup.
+  const response = UrlFetchApp.fetch('https://haganenet-barbur.com/api/drive-products', {
+    method: 'post', headers: {'X-Barbur-Key': secret}, muteHttpExceptions: true
+  });
+  if (response.getResponseCode() !== 200) throw new Error('לא ניתן לקרוא את קישורי המוצרים מהאתר. בדקי את BARBUR_CATALOG_PASSWORD בהגדרות הסקריפט.');
+  const payload = JSON.parse(response.getContentText());
+  const result = {};
+  Object.keys(payload.files || {}).forEach(title => { result[cleanProductName(title)] = payload.files[title]; });
+  return result;
 }

@@ -113,6 +113,7 @@
     }
     @media(prefers-reduced-motion:reduce) { #budgetPopup *, #budgetPopup { animation:none; transition:none; } }
   </style>
+  <script src="js/shop-catalog.js"></script>
 </head>
 <body>
   <!-- Toast Notification -->
@@ -491,13 +492,13 @@
 
     function getCustomProducts() {
       const products = safeJsonParse(localStorage.getItem(CUSTOM_PRODUCTS_KEY), []);
-      return Array.isArray(products) ? products : [];
+      return ShopCatalog.customProducts(Array.isArray(products) ? products : []);
     }
 
     function getProductManagementConfig() {
       const config = safeJsonParse(localStorage.getItem(PRODUCT_MANAGEMENT_KEY), {});
       return {
-        items: config && typeof config.items === 'object' ? config.items : {},
+        items: ShopCatalog.overrides(config && typeof config.items === 'object' ? config.items : {}),
         order: config && typeof config.order === 'object' ? config.order : {}
       };
     }
@@ -506,12 +507,12 @@
       if (!fileName || typeof fileName !== 'string') return fallbackPath;
       const trimmed = fileName.trim();
       if (!trimmed) return fallbackPath;
-      return trimmed.startsWith('images/') ? trimmed : `images/Products/${trimmed}`;
+      return trimmed.startsWith('/api/shop-media?') || trimmed.startsWith('images/') ? trimmed : `images/Products/${trimmed}`;
     }
 
     function formatMultilineForHtml(text) {
       if (text == null) return '';
-      return text.toString().replace(/\r\n/g, '\n').replace(/\n/g, '<br>');
+      return text.toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\r\n/g, '\n').replace(/\n/g, '<br>');
     }
 
     function renderCustomProducts() {
@@ -532,15 +533,15 @@
         const href = `product-detail.html?cat=${encodeURIComponent(category)}&file=${encodeURIComponent(fileId)}`;
         const imageSrc = normalizeMediaPath(product.imageName, 'images/Products/aviv.svg');
         const videoSrc = normalizeMediaPath(product.videoName, '');
-        const shortDesc = product.shortDescription || 'קובץ חדש נוסף לחנות.';
-        const title = product.title || 'קובץ חדש';
+        const shortDesc = formatMultilineForHtml(product.shortDescription || 'קובץ חדש נוסף לחנות.');
+        const title = formatMultilineForHtml(product.title || 'קובץ חדש');
 
         const createCardElement = () => {
           const card = document.createElement('div');
           card.className = 'file-card';
           card.dataset.customProduct = 'true';
 
-          const mediaAttr = videoSrc ? ` data-preview-video="${videoSrc}"` : '';
+          const mediaAttr = videoSrc ? ` data-preview-video="${videoSrc}"` : ' data-no-preview="true"';
           card.innerHTML = `<a href="${href}"><img src="${imageSrc}" alt="${title}"${mediaAttr}><p class="file-desc" style="white-space: pre-line;">${shortDesc}</p></a><a class="btn primary" href="${href}">לפרטים</a>`;
           return card;
         };
@@ -607,6 +608,7 @@
           if (override.title) img.alt = override.title;
           if (override.shortDescription) desc.textContent = override.shortDescription;
           desc.style.whiteSpace = 'pre-line';
+          if (override.removeVideo) { img.removeAttribute('data-preview-video'); img.dataset.noPreview = 'true'; }
           if (override.imageName) img.src = normalizeMediaPath(override.imageName, img.getAttribute('src'));
 
           const previewVideo = normalizeMediaPath(override.videoName || '', '');
@@ -717,7 +719,8 @@
     }
     
     // Initialize on page load
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await ShopCatalog.ready;
       renderCustomProducts();
       applyManagedProductConfig();
       updateCartCount();
@@ -836,6 +839,8 @@
           return;
         }
         
+        if (img.dataset.noPreview === 'true') return;
+
         // Skip if already initialized
         if (img.parentNode.classList && img.parentNode.classList.contains('product-image-container')) {
           console.log(`  ℹ️ Card ${index + 1} already initialized, skipping`);

@@ -149,6 +149,7 @@
     footer { text-align:center; margin-top:3rem; font-size:.8rem; color:#666; padding-top:2rem; border-top:1px solid var(--border); }
   </style>
   <link rel="stylesheet" href="css/toast.css?v=1">
+  <script src="js/shop-catalog.js"></script>
 </head>
 <body>
   <!-- Toast Notification -->
@@ -240,13 +241,13 @@
 
     function getCustomProducts() {
       const products = safeJsonParse(localStorage.getItem(CUSTOM_PRODUCTS_KEY), []);
-      return Array.isArray(products) ? products : [];
+      return ShopCatalog.customProducts(Array.isArray(products) ? products : []);
     }
 
     function getProductManagementConfig() {
       const config = safeJsonParse(localStorage.getItem(PRODUCT_MANAGEMENT_KEY), {});
       return {
-        items: config && typeof config.items === 'object' ? config.items : {}
+        items: ShopCatalog.overrides(config && typeof config.items === 'object' ? config.items : {})
       };
     }
 
@@ -254,12 +255,12 @@
       if (!fileName || typeof fileName !== 'string') return fallbackPath;
       const trimmed = fileName.trim();
       if (!trimmed) return fallbackPath;
-      return trimmed.startsWith('images/') ? trimmed : `images/Products/${trimmed}`;
+      return trimmed.startsWith('/api/shop-media?') || trimmed.startsWith('images/') ? trimmed : `images/Products/${trimmed}`;
     }
 
     function formatMultilineForHtml(text) {
       if (text == null) return '';
-      return text.toString().replace(/\r\n/g, '\n').replace(/\n/g, '<br>');
+      return text.toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\r\n/g, '\n').replace(/\n/g, '<br>');
     }
     
     // Update back button to return to the correct category
@@ -577,6 +578,11 @@
       }
     };
 
+    let productKey = cat + '-' + file;
+    let product;
+    let managedOverride;
+    async function initializeShopProduct() {
+      await ShopCatalog.ready;
     // Merge admin-managed products from localStorage into runtime catalog.
     getCustomProducts().forEach((item) => {
       const key = `${item.category}-custom-${item.id}`;
@@ -591,10 +597,10 @@
       };
     });
     
-    const productKey = cat + '-' + file;
+    productKey = cat + '-' + file;
     const managementConfig = getProductManagementConfig();
-    const managedOverride = managementConfig.items[productKey] || null;
-    const product = products[productKey];
+    managedOverride = managementConfig.items[productKey] || null;
+    product = products[productKey];
     let isHiddenProduct = false;
     let isDeletedProduct = false;
     let isGiftProduct = false;
@@ -602,11 +608,13 @@
     
     if (product) {
       if (managedOverride) {
+        if (typeof managedOverride.isGift === 'boolean') product.isFree = managedOverride.isGift;
         if (managedOverride.title) product.title = managedOverride.title;
         if (managedOverride.shortDescription) product.shortDesc = managedOverride.shortDescription;
         if (managedOverride.longDescription) product.description = managedOverride.longDescription;
         if (managedOverride.price) product.price = managedOverride.price;
         if (managedOverride.imageName) product.image = normalizeMediaPath(managedOverride.imageName, product.image);
+        if (managedOverride.removeVideo) product.previewVideo = '';
         if (managedOverride.videoName) product.previewVideo = normalizeMediaPath(managedOverride.videoName, product.previewVideo || '');
         if (managedOverride.isGift) {
           isGiftProduct = true;
@@ -657,6 +665,7 @@
         document.getElementById('productDescription').style.whiteSpace = 'normal';
         document.getElementById('productImage').src = product.image;
         document.getElementById('productImage').alt = product.title;
+        if (managedOverride?.removeVideo) document.getElementById('productImage').dataset.noPreview = 'true';
         if (product.previewVideo) {
           document.getElementById('productImage').dataset.previewVideo = product.previewVideo;
         } else {
@@ -669,6 +678,12 @@
     document.addEventListener('product-cover-updated', ({detail}) => {
       if (product && detail.key === productKey) product.image = detail.url;
     });
+
+      updateCartCount();
+      checkIfInCart();
+      initPreviewSystem();
+    }
+    initializeShopProduct();
 
     // Cart management functions
     function getCart() {
@@ -708,7 +723,7 @@
         cart.push({
           key: productKey,
           title: product.title,
-          price: product.price,
+          price: product.isFree ? '₪0.00' : product.price,
           image: product.image,
           category: cat,
           isFree: product.isFree || false
@@ -754,10 +769,7 @@
       }
     }
     
-    // Initialize
-    updateCartCount();
-    checkIfInCart();
-    initPreviewSystem();
+
 
     // Preview System for Product Detail Page
     function initPreviewSystem() {
@@ -766,6 +778,7 @@
       const imageWrapper = document.querySelector('.product-image-wrapper');
       const img = document.querySelector('#productImage');
       
+      if (img?.dataset.noPreview === 'true') return;
       if (!imageWrapper || !img) {
         console.log('⚠️ Product image elements not found');
         return;
