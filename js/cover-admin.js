@@ -71,7 +71,7 @@ async function uploadProductCover() {
     if (!response.ok) throw new Error(result.error || 'השמירה לא הושלמה. נסי שוב.');
     coverURLs[key] = result.url;
     updateCoverPreview();
-    coverStatus('תמונת השער נשמרה וזמינה לכל המבקרים באתר.');
+    coverStatus('תמונת השער נשמרה. העדכון עשוי לקחת כדקה עד שיופיע אצל כל המבקרים.');
   } catch (error) { coverStatus(error.message); }
   finally {
     coverUploading = false;

@@ -7,11 +7,11 @@
 ## מה נדרש לפרסום ב־Cloudflare Pages
 
 1. הפרויקט הפעיל זוהה: `haganenetbarbur` ב־Cloudflare Pages, מחובר למאגר `uniquecenteryoni/HaganenetBarbur`, ענף `main`, ודומיין `haganenet-barbur.com`.
-2. אם R2 טרם הופעל, בעל החשבון צריך לאשר את ההצטרפות לשירות. בדשבורד מופיע $0 כעת, עם חיוב אוטומטי לפי שימוש מעבר למכסות החינמיות. הפעלת השירות אינה התחייבות לאפס חיוב בעתיד. לאחר ההפעלה, ב־R2 צרו bucket לתמונות, למשל `barbur-product-covers`. אין צורך להפוך אותו לציבורי.
-3. בפרויקט Pages, ב־Settings → Bindings, הוסיפו R2 binding בשם **PRODUCT_COVERS** שמצביע ל־bucket.
+2. משתמשים רק ב־Workers KV במסלול Workers Free. אין להפעיל R2 או לשדרג את Workers. נוצר namespace בשם `barbur-product-covers-free`. במסלול החינמי חריגה ממכסה גורמת לכישלון הפעולות, ללא חיוב יתר. שינוי עתידי של תוכנית החשבון למסלול בתשלום עשוי לשנות זאת.
+3. בפרויקט Pages, ב־Settings → Bindings, הוסיפו KV binding בשם **COVER_IMAGES** שמצביע ל־namespace.
 4. ב־Settings → Variables and Secrets הוסיפו secret בשם **ADMIN_PASSWORD**, סיסמה חדשה ואקראית באורך 16–256 תווים. אין לשמור אותה בקוד או ב־Git. זו הסיסמה החדשה לפאנל; הסיסמה הישנה הוסרה מהקוד ואינה מתקבלת.
 5. פרסמו את הגרסה הכוללת את תיקיית `functions/`, את `server/cover-service.mjs` ואת `_routes.json`. ב־Git integration משאירים את מבנה האתר הקיים ותיקיית הפלט בשורש. אם מוגדרת תיקיית פלט אחרת, יש לכלול שם את קובצי האתר ואת `_routes.json` ולהריץ את פרסום Pages מתוך שורש הפרויקט שבו נמצאת `functions/`.
-6. בצעו redeploy אחרי הוספת ה־binding וה־secret. הגדרת Preview נפרדת מ־Production; השתמשו ב־bucket ובסיסמה נפרדים לתצוגת ניסוי.
+6. בצעו redeploy אחרי הוספת ה־binding וה־secret. הגדרת Preview נפרדת מ־Production; השתמשו ב־namespace ובסיסמה נפרדים לתצוגת ניסוי.
 7. פתחו `/admin.html`, התחברו בסיסמה החדשה והעלו תמונה למוצר. בדקו בדף הבית ובדף המוצר בחלון פרטי. רעננו כדי לבדוק שהעדכון נשמר גם לאחר יציאה.
 
 הכניסה תקפה לשמונה שעות, עם cookie מסוג HttpOnly/Secure/SameSite=Strict.
@@ -33,7 +33,7 @@ node --test tests/*.test.mjs
 אפשר להריץ את האתר עם Pages Functions באמצעות Wrangler (כלי רשמי של Cloudflare):
 
 ```sh
-npx wrangler pages dev . --r2 PRODUCT_COVERS
+npx wrangler pages dev . --kv COVER_IMAGES
 ```
 
 לבדיקה מקומית בלבד מגדירים `ADMIN_PASSWORD` ב־`.dev.vars` שאינו נכנס ל־Git. האחסון המקומי של Wrangler נפרד מייצור. דפדפנים תומכים ב־Secure cookies על localhost; בפרסום נדרש HTTPS.
@@ -41,8 +41,15 @@ npx wrangler pages dev . --r2 PRODUCT_COVERS
 תיעוד רשמי:
 - https://developers.cloudflare.com/pages/functions/bindings/
 - https://developers.cloudflare.com/pages/functions/routing/
-- https://developers.cloudflare.com/r2/api/workers/workers-api-reference/
+- https://developers.cloudflare.com/kv/platform/pricing/
+- https://developers.cloudflare.com/kv/platform/limits/
 
 ## מצב הפרסום
 
-הקוד והבדיקות המקומיות מוכנים, לרבות קומפילציה באמצעות Wrangler ובדיקת העלאת PNG אמיתי וקריאתו באמצעות R2 בסביבת Cloudflare המקומית. נבדק בדפדפן שדף המוצר טוען את התמונה מה־API. חשבון האחסון זוהה. הפעלה בייצור ממתינה להפעלת מינוי R2 על ידי בעל החשבון, יצירת bucket, הגדרת binding ו־secret, ופרסום. אין להציג את התכונה כפעילה באתר עד השלמת צעדים אלו ובדיקת העלאה אמיתית.
+הקוד והבדיקות המקומיות הותאמו ל־KV: בדיקות הרשאה, קבצים, דפדוף ותקלת מכסה חינמית, ובדיקת PNG אמיתי בסביבת Cloudflare KV המקומית. המסלול הפעיל בחשבון אומת כ־Workers Free. R2 לא הופעל. טרם פורסם בייצור; יש להשלים binding, סיסמת מנהל ופרסום.
+
+## המכסות החינמיות והשהיית העדכון
+
+נכון ל־25 בנובמבר 2026, Workers KV Free כולל אחסון 1GB, עד 100,000 קריאות ביום, 1,000 כתיבות ביום ו־1,000 בקשות רשימה ביום. אלה מכסות משותפות לחשבון. הפעולות נעצרות בחריגה; אין מנגנון בקוד שמפעיל מסלול בתשלום. האתר משתמש בבקשת רשימה בכל כניסה לדף ובקריאה לכל תמונת שער חדשה. אם המכסה נוצלה, ממשק ההעלאה מציג תקלה והתמונות המקוריות נשארות כגיבוי.
+
+KV מפיץ עדכונים בין אזורים בהשהיה שעשויה להגיע לכדקה; ההודעה בפאנל מציינת זאת. אין לפרש שמירה מוצלחת כעדכון מיידי בכל מכשיר.

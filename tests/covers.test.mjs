@@ -1,19 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
-import {session, covers, image} from '../server/cover-service.mjs';
+import {session, covers, image, withStorageErrors} from '../server/cover-service.mjs';
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 const origin = 'https://shop.test';
 function setup() {
   const objects = new Map();
-  const env = {ADMIN_PASSWORD: 'test-only-long-secret-password', PRODUCT_COVERS: {
-    async put(key, bytes, options) {
-      const etag = String((objects.get(key)?.version || 0) + 1);
-      const object = {key, bytes, body: bytes, etag, httpEtag: `"${etag}"`, version: Number(etag), ...options};
-      objects.set(key, object); return object;
+  const env = {ADMIN_PASSWORD: 'test-only-long-secret-password', COVER_IMAGES: {
+    async put(key, bytes, {metadata}) { objects.set(key, {bytes, metadata}); },
+    async getWithMetadata(key) {
+      const object = objects.get(key);
+      return {value: object?.bytes || null, metadata: object?.metadata || null};
     },
-    async get(key) { return objects.get(key); },
-    async list() { return {objects: [...objects.values()], truncated: false}; }
+    async list() { return {keys: [...objects.entries()].map(([name, object]) => ({name, metadata: object.metadata})), list_complete: true}; }
   }};
   return {env, objects};
 }
@@ -74,13 +73,22 @@ test('unconfigured storage fails closed, incorrect passwords cannot log in, logo
 });
 test('lists all pages, rejects invalid product keys and returns missing image as 404', async () => {
   const {env} = setup(); let calls = 0;
-  env.PRODUCT_COVERS.list = async ({cursor}) => {
+  env.COVER_IMAGES.list = async ({cursor}) => {
     calls++;
-    return cursor ? {objects: [{key: 'covers/body-2', etag: 'b'}], truncated: false}
-      : {objects: [{key: 'covers/body-1', etag: 'a'}], truncated: true, cursor: 'next'};
+    return cursor ? {keys: [{name: 'covers/body-2', metadata: {version:'b'}}], list_complete: true}
+      : {keys: [{name: 'covers/body-1', metadata: {version:'a'}}], list_complete: false, cursor: 'next'};
   };
   const listing = await (await covers({env, request: new Request(origin + '/api/covers')})).json();
   assert.equal(Object.keys(listing.covers).length, 2); assert.equal(calls, 2);
   assert.equal((await image({env, request: new Request(origin + '/api/cover-image?key=../secret')})).status, 400);
   assert.equal((await image({env, request: new Request(origin + '/api/cover-image?key=general-1')})).status, 404);
+});
+
+test('free quota failures return a clear error without successful writes or paid fallback', async () => {
+  const {env, objects} = setup(); const cookie = await login(env);
+  env.COVER_IMAGES.put = async () => { throw new Error('KV free write limit exceeded'); };
+  const request = new Request(origin + '/api/covers?key=general-1', {method:'PUT', headers:{Origin:origin,Cookie:cookie,'Content-Type':'image/png'},body:png});
+  const response = await withStorageErrors(covers)({env,request});
+  assert.equal(response.status,503); assert.equal(objects.size,0);
+  assert.match((await response.json()).error,/מכסה/);
 });

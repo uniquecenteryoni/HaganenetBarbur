@@ -4,7 +4,7 @@ const cookieName = '__Host-cover_admin';
 export const json = (data, status = 200, headers = {}) => new Response(JSON.stringify(data), {
   status, headers: {'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...headers}
 });
-const configured = env => !!env.PRODUCT_COVERS && typeof env.ADMIN_PASSWORD === 'string' && env.ADMIN_PASSWORD.length >= 16;
+const configured = env => !!env.COVER_IMAGES && typeof env.ADMIN_PASSWORD === 'string' && env.ADMIN_PASSWORD.length >= 16 && env.ADMIN_PASSWORD.length <= 256;
 const sameOrigin = request => request.headers.get('Origin') === new URL(request.url).origin;
 async function signingKey(secret) {
   return crypto.subtle.importKey('raw', encoder.encode(secret), {name: 'HMAC', hash: 'SHA-256'}, false, ['sign', 'verify']);
@@ -39,14 +39,16 @@ export async function session({request, env}) {
 const validKey = key => typeof key === 'string' && /^[a-z][a-z0-9-]{0,99}$/.test(key);
 const imageURL = (key, version) => `/api/cover-image?key=${encodeURIComponent(key)}&v=${encodeURIComponent(version)}`;
 export async function covers({request, env}) {
-  if (!env.PRODUCT_COVERS) return json({error: 'אחסון התמונות עדיין לא חובר.'}, 503);
+  if (!env.COVER_IMAGES) return json({error: 'אחסון התמונות עדיין לא חובר.'}, 503);
   if (request.method === 'GET') {
     const covers = {};
     let cursor;
     do {
-      const page = await env.PRODUCT_COVERS.list({prefix: 'covers/', cursor});
-      for (const object of page.objects) covers[object.key.slice(7)] = imageURL(object.key.slice(7), object.etag);
-      cursor = page.truncated ? page.cursor : undefined;
+      const page = await env.COVER_IMAGES.list({prefix: 'covers/', cursor});
+      for (const item of page.keys) {
+        if (item.metadata?.version) covers[item.name.slice(7)] = imageURL(item.name.slice(7), item.metadata.version);
+      }
+      cursor = !page.list_complete ? page.cursor : undefined;
     } while (cursor);
     return json({covers});
   }
@@ -75,18 +77,27 @@ export async function covers({request, env}) {
     : type === 'image/png' ? [137,80,78,71,13,10,26,10].every((b,i) => bytes[i] === b)
     : size >= 12 && new TextDecoder().decode(bytes.slice(0,4)) === 'RIFF' && new TextDecoder().decode(bytes.slice(8,12)) === 'WEBP';
   if (!matches) return json({error: 'הקובץ אינו תמונה בפורמט שנבחר.'}, 415);
-  const object = await env.PRODUCT_COVERS.put(`covers/${key}`, bytes, {httpMetadata: {contentType: type}});
-  return json({key, url: imageURL(key, object.etag)});
+  const version = crypto.randomUUID();
+  await env.COVER_IMAGES.put(`covers/${key}`, bytes.buffer, {metadata: {contentType: type, version}});
+  return json({key, url: imageURL(key, version)});
 }
 export async function image({request, env}) {
   if (!['GET', 'HEAD'].includes(request.method)) return new Response(null, {status: 405});
   const key = new URL(request.url).searchParams.get('key');
   if (!validKey(key)) return new Response(null, {status: 400});
-  if (!env.PRODUCT_COVERS) return new Response(null, {status: 503});
-  const object = await env.PRODUCT_COVERS.get(`covers/${key}`);
-  if (!object) return new Response(null, {status: 404});
-  return new Response(request.method === 'HEAD' ? null : object.body, {headers: {
-    'Content-Type': object.httpMetadata.contentType, 'X-Content-Type-Options': 'nosniff',
-    'Cache-Control': 'no-cache', 'ETag': object.httpEtag
+  if (!env.COVER_IMAGES) return new Response(null, {status: 503});
+  const object = await env.COVER_IMAGES.getWithMetadata(`covers/${key}`, {type: 'arrayBuffer'});
+  if (!object.value) return new Response(null, {status: 404});
+  return new Response(request.method === 'HEAD' ? null : object.value, {headers: {
+    'Content-Type': object.metadata.contentType, 'X-Content-Type-Options': 'nosniff',
+    'Cache-Control': 'no-cache', 'ETag': `"${object.metadata.version}"`
   }});
+}
+
+// A quota or storage failure must not become a false success or trigger a paid fallback.
+export function withStorageErrors(handler) {
+  return async context => {
+    try { return await handler(context); }
+    catch { return json({error: 'שירות התמונות אינו זמין כרגע או שהמכסה החינמית נוצלה. לא בוצע מעבר למסלול בתשלום. נסי שוב מאוחר יותר.'}, 503); }
+  };
 }
