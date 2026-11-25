@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import test from "node:test";
 import assert from "node:assert/strict";
 import vm from "node:vm";
@@ -8,6 +9,14 @@ test("Drive delivery resolves the stored file ID when the product title differs 
   const title = "ערכת מוצר חדשה";
   const context = {
     console,
+    Utilities: {
+      DigestAlgorithm: { SHA_256: "sha256" },
+      Charset: { UTF_8: "utf8" },
+      computeDigest: (algorithm, value) => [
+        ...createHash("sha256").update(value).digest(),
+      ],
+      base64Encode: (bytes) => Buffer.from(bytes).toString("base64"),
+    },
     Logger: { log() {} },
     PropertiesService: {
       getScriptProperties: () => ({ getProperty: () => "test-only-secret" }),
@@ -15,7 +24,12 @@ test("Drive delivery resolves the stored file ID when the product title differs 
     UrlFetchApp: {
       fetch: (url, options) => {
         assert.equal(url, "https://haganenet-barbur.com/api/drive-products");
-        assert.equal(options.headers["X-Barbur-Key"], "test-only-secret");
+        assert.equal(
+          options.headers["X-Barbur-Key"],
+          createHash("sha256")
+            .update("barbur-drive-catalog:test-only-secret")
+            .digest("base64"),
+        );
         return {
           getResponseCode: () => 200,
           getContentText: () =>
@@ -59,6 +73,14 @@ test("the connection bridge fails clearly on rejected credentials and makes no r
   let calls = 0;
   let secret = "";
   const context = {
+    Utilities: {
+      DigestAlgorithm: { SHA_256: "sha256" },
+      Charset: { UTF_8: "utf8" },
+      computeDigest: (algorithm, value) => [
+        ...createHash("sha256").update(value).digest(),
+      ],
+      base64Encode: (bytes) => Buffer.from(bytes).toString("base64"),
+    },
     PropertiesService: {
       getScriptProperties: () => ({ getProperty: () => secret }),
     },

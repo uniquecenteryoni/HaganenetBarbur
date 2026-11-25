@@ -904,8 +904,9 @@ function getVisitsForPanel() {
 function getStoreDriveFileMap() {
   const secret = PropertiesService.getScriptProperties().getProperty('BARBUR_CATALOG_PASSWORD');
   if (!secret) return {}; // Keep the existing folder delivery working during setup.
+  const key = Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, 'barbur-drive-catalog:' + secret, Utilities.Charset.UTF_8));
   const response = UrlFetchApp.fetch('https://haganenet-barbur.com/api/drive-products', {
-    method: 'post', headers: {'X-Barbur-Key': secret}, muteHttpExceptions: true
+    method: 'post', headers: {'X-Barbur-Key': key}, muteHttpExceptions: true
   });
   if (response.getResponseCode() !== 200) throw new Error('לא ניתן לקרוא את קישורי המוצרים מהאתר. בדקי את BARBUR_CATALOG_PASSWORD בהגדרות הסקריפט.');
   const payload = JSON.parse(response.getContentText());

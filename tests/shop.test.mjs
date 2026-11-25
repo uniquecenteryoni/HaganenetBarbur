@@ -6,6 +6,7 @@ import {
   shopMedia,
   driveProducts,
   driveFileId,
+  catalogKey,
 } from "../server/shop-service.mjs";
 const origin = "https://shop.test";
 function setup() {
@@ -123,7 +124,7 @@ test("saving a product publishes metadata but keeps Drive links private", async 
     env,
     request: new Request(origin + "/api/drive-products", {
       method: "POST",
-      headers: { "X-Barbur-Key": env.ADMIN_PASSWORD },
+      headers: { "X-Barbur-Key": await catalogKey(env.ADMIN_PASSWORD) },
     }),
   });
   assert.equal(
@@ -201,7 +202,7 @@ test("a gift may cost zero; partial state changes retain data and remove deleted
       env,
       request: new Request(origin + "/api/drive-products", {
         method: "POST",
-        headers: { "X-Barbur-Key": env.ADMIN_PASSWORD },
+        headers: { "X-Barbur-Key": await catalogKey(env.ADMIN_PASSWORD) },
       }),
     })
   ).json();

@@ -298,6 +298,15 @@ export async function shopMedia({ request, env }) {
   });
   return json({ url: `/api/shop-media?id=${id}` });
 }
+export async function catalogKey(secret) {
+  const bytes = new Uint8Array(
+    await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode("barbur-drive-catalog:" + secret),
+    ),
+  );
+  return btoa(String.fromCharCode(...bytes));
+}
 export async function driveProducts({ request, env }) {
   if (request.method !== "POST")
     return json({ error: "Method not allowed" }, 405);
@@ -306,7 +315,7 @@ export async function driveProducts({ request, env }) {
   if (
     !provided ||
     typeof env.ADMIN_PASSWORD !== "string" ||
-    provided !== env.ADMIN_PASSWORD
+    provided !== (await catalogKey(env.ADMIN_PASSWORD))
   )
     return json({ error: "Unauthorized" }, 401);
   const files = {};
