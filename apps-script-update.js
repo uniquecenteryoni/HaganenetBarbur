@@ -257,12 +257,13 @@ function processAndSendFiles(startDate, endDate, specificKey = null) {
   for (let key in groups) {
     if (specificKey && key !== specificKey) continue;
     const group = groups[key];
-    const storeFiles = getStoreDriveFileMap();
+    const storeFiles = getStoreDriveFileMapForDelivery();
     const attachments = [];
     group.products.forEach(pName => {
       if (storeFiles[pName]) { attachments.push(DriveApp.getFileById(storeFiles[pName]).getBlob()); return; }
       const files = folder.getFilesByName(pName + ".pdf");
-      if (files.hasNext()) attachments.push(files.next().getBlob());
+      if (!files.hasNext()) throw new Error("הקובץ לא נמצא בדרייב: " + pName);
+      attachments.push(files.next().getBlob());
     });
 
     const productsHtml = group.products.map((p, idx) => (idx + 1) + ". " + p).join("<br>");
@@ -289,12 +290,13 @@ function processAndSendFiles(startDate, endDate, specificKey = null) {
 
 function sendManualEmail(emails, fileNames) {
   const folder = DriveApp.getFolderById(FILES_FOLDER_ID);
-  const storeFiles = getStoreDriveFileMap();
+  const storeFiles = getStoreDriveFileMapForDelivery();
   const attachments = fileNames.map(name => {
     const title = cleanProductName(name.replace(/\.pdf$/i, ""));
     if (storeFiles[title]) return DriveApp.getFileById(storeFiles[title]).getBlob();
     const f = folder.getFilesByName(name);
-    return f.hasNext() ? f.next().getBlob() : null;
+    if (!f.hasNext()) throw new Error("הקובץ לא נמצא בדרייב: " + name);
+    return f.next().getBlob();
   }).filter(a => a);
 
   const productsHtml = fileNames.map((p, idx) => (idx + 1) + ". " + p.replace(".pdf", "")).join("<br>");
@@ -356,7 +358,7 @@ function getFilesList() {
       const f = files.next();
       list.push(f.getName());
     }
-    const storeFiles = getStoreDriveFileMap();
+    const storeFiles = getStoreDriveFileMapForDelivery();
     Object.keys(storeFiles).forEach(title => { const name = title + '.pdf'; if (list.indexOf(name) === -1) list.push(name); });
     Logger.log('getFilesList: סה"כ ' + list.length + ' קבצים');
     return list.sort();
@@ -913,4 +915,10 @@ function getStoreDriveFileMap() {
   const result = {};
   Object.keys(payload.files || {}).forEach(title => { result[cleanProductName(title)] = payload.files[title]; });
   return result;
+}
+
+// A temporary catalog failure must not hide the existing folder's files.
+function getStoreDriveFileMapForDelivery() {
+  try { return getStoreDriveFileMap(); }
+  catch (error) { Logger.log('קטלוג האתר אינו זמין; נעשה שימוש בתיקיית הקבצים הקיימת.'); return {}; }
 }

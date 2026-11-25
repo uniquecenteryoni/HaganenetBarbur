@@ -103,3 +103,13 @@ test("the connection bridge fails clearly on rejected credentials and makes no r
     /BARBUR_CATALOG_PASSWORD/,
   );
 });
+
+
+test('legacy folder delivery survives a catalog outage; missing files prevent empty emails', () => {
+ const sent=[];
+ const context={Logger:{log(){}},DriveApp:{getFileById:()=>({getBlob:()=>({signature:true})}),getFolderById:()=>({getFilesByName:name=>({hasNext:()=>name==='legacy.pdf',next:()=>({getBlob:()=>({legacy:true})})}),getFiles:()=>({hasNext:()=>false})})},MailApp:{sendEmail:email=>sent.push(email)},SpreadsheetApp:{openById:()=>({getSheets:()=>[{getDataRange:()=>({getValues:()=>[['header']]})}]})}};
+ vm.createContext(context);new vm.Script(fs.readFileSync('apps-script-update.js','utf8')).runInContext(context);
+ context.getStoreDriveFileMap=()=>{throw new Error('catalog unavailable');};
+ context.sendManualEmail(['buyer@example.test'],['legacy.pdf']);assert.equal(sent.length,1);assert.equal(sent[0].attachments[0].legacy,true);
+ assert.throws(()=>context.sendManualEmail(['buyer@example.test'],['missing.pdf']),/לא נמצא/);assert.equal(sent.length,1);
+});
